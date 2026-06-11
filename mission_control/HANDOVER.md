@@ -1,18 +1,19 @@
 # 인수인계
 
-> 최종 갱신일: 2026-06-11 (RST-401 카루아 응답 엔진 완료)
+> 최종 갱신일: 2026-06-11 (전면 리팩토링 계획 및 문서 상태 동기화)
 
 ## 현재 목표
 
-기존 BarBot 프로토타입을 **Re:Station 카루아 단일 캐릭터 대화형 칵테일 추천 MVP**로 개편한다.
+기존 BarBot 프로토타입을 **Re:Station 카루아 중심 대화형 칵테일 추천 MVP**로 개편한다. 시에스타는 낮은 빈도의 짧은 만담 이벤트로 등장한다.
 
 ## 확정된 핵심 계약
 
-- [x] MVP 캐릭터는 카루아 한 명이다.
+- [x] MVP의 주 대화 캐릭터는 카루아이며, 시에스타는 낮은 빈도의 만담 이벤트로만 등장한다.
 - [x] 상담이 아니라 농담과 추천을 통한 환기를 제공한다.
 - [x] 추천 결과와 근거는 DB 및 추천 엔진이 결정한다.
 - [x] WebLLM은 일반 대화와 추천 설명만 생성한다.
 - [x] WebLLM은 브라우저의 Web Worker에서 실행한다.
+- [x] OpenAI API 및 Ollama 후보에서 WebLLM 기반 생성형 표현 계층으로 전환한다.
 - [x] Qwen과 Gemma 후보를 실제 평가한 후 기본 모델을 결정한다.
 - [x] WebLLM 실패 시 규칙 기반 엔진으로 복구한다.
 - [x] 백엔드는 MVP 범위에서 사용하지 않는다.
@@ -24,19 +25,23 @@
 - [x] **RST-102**: BarBot → Re:Station 브랜드 교체 완료. `<title>`, 헤더명, CSS 클래스, 페르소나, localStorage 키 모두 변경.
 - [x] **RST-401**: 카루아 규칙 기반 대화 응답 엔진 완료. keywords.ts(12규칙), conversation.ts(30+템플릿), akinator/engine.ts(질문/선택지), App.tsx(환영/작별/추천) 모두 카루아 말투 적용.
 - [x] **PLAN-002**: 시에스타·카루아 발화 알고리즘, 금지 패턴, 관계성, 평가 기준 문서화.
+- [x] **RST-201/RST-202**: 단일 `CocktailData` 컬렉션을 추천, 검색, 카드, 도감에 적용하고 `toLegacyCocktail()` 공개 변환 계층 제거.
+- [x] **검증 강화**: `npm run build`에 타입 검사 포함, 추천 검색 및 이름 우선순위 회귀 테스트 4개 추가, 초기 JS 번들 276.06 kB로 감소.
+- [x] **검색 및 WebLLM 계약**: 이름·별칭 검색 우선, OpenAI/Ollama에서 WebLLM 전환, 즉시 규칙 반응과 스트리밍 기반 체감 지연 최소화 방향 확정.
+- [x] **시에스타 이벤트 계약**: 예고 없는 난입, 짧은 만담, 업무 복귀 퇴장, 카루아에게 대화권 반환 흐름 확정.
+
+전체 리팩토링은 `TASK_BOARD.md`의 상위 프로그램 `RST-000`과 단계별 `RST-*` 작업을 기준으로 추적한다.
 
 ## 다음 작업
 
-`RST-201` 칵테일 데이터 계약 확정 및 단일화 — 레거시 `Cocktail`과 `CocktailRecord`를 통합하고 변환 계층(`toLegacyCocktail`)을 제거한다.
+`RST-404` 상세 카루아 계약 적합성 감사 및 보강 — 현재 규칙 엔진 응답을 `CHARACTER_DESIGN.md` 기준으로 평가하고 실패 대사를 수정한다.
 
 ### 권장 순서
 
-1. 단일 `CocktailData` 타입 설계 (두 타입의 필드를 모두 커버)
-2. `src/types.ts`에 새 타입 정의, `src/types/cocktail-db.ts`의 `CocktailRecord` 폐기 예정 마킹
-3. `database.ts`의 레거시 `cocktails[]` 배열을 새 타입으로 마이그레이션
-4. UI 컴포넌트에서 `Cocktail` → 새 타입으로 점진적 교체
-5. `toLegacyCocktail()` 변환 함수 제거
-6. lint + build 검증
+1. `CHARACTER_DESIGN.md`의 카루아 실패 판정과 금지 패턴을 평가 항목으로 정리
+2. `keywords.ts`, `conversation.ts`, `akinator/engine.ts`, `App.tsx` 대사 전수 검사
+3. 실패 대사를 수정하고 회귀 테스트 추가
+4. lint + test + build 검증
 
 ## 먼저 읽을 파일
 
@@ -45,11 +50,11 @@
 | 1 | `mission_control/DECISIONS.md` | 변경하면 안 되는 핵심 결정 |
 | 2 | `mission_control/CHARACTER_DESIGN.md` | 캐릭터 대화 생성과 검수 기준 |
 | 3 | `mission_control/TASK_BOARD.md` | 단계, 완료 조건, 견적 |
-| 4 | `bar_tend/vite-project/src/types.ts` | 레거시 `Cocktail` 타입 정의 |
-| 5 | `bar_tend/vite-project/src/types/cocktail-db.ts` | 현재 `CocktailRecord` 타입 정의 |
-| 6 | `bar_tend/vite-project/src/lib/cocktails/database.ts` | 이중 데이터, `toLegacyCocktail()` 변환 계층 |
-| 7 | `bar_tend/vite-project/src/lib/cocktails/cocktail-db.ts` | `CocktailRecord` 기반 데이터 접근 |
-| 8 | `bar_tend/vite-project/src/App.tsx` | 현재 사용자 흐름과 집중된 로직 |
+| 4 | `bar_tend/src/lib/bartender/keywords.ts` | 키워드 규칙 응답 |
+| 5 | `bar_tend/src/lib/bartender/conversation.ts` | 일반 대화 템플릿 |
+| 6 | `bar_tend/src/lib/akinator/engine.ts` | 추천 질문 대사 |
+| 7 | `bar_tend/src/App.tsx` | 환영, 추천, 작별 대사와 집중된 로직 |
+| 8 | `bar_tend/src/lib/cocktails/database.test.ts` | 현재 회귀 테스트 패턴 |
 
 ## 다중 작업 PC 동기화
 
@@ -77,21 +82,27 @@ git stash pop
 
 ## 주의사항
 
-- [ ] 시에스타, 웰컴 드링크, 게임 시스템을 MVP 작업에 섞지 않는다.
-- [ ] 시에스타는 MVP 런타임에 넣지 않지만 `CHARACTER_DESIGN.md`의 설계 계약은 보존한다.
+- [ ] 시에스타를 상시 대화 캐릭터나 선택 캐릭터로 확장하지 않는다.
+- [ ] 시에스타 만담 이벤트는 추천 질문, 안전 확인, 퇴장 및 초기화 흐름을 끊지 않는다.
+- [ ] 시에스타 이벤트가 끝난 뒤 대화 중심을 카루아에게 돌린다.
+- [ ] 시에스타 이벤트는 예고 없는 난입으로 시작하고 창고 정리, 청소, 재고 확인 같은 업무 복귀 발화로 끝낸다.
+- [ ] 사용자가 시에스타에게 말을 이어도 시에스타가 상시 대화 캐릭터처럼 남아 있지 않게 한다.
 - [ ] 카루아 대사는 농담을 먼저 두고 의미를 직접 해설하지 않는다.
 - [ ] WebLLM 연결 전에 규칙 기반 전체 흐름을 완성한다.
 - [ ] WebLLM이 추천 결과를 선택하거나 변경하게 만들지 않는다.
 - [ ] Qwen 또는 Gemma 모델명을 평가 없이 코드에 고정하지 않는다.
 - [ ] 모델 다운로드는 자동 시작하지 않고 사용자에게 크기와 진행 상태를 보여준다.
+- [ ] WebLLM을 기다리느라 추천 카드나 규칙 기반 첫 반응 표시를 늦추지 않는다.
+- [ ] 준비된 모델 기준 첫 토큰 800ms 목표와 요청 시간 예산을 측정한다.
 - [x] ~~한국어 문자열 손상~~ — RST-101-1 조사 결과 손상 없음 확인 완료
 - [x] ~~localStorage 키 마이그레이션~~ — RST-102에서 마이그레이션 로직 추가 완료
-- [ ] 데이터 모델 단일화 전 양쪽 데이터 중 하나를 임의 삭제하지 않는다.
-- [ ] 새 `CocktailData` 타입은 `Cocktail`의 `aroma`, `vibe`, `story`, `popCulture`와 `CocktailRecord`의 `features`, `bar_id`를 모두 커버해야 함
+- [x] 단일 `CocktailData` 타입이 표시 필드와 추천 필드, 시그니처 바 필드를 함께 제공한다.
 
 ## 검증 기준
 
 - [ ] `npm.cmd run lint`
+- [ ] `npm.cmd test`
+- [ ] `npm.cmd run check`
 - [ ] `npm run build` 또는 `npm.cmd run build`
 - [ ] 카루아 초기 메시지 표시
 - [ ] 자유 대화 입력과 좌우 메시지 표시

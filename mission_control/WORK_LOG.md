@@ -7,6 +7,70 @@
 - 실패한 시도도 다음 작업자의 시간을 절약할 수 있도록 기록한다.
 - 수정 또는 생성 파일은 경로를 명시한다.
 
+## 2026-06-11 / DOC-001 / 전면 리팩토링 계획 및 문서 상태 동기화
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-11 |
+| 작업 ID | DOC-001 |
+| 작업자 | 현재 작업자 |
+| 작업 내용 | `mission_control`에 흩어진 전면 리팩토링 계획을 상위 프로그램으로 묶고 현재 코드 상태와 문서 표현을 동기화했다. |
+| 수정 파일 | `mission_control/TASK_BOARD.md`, `CURRENT_STATE.md`, `HANDOVER.md`, `ARCHITECTURE.md`, `WORK_LOG.md` |
+| 주요 변경 사항 | RST-000 추가, PLAN-003~005와 완료 RST 작업을 완료 표에 반영, 전체·잔여 일정 재산정, Vitest 4개로 동기화, 현재 계획에서 오래된 426개 데이터 표현과 한국어 손상 위험 제거, BAR-001~004 대체 상태 명시 |
+| 검증 | 문서 내 오래된 상태 문자열 검색, Markdown 변경 diff 및 공백 오류 검사, `npm.cmd test` 4개 통과 |
+| 후속 작업 제안 | RST-404 상세 카루아 계약 적합성 감사 후 RST-301 애플리케이션 로직 분리 |
+
+## 2026-06-11 / PLAN-005 / 시에스타 난입 및 업무복귀 장면 문법
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-11 |
+| 작업 ID | PLAN-005 |
+| 작업자 | 현재 작업자 |
+| 작업 내용 | 시에스타 이벤트를 손님-카루아 대화에 불쑥 난입하고, 카루아 또는 손님과 만담한 뒤 바 업무로 돌아가는 장면으로 상세화했다. |
+| 수정 파일 | `mission_control/CHARACTER_DESIGN.md`, `PROJECT_VISION.md`, `DECISIONS.md`, `TASK_BOARD.md`, `ARCHITECTURE.md`, `HANDOVER.md`, `CURRENT_STATE.md`, `WORK_LOG.md` |
+| 주요 변경 사항 | 예고 없는 난입, 대화 대상 선택, 2~4발화 만담, 창고 정리·청소·재고 확인 등 업무복귀 퇴장, 상태 흐름 `IDLE → INTERRUPTING → BANTER → EXITING → COOLDOWN` 확정 |
+| 후속 작업 제안 | RST-405 구현 시 이벤트 메시지 화자와 상태 머신을 먼저 분리 |
+
+## 2026-06-11 / PLAN-004 / 시에스타 만담 이벤트 계약
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-11 |
+| 작업 ID | PLAN-004 |
+| 작업자 | 현재 작업자 |
+| 작업 내용 | 시에스타를 MVP 이후 상시 캐릭터가 아니라 MVP 런타임의 낮은 빈도 만담 이벤트 캐릭터로 재정의했다. |
+| 수정 파일 | `mission_control/DECISIONS.md`, `PROJECT_VISION.md`, `CHARACTER_DESIGN.md`, `TASK_BOARD.md`, `HANDOVER.md`, `CURRENT_STATE.md`, `ARCHITECTURE.md`, `WORK_LOG.md` |
+| 주요 변경 사항 | DEC-012 및 RST-405 추가, 2~4발화 이벤트, 발생 금지 구간, 손님 참여, 카루아에게 대화권 반환 계약 확정 |
+| 후속 작업 제안 | RST-301 로직 분리 후 RST-405 이벤트 상태와 쿨다운 구현 |
+
+## 2026-06-11 / PLAN-003 / 검색 우선순위 및 WebLLM 체감 속도 계약
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-11 |
+| 작업 ID | PLAN-003 |
+| 작업자 | 현재 작업자 |
+| 작업 내용 | 칵테일 이름·별칭 검색을 취향 추천보다 우선하는 계약을 고정하고, OpenAI/Ollama에서 WebLLM으로 전환했음을 명시했다. WebLLM 체감 지연 최소화 설계와 성능 예산을 추가했다. |
+| 수정 파일 | `bar_tend/src/App.tsx`, `bar_tend/src/lib/cocktails/database.test.ts`, `bar_tend/README.md`, `mission_control/DECISIONS.md`, `PROJECT_VISION.md`, `ARCHITECTURE.md`, `TASK_BOARD.md`, `CURRENT_STATE.md`, `HANDOVER.md`, `WORK_LOG.md` |
+| 주요 변경 사항 | 이름 검색 우선 회귀 테스트, DEC-010/DEC-011, RST-606 추가, 즉시 규칙 첫 반응 + 추천 카드 선표시 + Worker 스트리밍 + 캐시 + 시간 예산 전략 |
+| 후속 작업 제안 | RST-601 Worker 구축 시 성능 계측부터 연결하고 RST-606 기준으로 후보 모델 비교 |
+
+## 2026-06-11 / RST-201-RST-202 / 칵테일 데이터 계약 통합 및 검증 강화
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-11 |
+| 작업 ID | RST-201, RST-202 |
+| 작업자 | 현재 작업자 |
+| 작업 내용 | 추천과 UI가 단일 `CocktailData` 컬렉션을 사용하도록 통합하고, 명시적 이름 검색과 추천 의도 판정을 분리했다. 타입 검사 포함 빌드와 Vitest 회귀 테스트를 추가했다. |
+| 수정 파일 | `bar_tend/src/types.ts`, `src/lib/cocktails/database.ts`, `src/lib/akinator/engine.ts`, `src/App.tsx`, 칵테일 UI 컴포넌트, `package.json`, `README.md`, `mission_control/*` |
+| 생성 파일 | `bar_tend/src/lib/cocktails/database.test.ts` |
+| 삭제 파일 | 미사용 `openai.ts`, `ollama.ts`, `api-cocktails.ts` |
+| 주요 변경 사항 | 공개 `toLegacyCocktail()` 계층 제거, 취향 표현의 명시적 검색 오인 방지, 빌드에 `tsc --noEmit` 포함, 초기 JS 번들 593.65 kB에서 276.06 kB로 감소 |
+| 검증 | `npm.cmd run lint`, `npm.cmd run check`, `npm.cmd test` 3개, `npm run build` 통과 |
+| 후속 작업 제안 | RST-404 캐릭터 계약 감사, RST-301 `App.tsx` 로직 분리, 저장 및 사용자 흐름 테스트 확대 |
+
 ## 2026-06-11 / PLAN-002 / 캐릭터 대화 설계 계약 반영
 
 | 항목 | 내용 |
