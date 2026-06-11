@@ -78,7 +78,7 @@ export default function BarExterior({ onEnter }: { onEnter: () => void }) {
               className="text-base md:text-lg font-bold tracking-[0.3em] glow-gold"
               style={{ color: '#C4A35A' }}
             >
-              BAR BOT
+              Re:Station
             </span>
           </div>
 
