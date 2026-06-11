@@ -51,6 +51,26 @@
 | 7 | `bar_tend/vite-project/src/lib/cocktails/cocktail-db.ts` | `CocktailRecord` 기반 데이터 접근 |
 | 8 | `bar_tend/vite-project/src/App.tsx` | 현재 사용자 흐름과 집중된 로직 |
 
+## 다중 작업 PC 동기화
+
+이 프로젝트는 여러 PC에서 작업할 수 있다. 히스토리 충돌 시 아래 명령으로 강제 동기화한다.
+
+### 로컬 변경이 없을 때
+```bash
+git fetch origin
+git reset --hard origin/master
+```
+
+### 로컬 변경이 있을 때 (변경 보존)
+```bash
+git stash
+git fetch origin
+git reset --hard origin/master
+git stash pop
+```
+
+> 이 명령은 로컬 히스토리를 리모트와 완전히 일치시킨다. `git pull`은 강제 푸시로 인한 분기 히스토리에서 실패할 수 있으므로 `fetch + reset --hard`를 사용한다.
+
 ## 주의사항
 
 - [ ] 시에스타, 웰컴 드링크, 게임 시스템을 MVP 작업에 섞지 않는다.
