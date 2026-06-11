@@ -1,5 +1,6 @@
-import type { CocktailRecord, FeatureKey, TastePreference } from '../../types/cocktail-db.js'
-import { getAllCocktailRecords, scoreCocktailMatch } from '../cocktails/cocktail-db.js'
+import type { CocktailData } from '../../types.js'
+import type { FeatureKey, TastePreference } from '../../types/cocktail-db.js'
+import { getAllCocktailData, scoreCocktailMatch } from '../cocktails/cocktail-db.js'
 
 const NUDGE = 0.2
 
@@ -58,7 +59,7 @@ function clamp01(n: number): number {
 
 export interface FilterChoice {
   label: string
-  filter: ((c: CocktailRecord) => boolean) | null
+  filter: ((c: CocktailData) => boolean) | null
 }
 
 export interface FilterQuestion {
@@ -68,7 +69,7 @@ export interface FilterQuestion {
   dimension?: string
 }
 
-function spiritMatch(c: CocktailRecord, spirit: string): boolean {
+function spiritMatch(c: CocktailData, spirit: string): boolean {
   return c.base_spirit?.includes(spirit) ?? false
 }
 
@@ -115,8 +116,8 @@ const QUESTIONS: FilterQuestion[] = [
   },
 ]
 
-export function initCandidatePool(): CocktailRecord[] {
-  return getAllCocktailRecords()
+export function initCandidatePool(): CocktailData[] {
+  return getAllCocktailData()
 }
 
 /**
@@ -143,7 +144,7 @@ function buildAcknowledgement(expressed: Set<string>): string {
 const ASK_INTROS = ['자, ', '그러면 ', '음, ', '']
 
 export function nextFilterQuestion(
-  pool: CocktailRecord[],
+  pool: CocktailData[],
   startIndex: number,
   /** dimensions already expressed by the user */
   skipDimensions?: Set<string>,
@@ -201,7 +202,7 @@ export function nextFilterQuestion(
 
 type FilterRule = {
   test: RegExp
-  filter: (c: CocktailRecord) => boolean
+  filter: (c: CocktailData) => boolean
 }
 
 const FREE_TEXT_RULES: FilterRule[] = [
@@ -221,10 +222,10 @@ const FREE_TEXT_RULES: FilterRule[] = [
 ]
 
 export function filterPool(
-  pool: CocktailRecord[],
+  pool: CocktailData[],
   answer: string,
   questionIndex: number,
-): CocktailRecord[] {
+): CocktailData[] {
   const trimmed = answer.trim()
 
   // 1. Numeric choice: map "1", "2" … to the corresponding choice filter
@@ -256,7 +257,7 @@ export function filterPool(
   return matched ? current : pool
 }
 
-export function pickFromPool(pool: CocktailRecord[], preference: TastePreference): CocktailRecord | null {
+export function pickFromPool(pool: CocktailData[], preference: TastePreference): CocktailData | null {
   if (pool.length === 0) return null
   if (pool.length === 1) return pool[0]
 

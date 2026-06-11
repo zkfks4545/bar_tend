@@ -1,8 +1,14 @@
-import type { Cocktail } from '../../types.js'
+import type { CocktailData } from '../../types.js'
 
-const tasteLabels: Record<string, string> = { sweet: '단맛', sour: '신맛', bitter: '쓴맛', savory: '감칠맛', alcohol: '도수' }
+const tasteLabels = [
+  ['sweet', '단맛'],
+  ['sour', '신맛'],
+  ['bitter', '쓴맛'],
+  ['savory', '감칠맛'],
+  ['alcohol', '도수'],
+] as const
 
-export default function CocktailCard({ cocktail, onClose }: { cocktail: Cocktail; onClose: () => void }) {
+export default function CocktailCard({ cocktail, onClose }: { cocktail: CocktailData; onClose: () => void }) {
   if (!cocktail) return null
 
   return (
@@ -59,9 +65,9 @@ export default function CocktailCard({ cocktail, onClose }: { cocktail: Cocktail
         </div>
 
         <div className="flex flex-wrap gap-1 mb-4">
-          {Object.entries(tasteLabels).map(([key, label]) => (
+          {tasteLabels.map(([key, label]) => (
             <span key={key} className="text-xs px-2 py-1 rounded bg-white/5 text-white/60 border border-white/10">
-              {label} {'★'.repeat(cocktail.taste[key as keyof typeof cocktail.taste] || 0)}{'☆'.repeat(5 - (cocktail.taste[key as keyof typeof cocktail.taste] || 0))}
+              {label} {'★'.repeat(cocktail.taste[key])}{'☆'.repeat(5 - cocktail.taste[key])}
             </span>
           ))}
         </div>

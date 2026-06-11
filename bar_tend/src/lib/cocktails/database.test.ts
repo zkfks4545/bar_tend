@@ -1,0 +1,39 @@
+import { describe, expect, it } from 'vitest'
+import { initCandidatePool, isRecommendationIntent } from '../akinator/engine.js'
+import {
+  cocktails,
+  findCocktailByName,
+  getAllCocktailData,
+} from './database.js'
+
+describe('cocktail data contract', () => {
+  it('shares one hydrated collection between UI and recommendation', () => {
+    expect(getAllCocktailData()).toBe(cocktails)
+    expect(initCandidatePool()).toBe(cocktails)
+    expect(cocktails).toHaveLength(7)
+
+    for (const cocktail of cocktails) {
+      expect(cocktail.features).toBeDefined()
+      expect(cocktail.story).not.toBe('')
+      expect(cocktail.ingredients.length).toBeGreaterThan(0)
+    }
+  })
+})
+
+describe('explicit cocktail lookup', () => {
+  it('matches cocktail names in a sentence', () => {
+    expect(findCocktailByName('마티니 주세요')?.name).toBe('마티니')
+    expect(findCocktailByName('Mojito 한 잔')?.nameEn).toBe('Mojito')
+  })
+
+  it('does not steal preference-based recommendation requests', () => {
+    expect(isRecommendationIntent('과일 향 나는 칵테일 추천해줘')).toBe(true)
+    expect(findCocktailByName('과일 향 나는 칵테일 추천해줘')).toBeNull()
+    expect(findCocktailByName('진 베이스로 추천해줘')).toBeNull()
+  })
+
+  it('keeps an explicit cocktail name above recommendation intent', () => {
+    expect(isRecommendationIntent('모히토 추천해줘')).toBe(true)
+    expect(findCocktailByName('모히토 추천해줘')?.name).toBe('모히토')
+  })
+})

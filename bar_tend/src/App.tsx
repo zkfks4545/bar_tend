@@ -9,8 +9,7 @@ import CocktailCard from '@/components/inside/CocktailCard.jsx'
 import Sidebar from '@/components/sidebar/Sidebar.jsx'
 import { getCocktailResponse } from '@/lib/bartender/engine.js'
 import {
-  findLegacyCocktailByKeyword,
-  toLegacyCocktail,
+  findCocktailByName,
 } from '@/lib/cocktails/database.js'
 import {
   ingestTasteSignals,
@@ -23,8 +22,7 @@ import {
 } from '@/lib/akinator/engine.js'
 import { unlockCocktailId } from '@/lib/storage/codex-unlocks.js'
 import { useBarbotSession } from '@/hooks/useBarbotSession.js'
-import type { Cocktail, Message, Expression } from '@/types.js'
-import type { CocktailRecord } from '@/types/cocktail-db.js'
+import type { CocktailData, Message, Expression } from '@/types.js'
 
 export default function App() {
   const [scene, setScene] = useState<'outside' | 'inside'>('outside')
@@ -32,10 +30,10 @@ export default function App() {
   const [expression, setExpression] = useState<Expression>('idle')
   const [isBartenderTyping, setIsBartenderTyping] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
-  const [servedCocktail, setServedCocktail] = useState<Cocktail | null>(null)
+  const [servedCocktail, setServedCocktail] = useState<CocktailData | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [screenShake, setScreenShake] = useState(false)
-  const [candidatePool, setCandidatePool] = useState<CocktailRecord[] | null>(null)
+  const [candidatePool, setCandidatePool] = useState<CocktailData[] | null>(null)
   const [filterCount, setFilterCount] = useState(0)
 
   const {
@@ -47,7 +45,7 @@ export default function App() {
   } = useBarbotSession()
 
   const bartenderReply = useCallback(
-    (text: string, exp: Expression, cocktail?: Cocktail | null) => {
+    (text: string, exp: Expression, cocktail?: CocktailData | null) => {
       setIsBartenderTyping(true)
       setExpression('talk')
       setTimeout(() => {
@@ -120,11 +118,11 @@ export default function App() {
         const tasteSnapshot = ingestTasteSignals(text, preference)
         const { response, expression: exp } = getCocktailResponse(text, messages)
 
-        let cocktail: Cocktail | null = null
+        let cocktail: CocktailData | null = null
         let finalReply = response
         let finalExp = exp
-        const selectRecommendation = (record: CocktailRecord) => {
-          cocktail = toLegacyCocktail(record)
+        const selectRecommendation = (record: CocktailData) => {
+          cocktail = record
           setScreenShake(true)
           setTimeout(() => setScreenShake(false), 500)
           setCandidatePool(null)
@@ -133,7 +131,8 @@ export default function App() {
           finalReply = `취향을 좀 알 것 같네요.\n${cocktail.vibe}\n\n오늘의 추천: 「${cocktail.name}」\n${cocktail.story}\n\n마음에 드시면 좋고, 아니면... 또 찾아드릴게요.`
           finalExp = 'smirk'
         }
-        const explicitCocktail = findLegacyCocktailByKeyword(text)
+        // A named cocktail is the most specific intent, so it wins over preference search.
+        const explicitCocktail = findCocktailByName(text)
         const isRecommendation = !explicitCocktail && (candidatePool !== null || isRecommendationIntent(text))
 
         if (isRecommendation) {

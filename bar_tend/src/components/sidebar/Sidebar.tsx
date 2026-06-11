@@ -3,7 +3,7 @@ import CocktailBookTab from './CocktailBookTab.jsx'
 import RecipeInfoTab from './RecipeInfoTab.jsx'
 import BarMusicTab from './BarMusicTab.jsx'
 import { cocktails } from '@/lib/cocktails/database.js'
-import type { Cocktail } from '@/types.js'
+import type { CocktailData } from '@/types.js'
 
 export type SidebarTab = 'codex' | 'recipe' | 'music' | 'reset'
 
@@ -25,13 +25,13 @@ export default function Sidebar({
   mobileOpen: boolean
   onMobileClose: () => void
   onResetNight: () => void
-  onViewCocktail?: (cocktail: Cocktail) => void
+  onViewCocktail?: (cocktail: CocktailData) => void
 }) {
   const [tab, setTab] = useState<SidebarTab>('codex')
   const [confirmReset, setConfirmReset] = useState(false)
   const totalCocktails = cocktails.length
 
-  const handleCodexSelect = (cocktail: Cocktail) => {
+  const handleCodexSelect = (cocktail: CocktailData) => {
     onViewCocktail?.(cocktail)
     onMobileClose()
   }

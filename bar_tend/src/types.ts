@@ -36,6 +36,22 @@ export interface Cocktail {
   measures?: string[]
 }
 
+export interface CocktailData extends Cocktail {
+  type: 'CLASSIC' | 'SIGNATURE'
+  features: {
+    sweetness: number
+    alcohol_strength: number
+    fizz: number
+    sourness: number
+  }
+  name_en?: string
+  name_ko?: string
+  base_spirit?: string
+  bar_id?: string
+  bar_name?: string
+  bar_location_link?: string
+}
+
 export interface Message {
   role: 'user' | 'bartender'
   text: string

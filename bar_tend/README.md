@@ -1,16 +1,33 @@
-# React + Vite
+# Re:Station
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+카루아와 대화하며 취향에 맞는 칵테일을 추천받는 브라우저 기반 MVP입니다.
 
-Currently, two official plugins are available:
+## 실행
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+npm install
+npm run dev
+```
 
-## React Compiler
+## 검증
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm run lint
+npm run check
+npm test
+npm run build
+```
 
-## Expanding the ESLint configuration
+`npm run build`는 TypeScript 검사를 먼저 실행한 뒤 프로덕션 번들을 생성합니다.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 구조
+
+- `src/lib/cocktails/database.ts`: 단일 `CocktailData` 컬렉션과 검색
+- `src/lib/akinator/engine.ts`: 규칙 기반 추천 후보 필터링과 선택
+- `src/lib/bartender/`: 카루아 규칙 기반 대화
+- `src/components/`: 바 화면, 추천 카드, 사이드바
+- `src/lib/storage/`: 세션 취향과 도감 저장
+
+추천 결과는 DB와 규칙 엔진이 결정합니다. 생성형 대화는 향후 Web Worker 기반 WebLLM 표현 계층으로 연결합니다.
+
+등록된 칵테일 이름 또는 별칭이 입력에 있으면 취향 기반 추천보다 우선합니다. 생성형 표현 계층은 OpenAI/Ollama가 아닌 WebLLM을 기준으로 하며, 즉시 규칙 반응과 스트리밍으로 체감 지연을 줄입니다.

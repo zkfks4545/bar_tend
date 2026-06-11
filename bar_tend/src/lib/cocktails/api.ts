@@ -110,7 +110,7 @@ function getIngredients(drink: Drink): IngredientItem[] {
   return list
 }
 
-function inferTaste(ingredients: IngredientItem[], drink: Drink): TasteProfile {
+function inferTaste(drink: Drink): TasteProfile {
   const eng: string[] = []
   for (let i = 1; i <= 15; i++) {
     const ing = drink[`strIngredient${i}`] as string | null
@@ -148,7 +148,7 @@ function inferBase(ingredients: IngredientItem[]): string {
   return '리큐르'
 }
 
-function inferAroma(ingredients: IngredientItem[], drink: Drink): string[] {
+function inferAroma(drink: Drink): string[] {
   const all: string[] = []
   for (let i = 1; i <= 15; i++) {
     const n = drink[`strIngredient${i}`] as string | null
@@ -217,9 +217,9 @@ function generateStory(drink: Drink, ingredients: IngredientItem[], taste: Taste
 
 function toOurCocktail(drink: Drink): Cocktail {
   const ingredients = getIngredients(drink)
-  const taste = inferTaste(ingredients, drink)
+  const taste = inferTaste(drink)
   const base = inferBase(ingredients)
-  const aroma = inferAroma(ingredients, drink)
+  const aroma = inferAroma(drink)
   const vibe = generateVibe(taste)
   const story = generateStory(drink, ingredients, taste, base)
 

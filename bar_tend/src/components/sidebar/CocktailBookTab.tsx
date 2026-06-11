@@ -1,12 +1,12 @@
 import { cocktails } from '@/lib/cocktails/database.js'
-import type { Cocktail } from '@/types.js'
+import type { CocktailData } from '@/types.js'
 
 export default function CocktailBookTab({
   unlockedIds,
   onSelect,
 }: {
   unlockedIds: Set<string>
-  onSelect?: (cocktail: Cocktail) => void
+  onSelect?: (cocktail: CocktailData) => void
 }) {
   return (
     <div className="codex-grid">

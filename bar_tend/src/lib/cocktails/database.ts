@@ -1,4 +1,4 @@
-import type { Cocktail } from '../../types.js'
+import type { Cocktail, CocktailData } from '../../types.js'
 import type {
   CocktailDatabase,
   CocktailRecord,
@@ -7,15 +7,13 @@ import type {
   TastePreference,
 } from '../../types/cocktail-db.js'
 import {
-  isClassicCocktail,
   isSignatureCocktail,
 } from '../../types/cocktail-db.js'
 import rawDb from '../../data/cocktail-db.json'
-import { apiCocktails } from './api-cocktails.js'
 
 export const cocktailDatabase = rawDb as CocktailDatabase
 
-export const cocktails: Cocktail[] = [
+const legacyCocktails: Cocktail[] = [
   {
     id: 'mojito',
     name: '모히토',
@@ -680,10 +678,6 @@ export const cocktails: Cocktail[] = [
   },
 ]
 
-function normalizeKey(name: string): string {
-  return name.toLowerCase().replace(/[-\s]/g, '')
-}
-
 function normalizeForSearch(s: string): string {
   return s.toLowerCase().replace(/[\s\-_']+/g, '')
 }
@@ -709,17 +703,64 @@ function isFuzzyMatch(query: string, target: string): boolean {
   return levenshteinDistance(query, target) <= threshold
 }
 
-for (const api of apiCocktails) {
-  const apiKey = normalizeKey(api.name)
-  const exists = cocktails.some(local => {
-    if (normalizeKey(local.name) === apiKey) return true
-    if (local.nameEn && normalizeKey(local.nameEn) === apiKey) return true
-    return false
-  })
-  if (!exists) cocktails.push(api as Cocktail)
+function createCocktailData(record: CocktailRecord): CocktailData {
+  const scale = (n: number) => Math.max(1, Math.min(5, Math.round(n * 5)))
+  const legacyMatch = legacyCocktails.find(
+    (c) =>
+      c.name === record.name ||
+      (c.nameEn && record.name_en && c.nameEn === record.name_en) ||
+      c.name === record.name_ko,
+  )
+  const ingredients = record.recipe
+    .split(/,|—/)
+    .map((s) => s.trim())
+    .filter(Boolean)
+
+  return {
+    id: record.id,
+    name: record.name_ko ?? record.name,
+    nameEn: record.name_en ?? record.name,
+    aliases: legacyMatch?.aliases,
+    type: record.type,
+    features: record.features,
+    name_en: record.name_en,
+    name_ko: record.name_ko,
+    base_spirit: record.base_spirit,
+    bar_id: isSignatureCocktail(record) ? record.bar_id : undefined,
+    bar_name: isSignatureCocktail(record) ? record.bar_name : undefined,
+    bar_location_link: isSignatureCocktail(record) ? record.bar_location_link : undefined,
+    taste: {
+      sweet: scale(record.features.sweetness),
+      sour: scale(record.features.sourness),
+      bitter: scale(1 - record.features.sweetness * 0.7),
+      savory: legacyMatch?.taste.savory ?? 2,
+      alcohol: scale(record.features.alcohol_strength),
+      carbonated: record.features.fizz >= 0.35,
+    },
+    aroma: legacyMatch?.aroma ?? [],
+    base: record.base_spirit ?? (isSignatureCocktail(record) ? record.bar_name : 'Classic'),
+    ingredients: legacyMatch?.ingredients ?? ingredients,
+    recipe: legacyMatch?.recipe,
+    recipeText: legacyMatch?.recipeText ?? record.recipe,
+    story: legacyMatch?.story ?? record.description,
+    vibe: legacyMatch?.vibe ?? (
+      isSignatureCocktail(record)
+        ? `Signature @ ${record.bar_name}`
+        : 'Classic cocktail'
+    ),
+    popCulture: legacyMatch?.popCulture ?? (
+      isSignatureCocktail(record) ? record.bar_location_link : undefined
+    ),
+    image: record.image ?? legacyMatch?.image,
+    glass: legacyMatch?.glass,
+    category: record.type,
+    alcoholic: legacyMatch?.alcoholic,
+  }
 }
 
-export function findCocktailByKeyword(keyword: string): Cocktail | null {
+export const cocktails: CocktailData[] = cocktailDatabase.cocktails.map(createCocktailData)
+
+export function findCocktailByKeyword(keyword: string): CocktailData | null {
   const lower = keyword.toLowerCase()
   const norm = normalizeForSearch(keyword)
   for (const c of cocktails) {
@@ -745,11 +786,23 @@ export function findCocktailByKeyword(keyword: string): Cocktail | null {
   return null
 }
 
-export function searchCocktail(query: string): Cocktail | null {
+export function findCocktailByName(query: string): CocktailData | null {
+  const norm = normalizeForSearch(query)
+  if (norm.length < 2) return null
+
+  return cocktails.find((c) => {
+    const names = [c.name, c.nameEn, c.name_en, c.name_ko, ...(c.aliases ?? [])]
+      .filter((name): name is string => Boolean(name))
+      .map(normalizeForSearch)
+    return names.some((name) => norm === name || norm.includes(name))
+  }) ?? null
+}
+
+export function searchCocktail(query: string): CocktailData | null {
   return findCocktailByKeyword(query)
 }
 
-export function getRandomCocktail(): Cocktail {
+export function getRandomCocktail(): CocktailData {
   return cocktails[Math.floor(Math.random() * cocktails.length)]
 }
 
@@ -763,30 +816,28 @@ export function getPartnerBarById(barId: string): PartnerBar | undefined {
   return cocktailDatabase.partner_bars.find((b) => b.id === barId)
 }
 
-export function getAllCocktailRecords(): CocktailRecord[] {
-  return cocktailDatabase.cocktails
+export function getAllCocktailData(): CocktailData[] {
+  return cocktails
 }
 
-export function getClassicRecords(): CocktailRecord[] {
-  return cocktailDatabase.cocktails.filter(isClassicCocktail)
+export function getClassicCocktails(): CocktailData[] {
+  return cocktails.filter((c) => c.type === 'CLASSIC')
 }
 
-export function getSignatureRecords(): CocktailRecord[] {
-  return cocktailDatabase.cocktails.filter(isSignatureCocktail)
+export function getSignatureCocktails(): CocktailData[] {
+  return cocktails.filter((c) => c.type === 'SIGNATURE')
 }
 
-export function getCocktailRecordById(id: string): CocktailRecord | undefined {
-  return cocktailDatabase.cocktails.find((c) => c.id === id)
+export function getCocktailById(id: string): CocktailData | undefined {
+  return cocktails.find((c) => c.id === id)
 }
 
-export function getCocktailsForBar(barId: string): CocktailRecord[] {
-  return cocktailDatabase.cocktails.filter(
-    (c) => isSignatureCocktail(c) && c.bar_id === barId,
-  )
+export function getCocktailsForBar(barId: string): CocktailData[] {
+  return cocktails.filter((c) => c.type === 'SIGNATURE' && c.bar_id === barId)
 }
 
 export function scoreCocktailMatch(
-  record: CocktailRecord,
+  record: CocktailData,
   preference: TastePreference,
   weights: Partial<Record<FeatureKey, number>> = {},
 ): number {
@@ -814,8 +865,8 @@ export function rankCocktailsByPreference(
     type?: 'CLASSIC' | 'SIGNATURE'
     limit?: number
   },
-): CocktailRecord[] {
-  let pool = [...cocktailDatabase.cocktails]
+): CocktailData[] {
+  let pool = [...cocktails]
   if (options?.type) pool = pool.filter((c) => c.type === options.type)
 
   const ranked = pool
@@ -827,90 +878,4 @@ export function rankCocktailsByPreference(
 
   const limit = options?.limit ?? ranked.length
   return ranked.slice(0, limit).map((r) => r.record)
-}
-
-export function toLegacyCocktail(record: CocktailRecord): Cocktail {
-  const f = record.features
-  const scale = (n: number) => Math.max(1, Math.min(5, Math.round(n * 5)))
-
-  const ingredients = record.recipe
-    .split(/,|—/)
-    .map((s) => s.trim())
-    .filter(Boolean)
-
-  const base: Cocktail = {
-    id: record.id,
-    name: record.name,
-    nameEn: record.name_en,
-    taste: {
-      sweet: scale(f.sweetness),
-      sour: scale(f.sourness),
-      bitter: scale(1 - f.sweetness * 0.7),
-      savory: 2,
-      alcohol: scale(f.alcohol_strength),
-      carbonated: f.fizz >= 0.35,
-    },
-    aroma: [],
-    base: record.type === 'SIGNATURE' ? record.bar_name : 'Classic',
-    ingredients,
-    recipeText: record.recipe,
-    story: record.description,
-    vibe:
-      record.type === 'SIGNATURE'
-        ? `Signature @ ${record.bar_name}`
-        : 'Classic cocktail',
-    image: record.image,
-    category: record.type,
-  }
-
-  if (isSignatureCocktail(record)) {
-    base.popCulture = record.bar_location_link
-  }
-
-  const legacyMatch = cocktails.find(
-    (c) =>
-      c.name === record.name ||
-      (c.nameEn && record.name_en && c.nameEn === record.name_en) ||
-      c.name === record.name_ko
-  )
-  if (legacyMatch) {
-    base.story = legacyMatch.story
-    base.vibe = legacyMatch.vibe
-    base.aroma = legacyMatch.aroma
-    base.glass = legacyMatch.glass
-    if (legacyMatch.popCulture) base.popCulture = legacyMatch.popCulture
-    if (legacyMatch.recipeText) base.recipeText = legacyMatch.recipeText
-    if (legacyMatch.recipe) base.recipe = legacyMatch.recipe
-  }
-
-  return base
-}
-
-export function findLegacyCocktailByKeyword(keyword: string): Cocktail | null {
-  const q = keyword.trim().toLowerCase()
-  const qNorm = normalizeForSearch(keyword)
-  if (!qNorm) return null
-
-  const hit = cocktailDatabase.cocktails.find((c) => {
-    const nameStr = c.name.toLowerCase().replace(/\s+/g, '')
-    const idStr = c.id.toLowerCase().replace(/\s+/g, '')
-    const nameEnStr = c.name_en ? c.name_en.toLowerCase().replace(/\s+/g, '') : undefined
-    const nameKoStr = c.name_ko ? c.name_ko.toLowerCase().replace(/\s+/g, '') : undefined
-
-    const nameNorm = normalizeForSearch(c.name)
-    const nameEnNorm = c.name_en ? normalizeForSearch(c.name_en) : undefined
-
-    return (
-      nameStr.includes(qNorm) ||
-      qNorm.includes(nameStr) ||
-      qNorm.includes(idStr) ||
-      (nameEnStr && (nameEnStr.includes(qNorm) || qNorm.includes(nameEnStr))) ||
-      (nameKoStr && (nameKoStr.includes(qNorm) || qNorm.includes(nameKoStr))) ||
-      isFuzzyMatch(qNorm, nameNorm) ||
-      (nameEnNorm && isFuzzyMatch(qNorm, nameEnNorm))
-    )
-  })
-  if (hit) return toLegacyCocktail(hit)
-
-  return findCocktailByKeyword(q)
 }
