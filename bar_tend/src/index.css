@@ -101,7 +101,26 @@ body {
 }
 
 .bartender-sprite {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex: 1 1 auto;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  min-height: 140px;
+  overflow: visible;
   transition: filter 300ms ease;
+}
+
+.bartender-sprite__image {
+  display: block;
+  width: auto;
+  height: clamp(180px, 36vh, 360px);
+  max-width: min(80vw, 360px);
+  object-fit: contain;
+  object-position: bottom center;
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.55));
 }
 
 .bartender-sprite--thinking {
@@ -516,9 +535,14 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  overflow: hidden;
+  overflow: visible;
   padding-bottom: 0.25rem;
-  gap: 0.5rem;
+  gap: 0;
+}
+.restation-stage > .relative {
+  z-index: 3;
+  flex-shrink: 0;
+  margin-top: -0.75rem;
 }
 .restation-chat-dock {
   flex-shrink: 0;
