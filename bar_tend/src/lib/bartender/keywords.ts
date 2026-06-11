@@ -16,12 +16,12 @@ export const keywordRules: KeywordRule[] = [
   {
     pattern: new RegExp(koreanFriendly(['힘들', '우울', '슬퍼', '지쳤', '피곤', '외롭', '괴롭', '스트레스'])),
     expression: 'sympathy',
-    response: '아이고, 세상이 손님을 좀 괴롭혔나 보네요. 뭐, 술 한 잔에 다 잊을 수 있으면 좋겠지만... 그건 아니고, 그래도 기분은 좀 나아질 거예요.',
+    response: '오늘 하루가 손님한테 일을 꽤 몰아줬나 보네요. 여기선 일단 짐 말고 취향만 내려놓으시면 돼요.',
   },
   {
     pattern: new RegExp(koreanFriendly(['좋아', '행복', '신나', '기분', '축하', '최고', '기쁘', '즐거'])),
     expression: 'smirk',
-    response: '오, 좋은 일 있으셨군요. 그 기분, 칵테일로 한 번 더 업시켜 드릴까요?',
+    response: '오, 좋은 일이 먼저 도착했네요. 잔은 뒤늦게 합류시켜 드릴까요?',
   },
   {
     pattern: new RegExp(koreanFriendly(['추천', '뭐가 좋아', '칵테일', '마실', '취하', '주문'])),
@@ -36,7 +36,7 @@ export const keywordRules: KeywordRule[] = [
   {
     pattern: new RegExp(koreanFriendly(['이야기', '사연', '비밀', '옛날', '추억'])),
     expression: 'thinking',
-    response: '오, 이야기가 있으신가 보네요. 칵테일 잡고 천천히 털어놔 보세요. 듣는 게 제 주업무는 아니지만... 그래도 재밌게 들어드릴게요.',
+    response: '이야기가 있으신 표정이네요. 제 시급에는 비밀 유지비도 포함된 걸로 해둘게요.',
   },
   {
     pattern: new RegExp(koreanFriendly(['달콤', '달아', '시럽', '달게', '달짝'])),
@@ -66,6 +66,6 @@ export const keywordRules: KeywordRule[] = [
   {
     pattern: new RegExp(koreanFriendly(['강하', '독하', '진하', '세게', '도수'])),
     expression: 'talk',
-    response: '강하게 가시는군요. 오늘 확 풀고 싶었나 보네요. 책임은 못 지지만... 한 잔 준비해드릴게요.',
+    response: '강한 걸 찾으시네요. 잔은 작아도 존재감은 출석부보다 확실하죠. 천천히 드실 수 있는 쪽으로 볼게요.',
   },
 ]

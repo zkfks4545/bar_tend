@@ -66,7 +66,7 @@ export default function App() {
     setMessages([
       {
         role: 'bartender',
-        text: '어? 손님... 들어오시네요.\nRe:Station에 온 걸 환영합니다. 편하게 앉으세요.\n(추천 원하면 기분이나 취향을 말씀해 주세요. 농담도 받아요.)',
+        text: '어? 손님이 먼저 찾아오셨네요.\nRe:Station입니다. 편하게 앉으세요. 의자는 아직 퇴근 전이니까요.',
       },
     ])
   }, [])
@@ -128,7 +128,7 @@ export default function App() {
           setCandidatePool(null)
           setFilterCount(0)
 
-          finalReply = `취향을 좀 알 것 같네요.\n${cocktail.vibe}\n\n오늘의 추천: 「${cocktail.name}」\n${cocktail.story}\n\n마음에 드시면 좋고, 아니면... 또 찾아드릴게요.`
+          finalReply = `취향이 슬슬 자백하네요.\n${cocktail.vibe}\n\n오늘의 추천: 「${cocktail.name}」\n${cocktail.story}\n\n아니면 다시 고르죠. 잔은 상처받지 않으니까요.`
           finalExp = 'smirk'
         }
         // A named cocktail is the most specific intent, so it wins over preference search.

@@ -75,14 +75,14 @@ interface ResponseTemplate {
 }
 
 const SAD_RESPONSES: ResponseTemplate[] = [
-  { response: '손님, 표정이 안 좋아 보여요. 제가 농담을 할까요, 술을 줄까요? 둘 다 별로면... 그냥 조용히 있어드릴게요.', expression: 'sympathy' },
-  { response: '인생이 힘들죠, 저도 알아요. 근데 저는 알바 중이니까 일단 한 잔 하시겠어요?', expression: 'sympathy' },
-  { response: '세상이 무거우면 잠시 내려놓는 게 답이에요. 여기서는 그게 제 역할이니까, 천천히 쉬다 가세요.', expression: 'sympathy' },
+  { response: '오늘 표정이 야근한 영수증 같네요. 길고, 보고 싶지 않고. 말하고 싶은 만큼만 말씀하세요.', expression: 'sympathy' },
+  { response: '하루가 손님 몫까지 너무 성실했네요. 저는 알바라 성실함을 오래 보면 조금 긴장합니다.', expression: 'sympathy' },
+  { response: '세상이 무거운 날엔 의자도 꽤 유능해 보이죠. 일단 앉아 계셔도 돼요.', expression: 'sympathy' },
 ]
 
 const HAPPY_RESPONSES: ResponseTemplate[] = [
   { response: '오, 좋은 기운이 느껴져요. 오늘은 손님 한턱 내시는 날인가 보네요? 농담이고, 축하 한 잔 준비해드릴게요.', expression: 'smirk' },
-  { response: '좋은 날은 좋은 칵테일이 빠질 수 없죠. 제가 딱 골라드릴게요. 실패하면... 책임은 안 져요.', expression: 'smirk' },
+  { response: '좋은 날이면 잔도 참석은 시켜야죠. 제가 골라볼게요. 잔은 반대 의견이 없거든요.', expression: 'smirk' },
 ]
 
 const COCKTAIL_REQUEST: ResponseTemplate[] = [
@@ -149,7 +149,7 @@ export function generateResponse(input: string, history: Message[]): BartenderRe
       if (ctx.userMood === 'sad') return pick(SAD_RESPONSES)
       if (ctx.userMood === 'happy') return pick(HAPPY_RESPONSES)
       return {
-        response: '기분 얘기를 해주셨네요. 어떤 감정이든 여기선 환영이에요. 그 기분에 맞는 술을 찾아볼게요.',
+        response: '기분이 먼저 자리를 잡았네요. 손님보다 주문이 빠른 편인가 봐요.',
         expression: 'talk',
       }
     }
