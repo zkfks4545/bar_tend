@@ -1,0 +1,146 @@
+{
+  "schema_version": "1.0.0",
+  "partner_bars": [
+    {
+      "id": "bar_pukey_hongdae",
+      "name": "Hongdae Punk Bar 'PUKEY'",
+      "location_link": "https://maps.google.com/?q=Hongdae+PUKEY+Bar",
+      "description": "Premium punk bar in Hongdae — neon shots and raw illustration vibes.",
+      "signature_cocktail_ids": ["cocktail_signature_042"],
+      "active": true,
+      "onboarded_at": "2026-05-01"
+    },
+    {
+      "id": "bar_neon_alley",
+      "name": "Neon Alley Speakeasy",
+      "location_link": "https://maps.google.com/?q=Neon+Alley+Speakeasy",
+      "description": "Cyberpunk-themed speakeasy for signature collabs.",
+      "signature_cocktail_ids": ["cocktail_signature_043"],
+      "active": true,
+      "onboarded_at": "2026-05-15"
+    }
+  ],
+  "cocktails": [
+    {
+      "id": "cocktail_classic_001",
+      "name": "Martini",
+      "name_en": "Martini",
+      "name_ko": "마티니",
+      "type": "CLASSIC",
+      "base_spirit": "진",
+      "recipe": "드라이 진 2oz, 드라이 베르무트 1/3oz",
+      "description": "칵테일의 왕. 깔끔하고 날카로우며 드라이한 맛입니다.",
+      "features": {
+        "sweetness": 0.1,
+        "alcohol_strength": 0.9,
+        "fizz": 0.0,
+        "sourness": 0.2
+      },
+      "image": "https://www.thecocktaildb.com/images/media/drink/71t8581504353095.jpg"
+    },
+    {
+      "id": "cocktail_classic_002",
+      "name": "Mojito",
+      "name_en": "Mojito",
+      "name_ko": "모히토",
+      "type": "CLASSIC",
+      "base_spirit": "럼",
+      "recipe": "화이트 럼 2oz, 라임 주스 1oz, 설탕 2티스푼, 민트, 소다수 약간",
+      "description": "쿠바의 청량감 — 민트, 라임, 그리고 탄산의 깔끔한 마무리.",
+      "features": {
+        "sweetness": 0.4,
+        "alcohol_strength": 0.5,
+        "fizz": 0.7,
+        "sourness": 0.5
+      },
+      "image": "https://www.thecocktaildb.com/images/media/drink/metwgh1606770327.jpg"
+    },
+    {
+      "id": "cocktail_classic_003",
+      "name": "Old Fashioned",
+      "name_en": "Old Fashioned",
+      "name_ko": "올드 패션드",
+      "type": "CLASSIC",
+      "base_spirit": "위스키",
+      "recipe": "버번 위스키 2oz, 앙고스투라 비터스 2대시, 각설탕 1개, 물 약간",
+      "description": "위스키 향이 돋보이는 클래식 칵테일 — 쌉싸름함과 달콤함이 조화로운 시대를 초월한 맛.",
+      "features": {
+        "sweetness": 0.3,
+        "alcohol_strength": 0.85,
+        "fizz": 0.0,
+        "sourness": 0.15
+      },
+      "image": "https://www.thecocktaildb.com/images/media/drink/vrwquq1478252802.jpg"
+    },
+    {
+      "id": "cocktail_classic_004",
+      "name": "Margarita",
+      "name_en": "Margarita",
+      "name_ko": "마르가리타",
+      "type": "CLASSIC",
+      "base_spirit": "데킬라",
+      "recipe": "데킬라 2oz, 트리플 섹 1oz, 라임 주스 1oz, 소금 리밍",
+      "description": "입술에 닿는 짭짤한 소금과 새콤한 데킬라의 환상적인 만남.",
+      "features": {
+        "sweetness": 0.35,
+        "alcohol_strength": 0.7,
+        "fizz": 0.0,
+        "sourness": 0.75
+      },
+      "image": "https://www.thecocktaildb.com/images/media/drink/5noda61589575158.jpg"
+    },
+    {
+      "id": "cocktail_classic_005",
+      "name": "Negroni",
+      "name_en": "Negroni",
+      "name_ko": "네그로니",
+      "type": "CLASSIC",
+      "base_spirit": "진",
+      "recipe": "진 1oz, 캄파리 1oz, 스위트 베르무트 1oz",
+      "description": "쌉싸름하고 강렬하며, 놀랍도록 아름다운 밸런스.",
+      "features": {
+        "sweetness": 0.25,
+        "alcohol_strength": 0.8,
+        "fizz": 0.0,
+        "sourness": 0.4
+      },
+      "image": "https://www.thecocktaildb.com/images/media/drink/qgdu971561574065.jpg"
+    },
+    {
+      "id": "cocktail_signature_042",
+      "name": "PUKEY Goddess Shot",
+      "name_ko": "푸키 여신 샷",
+      "type": "SIGNATURE",
+      "base_spirit": "시그니처",
+      "bar_id": "bar_pukey_hongdae",
+      "bar_name": "Hongdae Punk Bar 'PUKEY'",
+      "bar_location_link": "https://maps.google.com/?q=Hongdae+PUKEY+Bar",
+      "recipe": "1급 비밀 (바텐더에게 직접 물어보세요!)",
+      "description": "홍대 프리미엄 펑크 바에서만 맛볼 수 있는 폭발적인 네온 빛 시그니처 샷.",
+      "features": {
+        "sweetness": 0.5,
+        "alcohol_strength": 0.9,
+        "fizz": 0.8,
+        "sourness": 0.6
+      }
+    },
+    {
+      "id": "cocktail_signature_043",
+      "name": "Glitch Rain",
+      "name_ko": "글리치 레인",
+      "type": "SIGNATURE",
+      "base_spirit": "시그니처",
+      "bar_id": "bar_neon_alley",
+      "bar_name": "Neon Alley Speakeasy",
+      "bar_location_link": "https://maps.google.com/?q=Neon+Alley+Speakeasy",
+      "recipe": "보드카, 유자 코디얼, 버터플라이 피, 소다 — 레시피는 매장에서만 공개됩니다",
+      "description": "글리치 레인은 보라색에서 청록색으로 색이 변하는 비주얼이 인상적인 시그니처 하이볼입니다. 네온 앨리 스피크이지에서만 만나볼 수 있으며, 보드카와 유자 코디얼, 버터플라이 피의 조화로 달콤하고 상큼한 탄산감을 선사합니다.",
+      "features": {
+        "sweetness": 0.45,
+        "alcohol_strength": 0.55,
+        "fizz": 0.85,
+        "sourness": 0.55
+      }
+    }
+  ]
+}

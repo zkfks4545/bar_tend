@@ -1,0 +1,64 @@
+export type Expression = 'idle' | 'talk' | 'surprised' | 'smirk' | 'sympathy' | 'thinking'
+
+export interface TasteProfile {
+  sweet: number
+  sour: number
+  bitter: number
+  savory: number
+  alcohol: number
+  carbonated: boolean
+}
+
+export interface RecipeItem {
+  ingredient: string
+  measure: string
+}
+
+export interface Cocktail {
+  id: string
+  name: string
+  nameEn?: string
+  aliases?: string[]
+  taste: TasteProfile
+  aroma: string[]
+  base: string
+  ingredients: string[]
+  recipe?: RecipeItem[]
+  recipeText?: string
+  story: string
+  vibe: string
+  popCulture?: string
+  image?: string
+  glass?: string
+  category?: string
+  alcoholic?: string
+  apiId?: string
+  measures?: string[]
+}
+
+export interface Message {
+  role: 'user' | 'bartender'
+  text: string
+}
+
+export interface BartenderResponse {
+  response: string
+  expression: Expression
+}
+
+export interface KeywordRule {
+  pattern: RegExp
+  expression: Expression
+  response: string
+}
+
+export interface ConversationContext {
+  greeted: boolean
+  userMood: 'sad' | 'happy' | null
+  lastTopic: string | null
+  mentionedCocktail: Cocktail | null
+  recommendedCocktail: Cocktail | null
+  exchangeCount: number
+  lastBartenderWasQuestion: boolean
+  totalUserMessages: number
+}

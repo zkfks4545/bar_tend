@@ -1,0 +1,71 @@
+import type { Cocktail } from '../../types.js'
+
+const tasteLabels: Record<string, string> = { sweet: '단맛', sour: '신맛', bitter: '쓴맛', savory: '감칠맛', alcohol: '도수' }
+
+export default function CocktailCard({ cocktail, onClose }: { cocktail: Cocktail; onClose: () => void }) {
+  if (!cocktail) return null
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 fade-in">
+      <div className="rounded-lg max-w-md w-full mx-4 p-6 relative" style={{ background: '#0d0a07', border: '1px solid rgba(196, 163, 90, 0.2)', boxShadow: '0 0 30px rgba(196, 163, 90, 0.08)' }}>
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 text-white/40 hover:text-white/80 text-lg"
+        >
+          ✕
+        </button>
+
+        {cocktail.image && (
+          <div className="flex justify-center mb-3">
+            <img
+              src={cocktail.image}
+              alt={cocktail.name}
+              className="w-24 h-24 object-cover rounded-full border-2 border-white/10"
+            />
+          </div>
+        )}
+
+        <h2 className="text-2xl font-bold mb-1" style={{ color: '#C4A35A' }}>{cocktail.name}</h2>
+        <p className="text-white/50 text-sm mb-4 italic">{cocktail.vibe}</p>
+
+        <div className="space-y-2 mb-4">
+          <p className="text-sm text-white/70 leading-relaxed">{cocktail.story}</p>
+          {cocktail.popCulture && (
+            <p className="text-xs text-[#D4A574]/70">🎬 {cocktail.popCulture}</p>
+          )}
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 mb-4">
+          <div>
+            <p className="text-xs text-white/40 mb-1">베이스</p>
+            <p className="text-sm text-white/80">{cocktail.base}</p>
+          </div>
+          <div>
+            <p className="text-xs text-white/40 mb-1">재료</p>
+            <p className="text-sm text-white/80">{cocktail.ingredients.join(', ')}</p>
+          </div>
+          {cocktail.glass && (
+            <div>
+              <p className="text-xs text-white/40 mb-1">잔</p>
+              <p className="text-sm text-white/80">{cocktail.glass}</p>
+            </div>
+          )}
+          {cocktail.alcoholic && (
+            <div>
+              <p className="text-xs text-white/40 mb-1">분류</p>
+              <p className="text-sm text-white/80">{cocktail.alcoholic}</p>
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-wrap gap-1 mb-4">
+          {Object.entries(tasteLabels).map(([key, label]) => (
+            <span key={key} className="text-xs px-2 py-1 rounded bg-white/5 text-white/60 border border-white/10">
+              {label} {'★'.repeat(cocktail.taste[key as keyof typeof cocktail.taste] || 0)}{'☆'.repeat(5 - (cocktail.taste[key as keyof typeof cocktail.taste] || 0))}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
