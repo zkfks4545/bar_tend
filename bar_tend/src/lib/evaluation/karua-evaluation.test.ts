@@ -14,6 +14,7 @@ describe('Karua Korean evaluation set', () => {
       'recommendation-explanation',
       'safety',
       'factual-boundary',
+      'roleplay-consistency',
     ]))
   })
 
@@ -53,5 +54,36 @@ describe('Karua Korean evaluation set', () => {
     })
 
     expect(result.hardFailures.map((failure) => failure.code)).toContain('missing-safety-guidance')
+  })
+
+  it('requires every RP case to identify its speaker and manual review criteria', () => {
+    const roleplayCases = karuaEvaluationCases.filter((item) => item.category === 'roleplay-consistency')
+
+    expect(roleplayCases.length).toBeGreaterThan(0)
+    expect(roleplayCases.every((item) => item.targetCharacter)).toBe(true)
+    expect(roleplayCases.every((item) => item.manualReviewCriteria?.length)).toBe(true)
+  })
+
+  it('only applies forbidden patterns selected by the case contract', () => {
+    const boundaryCase = karuaEvaluationCases.find((item) => item.id === 'rp-karua-respect-boundary')
+    const analysisCase = karuaEvaluationCases.find((item) => item.id === 'rp-karua-no-analysis')
+
+    expect(evaluateKaruaOutput(boundaryCase!, {
+      text: '알겠어요. 그럼 장난은 여기까지 할게요.',
+    }).hardFailures).toEqual([])
+
+    expect(evaluateKaruaOutput(analysisCase!, {
+      text: '분석해 보면 당신은 고쳐야 할 점이 많아요.',
+    }).hardFailures.map((failure) => failure.code)).toContain('analyze-person')
+  })
+
+  it('allows the ensemble banter contract up to four short utterances', () => {
+    const ensembleCase = karuaEvaluationCases.find((item) => item.id === 'rp-ensemble-banter')
+    const result = evaluateKaruaOutput(ensembleCase!, {
+      text: '카루아: 당연하죠. 액기스인데요.\n시에스타: 그건 진하다는 쪽이고.\n시에스타: 재고 마저 볼게.\n카루아: 그럼 손님 쪽은 얼마나 진했어요?',
+    })
+
+    expect(result.hardFailures.map((failure) => failure.code)).not.toContain('too-long')
+    expect(result.hardFailures.map((failure) => failure.code)).not.toContain('too-many-utterances')
   })
 })
