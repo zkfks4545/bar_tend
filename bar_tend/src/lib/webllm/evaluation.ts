@@ -2,7 +2,10 @@ import {
   evaluateKaruaOutput,
   karuaEvaluationCases,
 } from '@/lib/evaluation/karua-evaluation.js'
-import { bartenderPersona } from '@/lib/bartender/persona.js'
+import {
+  getCharacterSystemPrompt,
+  KARUA_SYSTEM_PROMPT,
+} from '@/lib/webllm/prompts/character-prompts.js'
 import {
   loadModel,
   generate,
@@ -25,13 +28,13 @@ export async function evaluateModel(modelId: string): Promise<EvaluationResult> 
   console.log(`[${modelId}] Loaded in ${loadTimeMs.toFixed(0)}ms`)
 
   console.log(`[${modelId}] Warm-up...`)
-  const warmup = await generateNonStreaming(WARMUP_PROMPT, bartenderPersona)
+  const warmup = await generateNonStreaming(WARMUP_PROMPT, KARUA_SYSTEM_PROMPT)
   console.log(`[${modelId}] Warm-up: ${warmup.text.length} chars, ` +
     `TTFT=${warmup.metrics.firstTokenMs.toFixed(0)}ms, ` +
     `Tok/s=${warmup.metrics.tokensPerSecond.toFixed(1)}`)
 
   console.log(`[${modelId}] Benchmark...`)
-  const benchmark = await generateNonStreaming(BENCHMARK_PROMPT, bartenderPersona)
+  const benchmark = await generateNonStreaming(BENCHMARK_PROMPT, KARUA_SYSTEM_PROMPT)
   console.log(`[${modelId}] Benchmark: ${benchmark.text.length} chars, ` +
     `TTFT=${benchmark.metrics.firstTokenMs.toFixed(0)}ms, ` +
     `Tok/s=${benchmark.metrics.tokensPerSecond.toFixed(1)}`)
@@ -41,8 +44,11 @@ export async function evaluateModel(modelId: string): Promise<EvaluationResult> 
   for (let i = 0; i < karuaEvaluationCases.length; i++) {
     const testCase = karuaEvaluationCases[i]
     console.log(`[${modelId}] Case ${i + 1}/${karuaEvaluationCases.length}: ${testCase.id}`)
-    const output = await generate(testCase.userInput, undefined, {
-      systemPrompt: bartenderPersona,
+    const evaluationInput = testCase.context
+      ? `상황: ${testCase.context}\n손님: ${testCase.userInput}`
+      : testCase.userInput
+    const output = await generate(evaluationInput, undefined, {
+      systemPrompt: getCharacterSystemPrompt(testCase.targetCharacter),
     })
     const evalResult = evaluateKaruaOutput(testCase, { text: output })
     karuaResults.push({
