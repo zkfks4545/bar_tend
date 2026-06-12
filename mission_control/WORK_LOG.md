@@ -1,5 +1,22 @@
 ﻿# 작업 이력
 
+## 2026-06-12 / RST-601 + RST-602-A / WebLLM Worker 인프라 및 평가 실행기 구축
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-12 |
+| 작업 ID | RST-601, RST-602-A |
+| 작업자 | deepseek-v4-flash-free |
+| 작업 내용 | WebLLM Web Worker 인프라 구축 및 모델 평가 실행기 개발. Qwen3.5-2B를 기본 모델, Qwen3-1.7B를 폴백으로 설정. `@mlc-ai/web-llm@0.2.84` 설치 완료. WebLLM React 연결은 RST-602 평가 완료 후로 연기. |
+| 생성 파일 | `bar_tend/src/lib/webllm/worker.ts` — Web Worker 엔트리, `WebWorkerMLCEngineHandler` 연결 |
+| 생성 파일 | `bar_tend/src/lib/webllm/client.ts` — 로드/스트리밍 생성/타임아웃/언로드/인터럽트 + 논스트리밍 메트릭 API |
+| 생성 파일 | `bar_tend/src/lib/webllm/types.ts` — 상태 타입, 이벤트 콜백, 생성 옵션, 평가 결과 타입 |
+| 생성 파일 | `bar_tend/src/lib/webllm/evaluation.ts` — RST-602-A 평가 실행기. 브라우저 콘솔 `__evaluateModels()`로 3개 후보(Qwen3.5-2B, Qwen3.5-4B, Qwen3-1.7B)의 로드 시간·TTFT·Tok/s·E2E·Karua 16케이스 하드 실패율 측정 |
+| 수정 파일 | `bar_tend/package.json`, `bar_tend/package-lock.json` (`@mlc-ai/web-llm` 설치), `mission_control/TASK_BOARD.md` (RST-601→DONE, RST-602 세분화), `mission_control/WEBLLM_EVALUATION.md` (실행 방법 및 결과 테이블 갱신) |
+| 주요 변경 사항 | `@mlc-ai/web-llm@0.2.84` 설치, Web Worker 기반 모델 로드/스트리밍/타임아웃 구현, 평가 실행기로 모델별 메트릭 + Karua 자동 판정 통합 |
+| 검증 | `npm run lint`, `npm run check` 통과 |
+| 후속 작업 | RST-602-B: WebGPU 브라우저에서 실제 평가 실행. RST-604: WebLLM React 연결은 평가 완료 후 진행 |
+
 ## 2026-06-12 / RST-603-A / 카루아 한국어 모델 평가 기반 구축
 
 | 항목 | 내용 |
@@ -15,6 +32,26 @@
 | 실패한 시도 | PowerShell `Get-Content | ConvertFrom-Json` 검증은 한국어 UTF-8 디코딩 문제로 실패했다. Node UTF-8 JSON 파싱으로 16개 사례와 5개 범주를 재확인했다. |
 | 발견한 문제 | RST-602의 실제 WebLLM 후보 실행 결과가 없어 Qwen·Gemma 비교 점수와 최종 기본 모델 선정은 아직 기록할 수 없음 |
 | 후속 작업 제안 | RST-602에서 후보 모델 실행 환경을 연결한 뒤 각 사례를 모델별 3회 실행하고 `WEBLLM_EVALUATION.md` 결과표를 채워 RST-603을 완료할 것 |
+
+## 2026-06-12 / RST-503-A / 모바일 접근성 보강
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-12 |
+| 작업 ID | RST-503-A |
+| 작업자 | deepseek-v4-flash-free |
+| 작업 내용 | RST-503 완료 후 모바일 대응 미흡 항목 보강. 터치 타겟 최소 크기 44px 적용, 모바일 화면에서 스프라이트 높이 축소(clamp 180px→120px), 대화창 패딩/폰트 최적화, 입력창 크기 조정, 480px 이하 초소형 화면 추가 대응. |
+| 수정 파일 | `bar_tend/src/index.css`, `App.tsx` (exit-btn 클래스 추가) |
+| 검증 | `npm run build`, `npm run lint` 통과 |
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-12 |
+| 작업 ID | RST-503-A |
+| 작업자 | deepseek-v4-flash-free |
+| 작업 내용 | RST-503 완료 후 모바일 대응 미흡 항목 보강. 터치 타겟 최소 크기 44px 적용, 모바일 화면에서 스프라이트 높이 축소(clamp 180px→120px), 대화창 패딩/폰트 최적화, 입력창 크기 조정, 480px 이하 초소형 화면 추가 대응. |
+| 수정 파일 | `bar_tend/src/index.css`, `App.tsx` (exit-btn 클래스 추가) |
+| 검증 | `npm run build`, `npm run lint` 통과 |
 
 ## 2026-06-12 / RST-503 / Re:Station 시각 개편 (따뜻함 유지 + 신비로움 추가)
 
