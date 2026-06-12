@@ -36,13 +36,14 @@ export default function App() {
     <div
       className={`h-full restation-layout ${screenShake ? 'shake' : ''}`}
       style={{ background: '#0d0a07' }}
+      data-theme="restation"
     >
       <div className="restation-main flex flex-col relative overflow-hidden">
         <BarInterior />
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            boxShadow: 'inset 0 0 120px 30px rgba(0,0,0,0.5)',
+            boxShadow: 'inset 0 0 120px 30px rgba(0,0,0,0.5), inset 0 0 200px 40px rgba(80,40,120,0.04)',
             zIndex: 10,
           }}
         />
@@ -50,7 +51,8 @@ export default function App() {
           className="relative flex items-center justify-between px-4 py-2 z-20"
           style={{
             borderBottom: '1px solid rgba(196,163,90,0.08)',
-            background: 'linear-gradient(to bottom, rgba(13,10,7,0.95), transparent)',
+            boxShadow: '0 1px 20px rgba(120,80,180,0.03)',
+            background: 'linear-gradient(to bottom, rgba(13,10,7,0.95), rgba(13,10,7,0.7))',
           }}
         >
           <button
@@ -81,6 +83,7 @@ export default function App() {
               minHeight: '200px',
               background:
                 'linear-gradient(to top, rgba(13,10,7,0.9), rgba(13,10,7,0.3))',
+              boxShadow: '0 -10px 30px rgba(80,40,120,0.03), inset 0 1px 0 rgba(196,163,90,0.04)',
               borderTop: '1px solid rgba(196,163,90,0.05)',
             }}
           >
@@ -106,10 +109,10 @@ export default function App() {
               onClick={handleExit}
               className="text-xs transition-all duration-200 cursor-pointer select-none flex items-center gap-1"
               style={{
-                color: '#b83838',
-                textShadow: '0 0 6px rgba(184,56,56,0.25)',
-                background: 'rgba(184,56,56,0.06)',
-                border: '1px solid rgba(184,56,56,0.2)',
+                color: '#b088d0',
+                textShadow: '0 0 6px rgba(120,80,180,0.25)',
+                background: 'rgba(120,80,180,0.06)',
+                border: '1px solid rgba(180,136,208,0.2)',
                 padding: '4px 12px',
                 fontFamily: 'inherit',
                 letterSpacing: '0.12em',

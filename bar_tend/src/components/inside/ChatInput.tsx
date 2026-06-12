@@ -16,7 +16,7 @@ export default function ChatInput({ onSend, disabled }: { onSend: (text: string)
         disabled={disabled}
         placeholder={placeholder}
         className="w-full bg-white/5 border border-white/10 rounded-full px-6 py-3 text-white placeholder:text-white/20 focus:outline-none transition-all"
-        onFocus={(e) => e.currentTarget.style.borderColor = 'rgba(196, 163, 90, 0.5)'}
+        onFocus={(e) => e.currentTarget.style.borderColor = 'rgba(180, 136, 208, 0.5)'}
         onBlur={(e) => e.currentTarget.style.borderColor = ''}
       />
     </form>

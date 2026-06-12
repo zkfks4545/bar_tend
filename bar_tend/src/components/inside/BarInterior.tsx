@@ -74,11 +74,18 @@ export default function BarInterior() {
         ))}
       </div>
 
-      {/* Warm gold ambient light */}
+      {/* Warm gold ambient light with purple undertone */}
       <div
         className="absolute inset-0"
         style={{
           background: 'radial-gradient(ellipse at 50% 15%, rgba(196,163,90,0.05), transparent 50%)',
+        }}
+      />
+      <div
+        className="absolute inset-0"
+        style={{
+          background: 'radial-gradient(ellipse at 70% 80%, rgba(120,80,180,0.04), transparent 50%)',
+          pointerEvents: 'none',
         }}
       />
 

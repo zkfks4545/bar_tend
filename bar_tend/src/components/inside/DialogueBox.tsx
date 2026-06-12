@@ -16,7 +16,7 @@ export default function DialogueBox({ messages, isTyping }: { messages: Message[
             msg.role === 'user'
               ? 'text-white/90'
               : 'bg-white/5 text-white/90 border border-white/10'
-          }`} style={msg.role === 'user' ? { background: 'rgba(196, 163, 90, 0.12)', borderColor: 'rgba(196, 163, 90, 0.2)' } : {}}>
+          }`} style={msg.role === 'user' ? { background: 'rgba(120, 80, 180, 0.08)', borderColor: 'rgba(180, 136, 208, 0.15)' } : {}}>
             <pre className="whitespace-pre-wrap font-sans">{msg.text}</pre>
           </div>
         </div>

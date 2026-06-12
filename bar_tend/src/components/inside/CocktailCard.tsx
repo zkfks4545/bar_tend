@@ -13,7 +13,7 @@ export default function CocktailCard({ cocktail, onClose }: { cocktail: Cocktail
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 fade-in">
-      <div className="rounded-lg max-w-md w-full mx-4 p-6 relative" style={{ background: '#0d0a07', border: '1px solid rgba(196, 163, 90, 0.2)', boxShadow: '0 0 30px rgba(196, 163, 90, 0.08)' }}>
+      <div className="rounded-lg max-w-md w-full mx-4 p-6 relative" style={{ background: '#0d0a07', border: '1px solid rgba(196, 163, 90, 0.2)', boxShadow: '0 0 30px rgba(196, 163, 90, 0.08), 0 0 60px rgba(120, 80, 180, 0.04)' }}>
         <button
           onClick={onClose}
           className="absolute top-3 right-3 text-white/40 hover:text-white/80 text-lg"
@@ -26,7 +26,7 @@ export default function CocktailCard({ cocktail, onClose }: { cocktail: Cocktail
             <img
               src={cocktail.image}
               alt={cocktail.name}
-              className="w-24 h-24 object-cover rounded-full border-2 border-white/10"
+              className="w-24 h-24 object-cover rounded-full border-2" style={{ borderColor: 'rgba(180, 136, 208, 0.15)' }}
             />
           </div>
         )}
@@ -37,7 +37,7 @@ export default function CocktailCard({ cocktail, onClose }: { cocktail: Cocktail
         <div className="space-y-2 mb-4">
           <p className="text-sm text-white/70 leading-relaxed">{cocktail.story}</p>
           {cocktail.popCulture && (
-            <p className="text-xs text-[#D4A574]/70">🎬 {cocktail.popCulture}</p>
+            <p className="text-xs" style={{ color: 'rgba(180, 136, 208, 0.65)' }}>🎬 {cocktail.popCulture}</p>
           )}
         </div>
 
@@ -66,7 +66,7 @@ export default function CocktailCard({ cocktail, onClose }: { cocktail: Cocktail
 
         <div className="flex flex-wrap gap-1 mb-4">
           {tasteLabels.map(([key, label]) => (
-            <span key={key} className="text-xs px-2 py-1 rounded bg-white/5 text-white/60 border border-white/10">
+            <span key={key} className="text-xs px-2 py-1 rounded text-white/60" style={{ background: 'rgba(120,80,180,0.06)', border: '1px solid rgba(180,136,208,0.12)' }}>
               {label} {'★'.repeat(cocktail.taste[key])}{'☆'.repeat(5 - cocktail.taste[key])}
             </span>
           ))}

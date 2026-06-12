@@ -68,7 +68,7 @@ export default function BarExterior({ onEnter }: { onEnter: () => void }) {
           <div
             className="absolute left-1/2 -translate-x-1/2 px-6 py-1"
             style={{
-              top: '19%',
+              top: '17%',
               background: 'linear-gradient(to bottom, #1a1410, #0d0a07)',
               border: '1px solid rgba(196,163,90,0.4)',
               zIndex: 20,
@@ -81,6 +81,18 @@ export default function BarExterior({ onEnter }: { onEnter: () => void }) {
               Re:Station
             </span>
           </div>
+
+          {/* Mystery neon strip under the sign */}
+          <div
+            className="absolute left-1/2 -translate-x-1/2"
+            style={{
+              top: '20%',
+              width: '60%', height: 1,
+              background: 'linear-gradient(90deg, transparent, rgba(140,100,200,0.15), rgba(196,163,90,0.2), rgba(140,100,200,0.15), transparent)',
+              filter: 'blur(2px)',
+              zIndex: 21,
+            }}
+          />
 
           {/* Building wall */}
           <div
@@ -210,6 +222,17 @@ export default function BarExterior({ onEnter }: { onEnter: () => void }) {
                 left: '31%', top: '89%', width: '38%', height: '10%',
                 background: 'linear-gradient(to bottom, rgba(196,163,90,0.08), transparent)',
                 filter: 'blur(6px)',
+                pointerEvents: 'none',
+              }}
+            />
+
+            {/* Mystery purple ambient glow from the side */}
+            <div
+              className="absolute"
+              style={{
+                right: '5%', top: '10%', width: '20%', height: '40%',
+                background: 'radial-gradient(ellipse at center, rgba(120,80,180,0.04), transparent)',
+                filter: 'blur(15px)',
                 pointerEvents: 'none',
               }}
             />

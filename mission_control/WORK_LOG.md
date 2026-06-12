@@ -1,5 +1,34 @@
 ﻿# 작업 이력
 
+## 2026-06-12 / RST-603-A / 카루아 한국어 모델 평가 기반 구축
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-12 |
+| 작업 ID | RST-603-A |
+| 작업자 | GPT-5 Codex |
+| 작업 내용 | Qwen·Gemma 계열 WebLLM 후보를 동일 조건에서 비교하기 위한 카루아 한국어 평가 세트, 자동 하드 실패 판정기, 수동 채점 계약을 구축했다. |
+| 수정 파일 | `mission_control/WORK_LOG.md` |
+| 생성 파일 | `bar_tend/src/data/karua-evaluation-set.json`, `bar_tend/src/lib/evaluation/karua-evaluation.ts`, `bar_tend/src/lib/evaluation/karua-evaluation.test.ts`, `mission_control/WEBLLM_EVALUATION.md` |
+| 주요 변경 사항 | 일반 대화·질문 표현·추천 설명·안전·사실 경계 16개 평가 사례 추가, 장문·직접 위로·추천 결과 변조·자해 안전 안내 누락 자동 검출, 0~2점 수동 평가표와 모델 선정 통과 기준 정의 |
+| 검증 | `npm.cmd run lint`, `npm.cmd test` 19개, `npm.cmd run check`, `npm.cmd run build`, `git diff --check` 통과 |
+| 실패한 시도 | PowerShell `Get-Content | ConvertFrom-Json` 검증은 한국어 UTF-8 디코딩 문제로 실패했다. Node UTF-8 JSON 파싱으로 16개 사례와 5개 범주를 재확인했다. |
+| 발견한 문제 | RST-602의 실제 WebLLM 후보 실행 결과가 없어 Qwen·Gemma 비교 점수와 최종 기본 모델 선정은 아직 기록할 수 없음 |
+| 후속 작업 제안 | RST-602에서 후보 모델 실행 환경을 연결한 뒤 각 사례를 모델별 3회 실행하고 `WEBLLM_EVALUATION.md` 결과표를 채워 RST-603을 완료할 것 |
+
+## 2026-06-12 / RST-503 / Re:Station 시각 개편 (따뜻함 유지 + 신비로움 추가)
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-12 |
+| 작업 ID | RST-503 |
+| 작업자 | deepseek-v4-flash-free |
+| 작업 내용 | 기존 다크브라운/골드 "따뜻한 바" 팔레트를 유지한 채, 보라 언더톤·네온 글로우·드라마틱한 명암비를 레이어링하여 신비로운 분위기를 추가. 사이드바의 사이버펑크 시안/핑크를 골드/퍼플로 통일. |
+| 변경 방향 | DEC-014 참고. 전면 색상 교체가 아닌 기존 위 레이어링 방식 채택. |
+| 수정 파일 | `bar_tend/src/index.css`, `App.tsx`, `components/outside/BarExterior.tsx`, `components/inside/BarInterior.tsx`, `components/inside/CocktailCard.tsx`, `components/inside/ChatInput.tsx`, `components/inside/DialogueBox.tsx`, `mission_control/TASK_BOARD.md`, `CURRENT_STATE.md`, `DECISIONS.md`, `WORK_LOG.md` |
+| 주요 변경 사항 | CSS 변수 추가, 골드 글로우에 보라 언더글로우 병합, 사이드바 색상 팔레트 교체, 외부 건물에 네온 스트립 추가, 내부에 보라 앰비언트 라이트 추가, 스프라이트 박스섀도 보라 틴트, 카드/메시지/입력창 보라 악센트 |
+| 검증 | `npm run build`, `npm run lint`, `npm test` 15개 모두 통과. 초기 JS 번들 282.20 kB. |
+
 ## 작성 규칙
 
 - 작업 종료 시 최신 로그를 위에 추가한다.
