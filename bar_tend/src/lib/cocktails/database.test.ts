@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { initCandidatePool, isRecommendationIntent } from '../akinator/engine.js'
+import { initCandidatePool, isRecommendationIntent } from '../recommendation/question-engine.js'
 import {
   cocktails,
   findCocktailByName,

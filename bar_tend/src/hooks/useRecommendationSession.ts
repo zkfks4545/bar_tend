@@ -7,7 +7,7 @@ import {
   isRecommendationIntent,
   nextFilterQuestion,
   pickFromPool,
-} from '@/lib/akinator/engine.js'
+} from '@/lib/recommendation/question-engine.js'
 import { findCocktailByName } from '@/lib/cocktails/database.js'
 import {
   addQuestionHistory,

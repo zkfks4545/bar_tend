@@ -23,7 +23,7 @@ npm run build
 ## 구조
 
 - `src/lib/cocktails/database.ts`: 단일 `CocktailData` 컬렉션과 검색
-- `src/lib/akinator/engine.ts`: 규칙 기반 추천 후보 필터링과 선택
+- `src/lib/recommendation/question-engine.ts`: 규칙 기반 추천 질문, 후보 필터링과 선택
 - `src/lib/bartender/`: 카루아 규칙 기반 대화
 - `src/components/`: 바 화면, 추천 카드, 사이드바
 - `src/lib/storage/`: 세션 취향과 도감 저장

@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { getCocktailResponse } from '@/lib/bartender/engine.js'
-import { unlockCocktailId } from '@/lib/storage/codex-unlocks.js'
+import { unlockCocktailId } from '@/lib/storage/cocktail-unlocks.js'
 import { createTimerRegistry } from '@/lib/timing/timer-registry.js'
 import type { CocktailData, Expression, Message } from '@/types.js'
-import { useBarbotSession } from './useBarbotSession.js'
+import { useGuestPreferenceSession } from './useGuestPreferenceSession.js'
 import { useRecommendationSession } from './useRecommendationSession.js'
 
 type InteractionStatus = 'idle' | 'processing' | 'typing' | 'exiting'
@@ -25,7 +25,7 @@ export function useRestationController() {
     setUnlockedIds,
     ingestUserMessage,
     resetNight,
-  } = useBarbotSession()
+  } = useGuestPreferenceSession()
   const { resetRecommendation, resolveRecommendation } = useRecommendationSession()
 
   const clearPendingWork = useCallback(() => {

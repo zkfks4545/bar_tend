@@ -2,11 +2,11 @@ import { useCallback, useState } from 'react'
 import type { TastePreference } from '../types/cocktail-db.js'
 import type { IdolMemorySlot } from '../lib/idol/memory.js'
 import { updateIdolFromMessage } from '../lib/idol/memory.js'
-import { ingestTasteSignals } from '../lib/akinator/engine.js'
-import { clearSession, loadSession, saveSession } from '../lib/storage/session-store.js'
-import { loadUnlockedIds } from '../lib/storage/codex-unlocks.js'
+import { ingestTasteSignals } from '../lib/recommendation/question-engine.js'
+import { clearSession, loadSession, saveSession } from '../lib/storage/guest-session-store.js'
+import { loadUnlockedIds } from '../lib/storage/cocktail-unlocks.js'
 
-export function useBarbotSession() {
+export function useGuestPreferenceSession() {
   const [session, setSession] = useState(() => loadSession())
   const [unlockedIds, setUnlockedIds] = useState(() => loadUnlockedIds())
 
