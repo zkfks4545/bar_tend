@@ -1,5 +1,21 @@
 ﻿# 작업 이력
 
+## 2026-06-12 / RST-501 / 선택 질문 버튼과 선택 필터 구현
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-12 |
+| 작업 ID | RST-501 |
+| 작업자 | Gemini CLI, GPT-5 Codex |
+| 작업 내용 | 적응형 질문에 응답할 수 있는 선택 버튼 UI와 수집된 취향 신호를 관리하는 필터 칩 UI를 구현함. |
+| 주요 변경 사항 | `useRecommendationSession`: `activeQuestion` 상태 추가, `removeSignal` 함수 구현 (인덱스 기반 신호 제거 및 관련 상태 필터링). `useRestationController`: 새로운 상태와 함수 노출. `App.tsx`: `ChatInput`에 필요한 props 전달. `ChatInput.tsx`: 질문 선택지 버튼, '카루아에게 맡기기', '추천 취소' 버튼, 그리고 현재 적용된 신호를 보여주는 필터 칩 UI(제거 기능 포함) 구현. |
+| 이어받은 검토 | 활성 신호를 제거해도 이미 좁혀진 추천 후보군이 복구되지 않아 표시 상태와 실제 추천 조건이 달라지는 결함을 발견했다. |
+| 보완 내용 | 신호 제거 후 남은 신호로 추천 상태를 재구성하고, 남은 상태와 과거 질문 답변을 재적용해 후보군을 복구하도록 수정했다. 같은 필드의 신호가 여러 개일 때도 남은 신호를 유지한다. |
+| 수정 파일 | `bar_tend/src/hooks/useRecommendationSession.ts`, `src/hooks/useRestationController.ts`, `src/App.tsx`, `src/components/inside/ChatInput.tsx`, `src/lib/recommendation/state.ts`, `state.test.ts`, `src/lib/akinator/engine.ts`, `engine.test.ts`, `mission_control/HANDOVER.md`, `WORK_LOG.md` |
+| 완료 판정 | 선택 버튼, 자유 입력, 카루아에게 맡기기, 추천 취소, 활성 신호 제거와 실제 후보군 복구까지 완료 조건 충족 |
+| 검증 | `npm.cmd run lint`, `npm.cmd run check`, `npm.cmd test` 30개, `npm.cmd run build`, `git diff --check` 통과 |
+| 후속 작업 | RST-502 추천 카드 상세 데이터 적용 |
+
 ## 2026-06-12 / RST-402-B / 적응형 질문 코드 정리 및 개선
 
 | 항목 | 내용 |
@@ -29,7 +45,9 @@
 | 검증 | `npm.cmd run lint`, `npm.cmd test` 27개, `npm.cmd run check`, `npm.cmd run build`, `git diff --check` 통과 |
 | 후속 작업 | 최종 후보 모델에서 RP 평가를 수행하고 예시 복제, 장문, 말투 혼합, JSON 형식 이탈, 프롬프트 길이를 측정한 뒤 초안을 수정한다. |
 
-## 2026-06-12 / RST-602-F / 캐릭터 프롬프트 기반 RP 평가 계약 보완
+## 2026-06-12 / RST-602 / WebLLM 모델 평가 통합 이력
+
+### 단계 F / 캐릭터 프롬프트 기반 RP 평가 계약 보완
 
 | 항목 | 내용 |
 |---|---|
@@ -43,7 +61,7 @@
 | 수정 파일 | `bar_tend/src/data/karua-evaluation-set.json`, `bar_tend/src/lib/evaluation/karua-evaluation.ts`, `bar_tend/src/lib/evaluation/karua-evaluation.test.ts`, `mission_control/CHARACTER_DESIGN.md`, `TASK_BOARD.md`, `HANDOVER.md`, `WORK_LOG.md` |
 | 검증 | `npm.cmd run lint`, `npm.cmd test` 22개, `npm.cmd run check`, `npm.cmd run build`, `git diff --check` 통과 |
 
-## 2026-06-12 / RST-602-E / 모델 확정 철회 및 잠정 순위 전환
+### 단계 E / 모델 확정 철회 및 잠정 순위 전환
 
 | 항목 | 내용 |
 |---|---|
@@ -58,7 +76,7 @@
 | 검증 | `npm.cmd run lint`, `npm.cmd test` 19개, `npm.cmd run check`, `npm.cmd run build`, `git diff --check` 통과 |
 | 남은 작업 | 목표 기기, 허용 다운로드 크기, 프롬프트 요구 수준, 라이선스와 배포 조건을 검토한 뒤 최종 모델을 별도 결정 |
 
-## 2026-06-12 / RST-602-D / 공개 데이터 기반 단일 모델 선정 보완
+### 단계 D / 공개 데이터 기반 단일 모델 선정 보완
 
 > 이 기록의 단일 모델 확정은 사용자 결정에 따라 `RST-602-E`에서 철회되었다.
 
@@ -75,7 +93,7 @@
 | 검증 | `npm.cmd run lint`, `npm.cmd test` 19개, `npm.cmd run check`, `npm.cmd run build`, `git diff --check` 통과 |
 | 남은 검수 | RST-604~606에서 선택 모델의 실제 로드, 카루아 출력 계약, 오류 복구, 기기별 성능을 확인한다. 이 검수는 다른 모델과의 비교 선정 작업이 아니다. |
 
-## 2026-06-12 / RST-602-D + RST-603-B 신설 / 캐릭터 RP 일관성 평가 계획 수립
+### 단계 D 연계 / RST-603-B 캐릭터 RP 일관성 평가 계획 수립
 
 > 이 기록의 Qwen3.5-2B 선정 유지 결정은 `RST-602-E`에서 잠정 1순위로 변경되었다. RP 평가 설계는 유지한다.
 
@@ -88,7 +106,7 @@
 | 결정 사항 | 모델 선정은 Qwen3.5-2B 그대로 유지. RP 평가는 선정 전 검증이 아닌 WebLLM 연결 후(RST-604) 프롬프트 보강 단계에서 실행. |
 | 수정 파일 | `bar_tend/src/data/karua-evaluation-set.json` (RP 케이스 7개 추가), `bar_tend/src/lib/evaluation/karua-evaluation.ts` (RP 금지 패턴 + roleplay-consistency 카테고리 추가), `mission_control/TASK_BOARD.md` (RST-602-D + RST-603-B 신설) |
 
-## 2026-06-12 / RST-602-C / 공개 벤치마크 기반 모델 선정
+### 단계 C / 공개 벤치마크 기반 모델 선정
 
 > 이 기록의 선정 근거와 다중 폴백 결정은 `RST-602-D`에서 검토 후 대체되었다.
 
@@ -101,7 +119,7 @@
 | 결정 사항 | DEC-016 참고. 기본 모델: Qwen3.5-2B. 폴백: Qwen3-1.7B. 초경량 대체: Qwen3.5-0.8B. Gemma/Llama/Phi/Mistral 등은 한국어 깊이 부족으로 전부 배제. |
 | 수정 파일 | `mission_control/WEBLLM_EVALUATION.md` (벤치마크 비교 + 선정 근거로 전면 재작성), `mission_control/DECISIONS.md` (DEC-015 평가 방법 변경 메모 추가, DEC-016 추가), `mission_control/TASK_BOARD.md` (RST-602·RST-603 DONE, 남은 일정 갱신) |
 
-## 2026-06-12 / RST-602-B / WebLLM 전 모델 패밀리 전수 조사 및 평가 계획 확장
+### 단계 B / WebLLM 전 모델 패밀리 전수 조사 및 평가 계획 확장
 
 > “전수 평가” 표현과 출처 없는 품질 수치는 `RST-602-D`에서 현재 선정 근거에서 제외되었다.
 
@@ -117,7 +135,7 @@
 | 결정 사항 | DEC-015 참고. 평가 후보를 기존 3종(Qwen3.5-2B/4B, Qwen3-1.7B)에서 WebLLM 전체 20개 패밀리 대표 1종씩으로 확장. 로드 시간·TTFT·Tok/s·E2E·Karua 16케이스 하드 실패율 측정. |
 | 수정 파일 | `mission_control/WEBLLM_EVALUATION.md` (후보 목록 확장), `mission_control/DECISIONS.md` (DEC-015 추가) |
 
-## 2026-06-12 / RST-601 + RST-602-A / WebLLM Worker 인프라 및 평가 실행기 구축
+### 단계 A + RST-601 / WebLLM Worker 인프라 및 평가 실행기 구축
 
 | 항목 | 내용 |
 |---|---|
@@ -150,26 +168,6 @@
 | 발견한 문제 | RST-602의 실제 WebLLM 후보 실행 결과가 없어 Qwen·Gemma 비교 점수와 최종 기본 모델 선정은 아직 기록할 수 없음 |
 | 후속 작업 제안 | RST-602에서 후보 모델 실행 환경을 연결한 뒤 각 사례를 모델별 3회 실행하고 `WEBLLM_EVALUATION.md` 결과표를 채워 RST-603을 완료할 것 |
 
-## 2026-06-12 / RST-503-A / 모바일 접근성 보강
-
-| 항목 | 내용 |
-|---|---|
-| 날짜 | 2026-06-12 |
-| 작업 ID | RST-503-A |
-| 작업자 | deepseek-v4-flash-free |
-| 작업 내용 | RST-503 완료 후 모바일 대응 미흡 항목 보강. 터치 타겟 최소 크기 44px 적용, 모바일 화면에서 스프라이트 높이 축소(clamp 180px→120px), 대화창 패딩/폰트 최적화, 입력창 크기 조정, 480px 이하 초소형 화면 추가 대응. |
-| 수정 파일 | `bar_tend/src/index.css`, `App.tsx` (exit-btn 클래스 추가) |
-| 검증 | `npm run build`, `npm run lint` 통과 |
-
-| 항목 | 내용 |
-|---|---|
-| 날짜 | 2026-06-12 |
-| 작업 ID | RST-503-A |
-| 작업자 | deepseek-v4-flash-free |
-| 작업 내용 | RST-503 완료 후 모바일 대응 미흡 항목 보강. 터치 타겟 최소 크기 44px 적용, 모바일 화면에서 스프라이트 높이 축소(clamp 180px→120px), 대화창 패딩/폰트 최적화, 입력창 크기 조정, 480px 이하 초소형 화면 추가 대응. |
-| 수정 파일 | `bar_tend/src/index.css`, `App.tsx` (exit-btn 클래스 추가) |
-| 검증 | `npm run build`, `npm run lint` 통과 |
-
 ## 2026-06-12 / RST-503 / Re:Station 시각 개편 (따뜻함 유지 + 신비로움 추가)
 
 | 항목 | 내용 |
@@ -181,6 +179,7 @@
 | 변경 방향 | DEC-014 참고. 전면 색상 교체가 아닌 기존 위 레이어링 방식 채택. |
 | 수정 파일 | `bar_tend/src/index.css`, `App.tsx`, `components/outside/BarExterior.tsx`, `components/inside/BarInterior.tsx`, `components/inside/CocktailCard.tsx`, `components/inside/ChatInput.tsx`, `components/inside/DialogueBox.tsx`, `mission_control/TASK_BOARD.md`, `CURRENT_STATE.md`, `DECISIONS.md`, `WORK_LOG.md` |
 | 주요 변경 사항 | CSS 변수 추가, 골드 글로우에 보라 언더글로우 병합, 사이드바 색상 팔레트 교체, 외부 건물에 네온 스트립 추가, 내부에 보라 앰비언트 라이트 추가, 스프라이트 박스섀도 보라 틴트, 카드/메시지/입력창 보라 악센트 |
+| 모바일 접근성 보강 | 터치 타겟 최소 44px 적용, 모바일 스프라이트 높이 축소, 대화창 패딩·폰트와 입력창 크기 조정, 480px 이하 초소형 화면 대응 |
 | 검증 | `npm run build`, `npm run lint`, `npm test` 15개 모두 통과. 초기 JS 번들 282.20 kB. |
 
 ## 작성 규칙
@@ -190,6 +189,8 @@
 - 실패한 시도도 다음 작업자의 시간을 절약할 수 있도록 기록한다.
 - 수정 또는 생성 파일은 경로를 명시한다.
 - 작업자 항목에는 실제 작업 중인 AI 모델명을 기록한다. 모델명을 확인할 수 없는 과거 기록은 추측하지 않고 `AI 모델 미기록 (과거 기록)`으로 표시한다.
+- 같은 본 작업 번호의 구현·검토·보완은 별도 로그를 만들지 않고 기존 작업 로그에 누적한다.
+- `RST-602-A`처럼 작업 보드에서 독립 하위 단계로 정의된 경우에만 접미사 코드를 유지하며, 같은 본 작업 번호 아래에 모아 기록한다.
 
 ## 2026-06-12 / RST-203 / 추천 입력과 근거 모델 확장
 

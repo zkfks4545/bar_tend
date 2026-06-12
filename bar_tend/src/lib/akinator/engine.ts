@@ -2,6 +2,7 @@ import type { CocktailData } from '../../types.js'
 import type { FeatureKey, TastePreference } from '../../types/cocktail-db.js'
 import type { QuestionTopic, RecommendationState } from '../../types/recommendation.js'
 import { getAllCocktailData, scoreCocktailMatch } from '../cocktails/cocktail-db.js'
+import { filterCocktailsByRecommendationState } from '../recommendation/state.js'
 
 const NUDGE = 0.2
 
@@ -181,6 +182,18 @@ const KARUA_QUESTIONS: KaruaQuestion[] = [
 
 export function initCandidatePool(): CocktailData[] {
   return getAllCocktailData()
+}
+
+export function buildCandidatePoolFromState(state: RecommendationState): CocktailData[] {
+  let pool = filterCocktailsByRecommendationState(initCandidatePool(), state)
+
+  for (const entry of state.questionHistory) {
+    if (entry.answer) {
+      pool = applyAnswerToPool(pool, entry.answer, entry.topic as QuestionTopic)
+    }
+  }
+
+  return pool
 }
 
 export function pickNextQuestion(

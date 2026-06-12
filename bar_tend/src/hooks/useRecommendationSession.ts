@@ -1,11 +1,13 @@
 import { useCallback, useState } from 'react'
 import {
   applyAnswerToPool,
+  buildCandidatePoolFromState,
   ingestTasteSignals,
   initCandidatePool,
   isRecommendationIntent,
   pickNextQuestion,
   pickFromPool,
+  type FilterQuestion,
 } from '@/lib/akinator/engine.js'
 import { findCocktailByName } from '@/lib/cocktails/database.js'
 import {
@@ -16,6 +18,7 @@ import {
   createRecommendationState,
   extractRecommendationSignals,
   filterCocktailsByRecommendationState,
+  removeRecommendationSignal,
 } from '@/lib/recommendation/state.js'
 import type { CocktailData, Expression } from '@/types.js'
 import type { TastePreference } from '@/types/cocktail-db.js'
@@ -33,11 +36,23 @@ export function useRecommendationSession() {
   const [recommendationState, setRecommendationState] = useState<RecommendationState>(
     createRecommendationState,
   )
+  const [activeQuestion, setActiveQuestion] = useState<FilterQuestion | null>(null)
 
   const resetRecommendation = useCallback(() => {
     setCandidatePool(null)
     setRecommendationState(createRecommendationState())
+    setActiveQuestion(null)
   }, [])
+
+  const removeSignal = useCallback((index: number) => {
+    setRecommendationState((prev) => {
+      const next = removeRecommendationSignal(prev, index)
+      if (next !== prev && candidatePool !== null) {
+        setCandidatePool(buildCandidatePoolFromState(next))
+      }
+      return next
+    })
+  }, [candidatePool])
 
   const resolveRecommendation = useCallback(
     (text: string, preference: TastePreference): RecommendationResult | null => {
@@ -85,6 +100,7 @@ export function useRecommendationSession() {
         nextState = addQuestionHistory(nextState, { topic: nextQuestion.topic })
         setRecommendationState(nextState)
         setCandidatePool(filtered)
+        setActiveQuestion(nextQuestion.question)
         return {
           cocktail: null,
           decision: null,
@@ -109,7 +125,10 @@ export function useRecommendationSession() {
   )
 
   return {
+    activeQuestion,
+    recommendationState,
     resetRecommendation,
     resolveRecommendation,
+    removeSignal,
   }
 }

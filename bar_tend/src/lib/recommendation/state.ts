@@ -150,6 +150,22 @@ export function applyRecommendationSignals(
   return next
 }
 
+export function removeRecommendationSignal(
+  state: RecommendationState,
+  index: number,
+): RecommendationState {
+  if (!state.signals[index]) return state
+
+  const remainingSignals = state.signals.filter((_, signalIndex) => signalIndex !== index)
+  return applyRecommendationSignals(
+    {
+      ...createRecommendationState(),
+      questionHistory: [...state.questionHistory],
+    },
+    remainingSignals,
+  )
+}
+
 export function addQuestionHistory(
   state: RecommendationState,
   entry: QuestionHistoryEntry,

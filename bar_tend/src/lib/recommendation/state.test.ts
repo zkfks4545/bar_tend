@@ -6,6 +6,7 @@ import {
   createRecommendationState,
   extractRecommendationSignals,
   filterCocktailsByRecommendationState,
+  removeRecommendationSignal,
 } from './state.js'
 
 describe('recommendation state', () => {
@@ -49,5 +50,19 @@ describe('recommendation state', () => {
     )
 
     expect(state.excludedIngredients).toEqual(['민트'])
+  })
+
+  it('rebuilds structured state from the remaining signals when one is removed', () => {
+    const state = applyRecommendationSignals(createRecommendationState(), [
+      { field: 'alcoholPreference', value: 'low', confidence: 1, source: 'question' },
+      { field: 'alcoholPreference', value: 'high', confidence: 1, source: 'question' },
+      { field: 'taste.sweetness', value: 0.8, confidence: 1, source: 'question' },
+    ])
+
+    const next = removeRecommendationSignal(state, 1)
+
+    expect(next.alcoholPreference).toBe('low')
+    expect(next.taste.sweetness).toBe(0.8)
+    expect(next.signals).toHaveLength(2)
   })
 })

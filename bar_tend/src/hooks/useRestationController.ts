@@ -26,7 +26,13 @@ export function useRestationController() {
     ingestUserMessage,
     resetNight,
   } = useBarbotSession()
-  const { resetRecommendation, resolveRecommendation } = useRecommendationSession()
+  const {
+    activeQuestion,
+    recommendationState,
+    resetRecommendation,
+    resolveRecommendation,
+    removeSignal,
+  } = useRecommendationSession()
 
   const clearPendingWork = useCallback(() => {
     timerRegistry.current.clearAll()
@@ -99,6 +105,17 @@ export function useRestationController() {
     )
   }, [clearPendingWork, resetNight, resetRecommendation, bartenderReply])
 
+  const handleCancelRecommendation = useCallback(() => {
+    clearPendingWork()
+    resetRecommendation()
+    setExpression('idle')
+    setMessages((prev) => [
+      ...prev,
+      { role: 'user', text: '[ 추천 취소 ]' },
+      { role: 'bartender', text: '알겠어요. 추천은 접어두고 그냥 이야기나 나누죠. 어떤 이야기 해줄까요?' },
+    ])
+  }, [clearPendingWork, resetRecommendation])
+
   const handleSend = useCallback(
     (text: string) => {
       if (interactionStatus !== 'idle') return
@@ -159,10 +176,14 @@ export function useRestationController() {
     sidebarOpen,
     screenShake,
     unlockedIds,
+    activeQuestion,
+    recommendationState,
     handleEnter,
     handleExit,
     handleResetNight,
+    handleCancelRecommendation,
     handleSend,
+    removeSignal,
     setServedCocktail,
     setSidebarOpen,
   }

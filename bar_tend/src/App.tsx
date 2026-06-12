@@ -20,10 +20,14 @@ export default function App() {
     sidebarOpen,
     screenShake,
     unlockedIds,
+    activeQuestion,
+    recommendationState,
     handleEnter,
     handleExit,
     handleResetNight,
+    handleCancelRecommendation,
     handleSend,
+    removeSignal,
     setServedCocktail,
     setSidebarOpen,
   } = useRestationController()
@@ -91,6 +95,10 @@ export default function App() {
             <ChatInput
               onSend={handleSend}
               disabled={isProcessing || isBartenderTyping}
+              activeQuestion={activeQuestion}
+              onCancelRecommendation={handleCancelRecommendation}
+              recommendationState={recommendationState}
+              onRemoveSignal={removeSignal}
             />
             {errorMessage && (
               <p className="px-6 pb-3 text-xs text-red-300" role="alert">
