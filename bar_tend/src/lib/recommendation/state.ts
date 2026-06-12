@@ -1,0 +1,270 @@
+import type { CocktailData } from '../../types.js'
+import type { FeatureKey, TastePreference } from '../../types/cocktail-db.js'
+import type {
+  AlcoholPreference,
+  QuestionHistoryEntry,
+  RecommendationDecision,
+  RecommendationMood,
+  RecommendationReason,
+  RecommendationSignal,
+  RecommendationSituation,
+  RecommendationState,
+} from '../../types/recommendation.js'
+
+const FEATURE_DEFAULTS: Record<FeatureKey, number> = {
+  sweetness: 0.5,
+  alcohol_strength: 0.5,
+  fizz: 0.35,
+  sourness: 0.45,
+}
+
+const FEATURE_LABELS: Record<FeatureKey, string> = {
+  sweetness: '단맛',
+  alcohol_strength: '도수감',
+  fizz: '탄산감',
+  sourness: '산미',
+}
+
+const MOOD_PATTERNS: Array<[RecommendationMood, RegExp]> = [
+  ['depressed', /우울|기분.*별로|침울/],
+  ['tired', /피곤|지쳤|지침|퇴근/],
+  ['lonely', /외롭|쓸쓸/],
+  ['excited', /들뜬|신나|설레/],
+  ['angry', /화나|짜증|분노/],
+  ['empty', /공허|허무/],
+  ['celebratory', /축하|기념|합격|성공/],
+  ['heartbroken', /실연|헤어졌|이별/],
+  ['anxious', /불안|초조|걱정/],
+  ['bored', /심심|무료|지루/],
+]
+
+const SITUATION_PATTERNS: Array<[RecommendationSituation, RegExp]> = [
+  ['after-work', /퇴근|야근|회사/],
+  ['breakup', /실연|헤어졌|이별/],
+  ['celebration', /축하|기념|합격|성공/],
+  ['sleepless', /잠이?\s*안|불면/],
+  ['rough-day', /망한 것 같|힘든 하루|오늘.*힘들/],
+  ['casual-drink', /아무 생각 없이|가볍게 한잔/],
+  ['first-visit', /처음 왔|첫 방문/],
+  ['returning-guest', /또 왔|다시 왔|단골/],
+]
+
+const TASTE_PATTERNS: Array<[FeatureKey, number, RegExp]> = [
+  ['sweetness', 0.8, /달콤|달달|단맛|디저트/],
+  ['sweetness', 0.2, /안\s*달|드라이|쌉쌀|씁쓸|쓴맛/],
+  ['sourness', 0.8, /상큼|새콤|신맛|시트러스|레몬|라임/],
+  ['sourness', 0.2, /안\s*신|산미\s*없/],
+  ['fizz', 0.8, /탄산|청량|스파클|톡\s*쏘/],
+  ['fizz', 0.1, /탄산\s*없|부드럽|스틸/],
+  ['alcohol_strength', 0.8, /도수.*높|독한|강한|세게|쎈/],
+  ['alcohol_strength', 0.2, /도수.*낮|약한|순한|가볍게/],
+]
+
+const ALCOHOL_PATTERNS: Array<[AlcoholPreference, RegExp]> = [
+  ['non-alcoholic', /무알코올|논알|non.?alcohol/],
+  ['low', /도수.*낮|약한 술|순한 술/],
+  ['high', /도수.*높|독한 술|강한 술/],
+]
+
+export function createRecommendationState(): RecommendationState {
+  return {
+    taste: {},
+    moods: [],
+    situations: [],
+    alcoholPreference: 'any',
+    preferredIngredients: [],
+    excludedIngredients: [],
+    questionHistory: [],
+    signals: [],
+  }
+}
+
+export function extractRecommendationSignals(text: string): RecommendationSignal[] {
+  const signals: RecommendationSignal[] = []
+
+  for (const [mood, pattern] of MOOD_PATTERNS) {
+    if (pattern.test(text)) signals.push(createSignal('moods', mood, text))
+  }
+  for (const [situation, pattern] of SITUATION_PATTERNS) {
+    if (pattern.test(text)) signals.push(createSignal('situations', situation, text))
+  }
+  for (const [feature, value, pattern] of TASTE_PATTERNS) {
+    if (pattern.test(text)) signals.push(createSignal(`taste.${feature}`, value, text))
+  }
+  for (const [preference, pattern] of ALCOHOL_PATTERNS) {
+    if (pattern.test(text)) signals.push(createSignal('alcoholPreference', preference, text))
+  }
+
+  const excluded =
+    text.match(/([가-힣A-Za-z]+)\s*(?:빼고|제외|없이)/)
+    ?? text.match(/(?:빼고|제외하고?)\s*([가-힣A-Za-z]+)/)
+  if (excluded?.[1]) {
+    signals.push(createSignal('excludedIngredients', excluded[1], text))
+  }
+
+  return signals
+}
+
+function createSignal(
+  field: RecommendationSignal['field'],
+  value: RecommendationSignal['value'],
+  evidence: string,
+): RecommendationSignal {
+  return { field, value, confidence: 0.8, source: 'rule', evidence }
+}
+
+export function applyRecommendationSignals(
+  state: RecommendationState,
+  signals: RecommendationSignal[],
+): RecommendationState {
+  const next: RecommendationState = {
+    ...state,
+    taste: { ...state.taste },
+    moods: [...state.moods],
+    situations: [...state.situations],
+    preferredIngredients: [...state.preferredIngredients],
+    excludedIngredients: [...state.excludedIngredients],
+    questionHistory: [...state.questionHistory],
+    signals: [...state.signals],
+  }
+
+  for (const signal of signals) {
+    if (signal.confidence < 0.5) continue
+    if (signal.field.startsWith('taste.') && typeof signal.value === 'number') {
+      const feature = signal.field.slice(6) as FeatureKey
+      next.taste[feature] = clamp01(signal.value)
+    } else if (signal.field === 'moods') {
+      addUnique(next.moods, signal.value as RecommendationMood)
+    } else if (signal.field === 'situations') {
+      addUnique(next.situations, signal.value as RecommendationSituation)
+    } else if (signal.field === 'alcoholPreference') {
+      next.alcoholPreference = signal.value as AlcoholPreference
+    } else if (signal.field === 'preferredIngredients') {
+      addUnique(next.preferredIngredients, String(signal.value))
+    } else if (signal.field === 'excludedIngredients') {
+      addUnique(next.excludedIngredients, String(signal.value))
+    }
+    next.signals.push(signal)
+  }
+
+  return next
+}
+
+export function addQuestionHistory(
+  state: RecommendationState,
+  entry: QuestionHistoryEntry,
+): RecommendationState {
+  return { ...state, questionHistory: [...state.questionHistory, entry] }
+}
+
+export function answerLatestQuestion(
+  state: RecommendationState,
+  answer: string,
+): RecommendationState {
+  const questionHistory = [...state.questionHistory]
+  const latest = questionHistory[questionHistory.length - 1]
+  if (latest && latest.answer === undefined) {
+    questionHistory[questionHistory.length - 1] = { ...latest, answer }
+  }
+  return { ...state, questionHistory }
+}
+
+export function filterCocktailsByRecommendationState(
+  pool: CocktailData[],
+  state: RecommendationState,
+): CocktailData[] {
+  return pool.filter((cocktail) => {
+    if (state.alcoholPreference === 'non-alcoholic' && !isNonAlcoholic(cocktail)) return false
+    if (state.alcoholPreference === 'low' && cocktail.features.alcohol_strength > 0.4) return false
+    if (state.alcoholPreference === 'high' && cocktail.features.alcohol_strength < 0.6) return false
+
+    const ingredients = cocktail.ingredients.map(normalize)
+    return !state.excludedIngredients.some((excluded) =>
+      ingredients.some((ingredient) => ingredient.includes(normalize(excluded))),
+    )
+  })
+}
+
+export function createRecommendationDecision(
+  cocktail: CocktailData,
+  state: RecommendationState,
+): RecommendationDecision {
+  return {
+    cocktail,
+    state,
+    reasons: buildRecommendationReasons(cocktail, state),
+  }
+}
+
+export function buildRecommendationReasons(
+  cocktail: CocktailData,
+  state: RecommendationState,
+): RecommendationReason[] {
+  const reasons: RecommendationReason[] = []
+  const tasteMatches = (Object.keys(state.taste) as FeatureKey[])
+    .filter((key) => state.taste[key] !== undefined)
+    .sort((a, b) => featureDelta(cocktail, state.taste, a) - featureDelta(cocktail, state.taste, b))
+    .slice(0, 2)
+
+  if (tasteMatches.length > 0) {
+    reasons.push({
+      code: 'taste-match',
+      label: '취향 일치',
+      detail: `${tasteMatches.map((key) => FEATURE_LABELS[key]).join('·')} 취향과 가까워요.`,
+      evidence: tasteMatches.map((key) => `${key}:${cocktail.features[key]}`),
+    })
+  }
+
+  if (state.alcoholPreference !== 'any') {
+    reasons.push({
+      code: 'strength-match',
+      label: '도수 조건',
+      detail: `요청한 도수 조건(${state.alcoholPreference})을 반영했어요.`,
+      evidence: [`alcohol_strength:${cocktail.features.alcohol_strength}`],
+    })
+  }
+
+  const ingredientMatches = state.preferredIngredients.filter((preferred) =>
+    cocktail.ingredients.some((ingredient) => normalize(ingredient).includes(normalize(preferred))),
+  )
+  if (ingredientMatches.length > 0) {
+    reasons.push({
+      code: 'ingredient-match',
+      label: '선호 재료',
+      detail: `${ingredientMatches.join(', ')} 선호를 반영했어요.`,
+      evidence: ingredientMatches,
+    })
+  }
+
+  if (state.moods.length > 0 || state.situations.length > 0) {
+    reasons.push({
+      code: 'context',
+      label: '대화 맥락',
+      detail: '대화에서 파악한 기분과 상황은 다음 질문과 설명 맥락에 보관했어요.',
+      evidence: [...state.moods, ...state.situations],
+    })
+  }
+
+  return reasons
+}
+
+function isNonAlcoholic(cocktail: CocktailData): boolean {
+  return cocktail.alcoholic?.toLowerCase().includes('non') === true
+    || cocktail.features.alcohol_strength === 0
+}
+
+function featureDelta(cocktail: CocktailData, taste: TastePreference, key: FeatureKey): number {
+  return Math.abs(cocktail.features[key] - (taste[key] ?? FEATURE_DEFAULTS[key]))
+}
+
+function addUnique<T>(items: T[], item: T): void {
+  if (!items.includes(item)) items.push(item)
+}
+
+function normalize(value: string): string {
+  return value.toLowerCase().replace(/\s+/g, '')
+}
+
+function clamp01(value: number): number {
+  return Math.max(0, Math.min(1, value))
+}

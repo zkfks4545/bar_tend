@@ -8,6 +8,19 @@
 - 수정 또는 생성 파일은 경로를 명시한다.
 - 작업자 항목에는 실제 작업 중인 AI 모델명을 기록한다. 모델명을 확인할 수 없는 과거 기록은 추측하지 않고 `AI 모델 미기록 (과거 기록)`으로 표시한다.
 
+## 2026-06-12 / RST-203 / 추천 입력과 근거 모델 확장
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-12 |
+| 작업 ID | RST-203 |
+| 작업자 | GPT-5 Codex |
+| 작업 내용 | JSON 질문과 향후 WebLLM 상태 추출이 공유할 추천 상태, 신호, 질문 이력, 데이터 기반 근거 객체를 구현하고 기존 추천 세션에 연결했다. |
+| 수정 파일 | `bar_tend/src/types/recommendation.ts`, `src/lib/recommendation/state.ts`, `state.test.ts`, `src/hooks/useRecommendationSession.ts`, `mission_control/TASK_BOARD.md`, `CURRENT_STATE.md`, `HANDOVER.md`, `ARCHITECTURE.md`, `WORK_LOG.md` |
+| 주요 변경 사항 | 기분·상황·맛·도수·무알코올·제외 재료 구조화, 신뢰도 검증 후 상태 반영, 조건 기반 후보 필터, 질문 이력 보관, 추천 결정과 근거 객체 반환. 현재 DB에 없는 무알코올 조건은 알코올 추천으로 대체하지 않음. |
+| 검증 | `npm.cmd run lint`, `npm.cmd test` 15개, `npm.cmd run check`, `npm.cmd run build` 통과. 초기 JS 번들 281.19 kB. |
+| 후속 작업 제안 | RST-402에서 고정 질문 배열을 추천 상태와 질문 이력 기반 적응형 JSON 질문으로 교체 |
+
 ## 2026-06-12 / RST-302 / 타이머, 로딩, 오류 상태 통합
 
 | 항목 | 내용 |

@@ -1,6 +1,6 @@
 # 인수인계
 
-> 최종 갱신일: 2026-06-12 (RST-302 타이머, 상태, 오류 처리 통합)
+> 최종 갱신일: 2026-06-12 (RST-203 추천 상태와 근거 모델 확장)
 
 ## 현재 목표
 
@@ -34,21 +34,22 @@
 - [x] **PLAN-006**: 설문 느낌을 줄이기 위한 단계적 질문 계약 확정. WebLLM 전 JSON 질문, 도입 후 자연어 질문·상태 후보 추출, 추천 엔진 검증 경계를 문서화했다.
 - [x] **RST-301**: `App.tsx`를 화면 렌더링 중심으로 축소하고, 추천 진행을 `useRecommendationSession`, 대화·장면·도감 연결을 `useRestationController`로 분리했다.
 - [x] **RST-302**: 컨트롤러의 모든 지연 작업을 관리형 타이머로 통합하고 퇴장, 초기화, 언마운트 시 취소한다. 처리 상태를 단일 상태로 통합하고 오류 시 입력 잠금 해제와 안내 문구를 제공한다.
+- [x] **RST-203**: JSON 질문과 WebLLM 상태 추출이 공유할 `RecommendationState`, 구조화 신호, 질문 이력, 추천 근거 객체를 추가하고 기존 추천 세션에 연결했다.
 
 전체 리팩토링은 `TASK_BOARD.md`의 상위 프로그램 `RST-000`과 단계별 `RST-*` 작업을 기준으로 추적한다.
 
 ## 다음 작업
 
-`RST-203` 추천 입력과 근거 모델 확장 — JSON 질문과 WebLLM 상태 추출이 공유할 추천 상태 및 근거 객체를 정의한다.
+`RST-402` 추천 상태 기반 적응형 JSON 질문 — 고정 질문 순서를 제거하고 현재 상태와 질문 이력에 따라 다음 질문을 선택한다.
 
 ### 권장 순서
 
-1. 기분, 상황, 맛, 무알코올, 제외 재료, 질문 이력 상태 계약 정의
-2. 상태 갱신의 허용 값, 신뢰도, 충돌 처리 규칙 정의
-3. 추천 결과와 함께 반환할 데이터 기반 근거 객체 정의
+1. 카루아식 반응, 질문 문구, 선택지, 상태 갱신 신호를 포함한 JSON 질문 계약 작성
+2. 현재 상태에서 아직 확인되지 않았고 후보를 잘 구분하는 질문 선택
+3. 직전 질문 답변 기록, 질문 반복 방지, 최대 1~3개 질문 제한
 4. lint + test + check + build 검증
 
-이후 `RST-402`에서 `useRecommendationSession`의 고정 질문 흐름을 추천 상태 기반 JSON 질문으로 교체한다.
+선택 버튼 UI는 후속 `RST-501`에서 연결한다. RST-402에서는 자유 입력과 숫자 입력 경로를 유지한다.
 
 ## 먼저 읽을 파일
 
@@ -62,8 +63,9 @@
 | 6 | `bar_tend/src/lib/akinator/engine.ts` | 추천 질문 대사 |
 | 7 | `bar_tend/src/hooks/useRestationController.ts` | 대화, 장면, 도감 연결과 타이머 |
 | 8 | `bar_tend/src/hooks/useRecommendationSession.ts` | 추천 후보와 질문 진행 |
-| 9 | `bar_tend/src/App.tsx` | 화면 렌더링 |
-| 10 | `bar_tend/src/lib/cocktails/database.test.ts` | 현재 회귀 테스트 패턴 |
+| 9 | `bar_tend/src/lib/recommendation/state.ts` | 추천 상태, 신호 검증, 후보 필터, 근거 생성 |
+| 10 | `bar_tend/src/types/recommendation.ts` | JSON 질문과 WebLLM이 공유할 추천 계약 |
+| 11 | `bar_tend/src/App.tsx` | 화면 렌더링 |
 
 ## 다중 작업 PC 동기화
 

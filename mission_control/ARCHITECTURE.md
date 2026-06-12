@@ -58,6 +58,7 @@ prac/
 | 대화 엔진 | 키워드 규칙과 대화 문맥 기반 응답 생성 | `src/lib/bartender/engine.ts`, `conversation.ts`, `keywords.ts` |
 | 만담 이벤트 엔진 | 안전한 구간에서 시에스타 이벤트 발생 여부와 짧은 발화 시퀀스 결정 | 목표: `src/domain/character/events/` |
 | 추천 세션 | 후보군, 질문 진행, 최종 선택 흐름 연결 | `src/hooks/useRecommendationSession.ts` |
+| 추천 상태와 근거 | 기분, 상황, 취향, 제약, 질문 이력, 구조화 근거 관리 | `src/lib/recommendation/state.ts`, `src/types/recommendation.ts` |
 | 추천 엔진 | 취향 신호 수집, 후보 필터, 다음 질문, 최종 선택 | `src/lib/akinator/engine.ts` |
 | 칵테일 데이터 계층 | JSON 데이터 접근, 단일 `CocktailData` 구성, 검색과 순위화 | `src/lib/cocktails/database.ts`, `cocktail-db.ts` |
 | 세션 저장 | 취향, 대화 메모리, 도감 해제를 브라우저에 저장 | `src/hooks/useBarbotSession.ts`, `src/lib/storage/` |
@@ -129,7 +130,7 @@ IDLE
 
 | 위험 | 근거 | 영향 |
 |---|---|---|
-| 자동 테스트 범위 부족 | 데이터, 검색 우선순위, 카루아 계약, 타이머 레지스트리 테스트 11개만 존재 | 저장 및 주요 사용자 흐름 회귀 위험 |
+| 자동 테스트 범위 부족 | 데이터, 검색 우선순위, 카루아 계약, 타이머, 추천 상태 테스트 15개만 존재 | 저장 및 주요 사용자 흐름 회귀 위험 |
 | WebLLM 미연결 | 전환 계약과 성능 전략은 확정됐으나 런타임 구현은 없음 | 생성형 표현 계층 미완성 |
 
 `useRestationController`의 응답 준비, 타이핑, 추천 카드, 화면 흔들림, 퇴장 지연 작업은 관리형 타이머 레지스트리를 사용한다. 퇴장, 초기화, 컴포넌트 언마운트 시 남은 작업을 모두 취소하며, 처리 상태는 `idle`, `processing`, `typing`, `exiting` 중 하나로 유지한다.
@@ -187,6 +188,9 @@ src/
 - 질문 JSON은 주제, 카루아식 반응, 질문 문구, 선택지, 상태 갱신 규칙을 포함한다.
 - 질문은 고정 순서로 진행하지 않고 이미 확인한 상태와 직전 답변에 따라 선택한다.
 - WebLLM 도입 후에도 질문 상태 계약과 추천 결정권은 추천 엔진에 남는다.
+- WebLLM과 JSON 질문은 `RecommendationSignal` 후보를 만들며, `RecommendationState` 반영 전 신뢰도와 허용 필드를 검증한다.
+- 추천 결과는 `RecommendationDecision`으로 칵테일, 검증된 상태, 데이터 기반 근거를 함께 반환한다.
+- 기분과 상황은 대응하는 DB 태그가 추가되기 전까지 질문과 설명 맥락으로만 보관하고 추천 적합성 근거로 과장하지 않는다.
 
 ### 목표 기술 경계
 
