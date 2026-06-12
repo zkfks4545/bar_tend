@@ -7,15 +7,8 @@ import {
   loadModel,
   generate,
   generateNonStreaming,
-  unloadModel,
 } from './client.js'
 import type { EvaluationResult, KaruaModelResult } from './types.js'
-
-export const EVALUATION_CANDIDATES = [
-  'Qwen3.5-2B-q4f16_1-MLC',
-  'Qwen3.5-4B-q4f16_1-MLC',
-  'Qwen3-1.7B-q4f16_1-MLC',
-] as const
 
 const WARMUP_PROMPT = '안녕하세요, 오늘 기분이 어떤가요?'
 const BENCHMARK_PROMPT = '하루가 힘들었어요. 위로가 필요해요. 재미있는 이야기나 해주세요.'
@@ -79,42 +72,6 @@ export async function evaluateModel(modelId: string): Promise<EvaluationResult> 
   }
 }
 
-export async function evaluateAllCandidates(): Promise<EvaluationResult[]> {
-  const results: EvaluationResult[] = []
-  for (const modelId of EVALUATION_CANDIDATES) {
-    console.log(`\n${'='.repeat(60)}`)
-    console.log(`  Evaluating: ${modelId}`)
-    console.log(`${'='.repeat(60)}`)
-    try {
-      const result = await evaluateModel(modelId)
-      results.push(result)
-      const m = result.benchmarkMetrics
-      console.log(`\n[${modelId}] Results:`)
-      console.log(`  Load time:     ${result.loadTimeMs.toFixed(0)}ms`)
-      console.log(`  TTFT:          ${m.firstTokenMs.toFixed(0)}ms`)
-      console.log(`  Tokens/sec:    ${m.tokensPerSecond.toFixed(1)}`)
-      console.log(`  E2E latency:   ${m.e2eLatencyMs.toFixed(0)}ms`)
-      console.log(`  Total tokens:  ${m.totalTokens}`)
-      console.log(`  Hard-fail:     ${result.autoHardFailRate.toFixed(1)}% ` +
-        `(${failedCount(result)}/${karuaEvaluationCases.length})`)
-    } catch (err) {
-      console.error(`[${modelId}] Evaluation failed:`, err)
-    } finally {
-      await unloadModel()
-    }
-  }
-
-  console.log(`\n${'='.repeat(60)}`)
-  console.log('  All evaluations complete')
-  console.log(`${'='.repeat(60)}\n`)
-  console.log(formatResultsForMarkdown(results))
-  return results
-}
-
-function failedCount(result: EvaluationResult): number {
-  return result.karuaResults.filter(r => !r.passed).length
-}
-
 export function formatResultsForMarkdown(results: EvaluationResult[]): string {
   let md = '| 모델 | 로드(ms) | TTFT(ms) | Tok/s | Hard-fail | E2E(ms) | 수동 |\n'
   md += '|---|---|---|---|---|---|---|\n'
@@ -142,13 +99,4 @@ export function formatResultsForMarkdown(results: EvaluationResult[]): string {
   }
 
   return md
-}
-
-/**
- * Expose for browser console access.
- * Open browser devtools and type: __evaluateModels()
- */
-if (typeof window !== 'undefined') {
-  ;(window as unknown as Record<string, unknown>).__evaluateModels = evaluateAllCandidates
-  console.log('WebLLM evaluation ready. Run __evaluateModels() in console.')
 }

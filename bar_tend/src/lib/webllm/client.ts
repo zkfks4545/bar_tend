@@ -6,8 +6,6 @@ import {
 import type { ChatCompletionMessageParam } from '@mlc-ai/web-llm'
 import type { WebLLMStatus, WebLLMEventCallbacks, WebLLMGenerateOptions, WebLLMMetrics } from './types.js'
 
-export const DEFAULT_MODEL_ID = 'Qwen3.5-2B-q4f16_1-MLC'
-export const FALLBACK_MODEL_ID = 'Qwen3-1.7B-q4f16_1-MLC'
 const DEFAULT_TIMEOUT_MS = 30_000
 const DEFAULT_MAX_TOKENS = 150
 const DEFAULT_TEMPERATURE = 0.8
@@ -44,7 +42,7 @@ function createWorker(): Worker {
 }
 
 export async function loadModel(
-  modelId: string = DEFAULT_MODEL_ID,
+  modelId: string,
   callbacks?: WebLLMEventCallbacks,
 ): Promise<void> {
   if (engine) return
