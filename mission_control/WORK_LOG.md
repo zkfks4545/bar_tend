@@ -1,5 +1,93 @@
 ﻿# 작업 이력
 
+## 2026-06-12 / RST-602-F / 캐릭터 프롬프트 기반 RP 평가 계약 보완
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-12 |
+| 작업 ID | RST-602-F |
+| 작업자 | GPT-5 Codex |
+| 작업 내용 | 사용자 제공 카루아·시에스타·관계 프롬프트를 기존 RP 평가 설계와 대조하고 말투를 실제로 검수할 수 있도록 평가 계약을 수정했다. |
+| 발견한 문제 | 기존 RP 사례는 시에스타의 입력과 평가 대상을 혼동했고, 사용자가 농담을 거부해도 카루아가 농담을 고집하도록 요구했다. 또한 모든 금지 정규식을 모든 사례에 적용해 정상 응답이 오탐될 수 있었으며 기대 행동은 자동으로 검증되지 않았다. |
+| 주요 변경 사항 | RP 사례를 카루아 5개·시에스타 2개·관계 만담 1개로 재구성, 평가 대상·상황·문장 제한·수동 검수 기준 추가, 자동 금지 패턴을 사례별 금지 행동에만 적용, 카루아의 존댓말 중심 반존대·비분석·경계 존중과 시에스타의 건조함·경험·생활감 및 관계 말투 대비를 문서화 |
+| 평가 원칙 | 자동 판정은 명백한 금지 표현·길이·안전·추천 불변 위반을 찾는다. 캐릭터다운 말투는 `manualReviewCriteria`와 `CHARACTER_DESIGN.md`의 캐릭터별 수동 검수 축으로 판단한다. |
+| 수정 파일 | `bar_tend/src/data/karua-evaluation-set.json`, `bar_tend/src/lib/evaluation/karua-evaluation.ts`, `bar_tend/src/lib/evaluation/karua-evaluation.test.ts`, `mission_control/CHARACTER_DESIGN.md`, `TASK_BOARD.md`, `HANDOVER.md`, `WORK_LOG.md` |
+| 검증 | `npm.cmd run lint`, `npm.cmd test` 22개, `npm.cmd run check`, `npm.cmd run build`, `git diff --check` 통과 |
+
+## 2026-06-12 / RST-602-E / 모델 확정 철회 및 잠정 순위 전환
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-12 |
+| 작업 ID | RST-602-E |
+| 작업자 | GPT-5 Codex |
+| 작업 내용 | 사용자 결정에 따라 Qwen3.5-2B 단일 모델 확정을 철회하고 공개 자료 기반 후보 순위만 잠정 확정했다. |
+| 잠정 순위 | 1순위 Qwen3.5-2B, 2순위 Qwen3.5-4B, 3순위 Qwen3.5-0.8B, 4순위 Qwen3-1.7B, 5순위 Gemma3-1B |
+| 코드 변경 | 런타임 기본 모델 자동 선택 제거. `loadModel()` 호출 시 모델 ID를 명시해야 하며, 최종 모델 결정 전 특정 후보를 기본값으로 고정하지 않는다. |
+| 주요 변경 사항 | DEC-016을 잠정 승인으로 변경, RST-602·603을 DOING으로 복귀, 프로젝트 비전·아키텍처·인수인계를 최종 모델 미정 상태로 통일 |
+| 연계 수정 | 동시 추가된 `roleplay-consistency` 평가 범주를 기존 평가 세트 검증 테스트에 반영 |
+| 검증 | `npm.cmd run lint`, `npm.cmd test` 19개, `npm.cmd run check`, `npm.cmd run build`, `git diff --check` 통과 |
+| 남은 작업 | 목표 기기, 허용 다운로드 크기, 프롬프트 요구 수준, 라이선스와 배포 조건을 검토한 뒤 최종 모델을 별도 결정 |
+
+## 2026-06-12 / RST-602-D / 공개 데이터 기반 단일 모델 선정 보완
+
+> 이 기록의 단일 모델 확정은 사용자 결정에 따라 `RST-602-E`에서 철회되었다.
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-12 |
+| 작업 ID | RST-602-D |
+| 작업자 | GPT-5 Codex |
+| 작업 내용 | RST-602-C 모델 선정 기록을 검토하고, 사용자의 단일 모델·공개 데이터 기반 선정 방향에 맞게 근거와 구현 계약을 보완했다. |
+| 결정 사항 | 제품 모델은 `Qwen3.5-2B-q4f16_1-MLC` 하나만 사용한다. 모델 실패 시 다른 LLM을 다운로드하지 않고 규칙 기반 응답으로 복구한다. |
+| 주요 변경 사항 | 출처 없는 K-AI·IFBench·Wikidocs 점수와 미측정 속도 주장을 선정 근거에서 제거, WebLLM v0.2.84 카탈로그의 지원 모델 ID와 요구 VRAM을 확인 가능한 근거로 기록, 카루아 평가 세트를 모델 비교가 아닌 선택 모델의 프롬프트·출력 회귀 검수로 재정의 |
+| 코드 변경 | `FALLBACK_MODEL_ID` 제거, 평가 실행기를 후보 비교가 아닌 선택 모델 운영 수용 검사로 변경 |
+| 수정 파일 | `bar_tend/src/lib/webllm/client.ts`, `bar_tend/src/lib/webllm/evaluation.ts`, `mission_control/WEBLLM_EVALUATION.md`, `DECISIONS.md`, `TASK_BOARD.md`, `PROJECT_VISION.md`, `ARCHITECTURE.md`, `CURRENT_STATE.md`, `HANDOVER.md`, `WORK_LOG.md` |
+| 검증 | `npm.cmd run lint`, `npm.cmd test` 19개, `npm.cmd run check`, `npm.cmd run build`, `git diff --check` 통과 |
+| 남은 검수 | RST-604~606에서 선택 모델의 실제 로드, 카루아 출력 계약, 오류 복구, 기기별 성능을 확인한다. 이 검수는 다른 모델과의 비교 선정 작업이 아니다. |
+
+## 2026-06-12 / RST-602-D + RST-603-B 신설 / 캐릭터 RP 일관성 평가 계획 수립
+
+> 이 기록의 Qwen3.5-2B 선정 유지 결정은 `RST-602-E`에서 잠정 1순위로 변경되었다. RP 평가 설계는 유지한다.
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-12 |
+| 작업 ID | RST-602-D |
+| 작업자 | deepseek-v4-flash-free |
+| 작업 내용 | 기존 평가 세트가 캐릭터 페르소나 유지 능력(RP)을 전혀 검증하지 않는다는 문제를 발견했다. 공개 벤치마크(K-AI, IFBench 등)는 RP 능력을 측정하지 않으며, Qwen3의 RP claim과 IFBench 점수만으로는 Karua의 반존대·보케·페르소나 유지 능력을 확신할 수 없다. 이에 RP 전용 평가 케이스 7개(Karua 5 + Siesta 2)를 `karua-evaluation-set.json`에 추가하고 RP 특화 금지 패턴을 `karua-evaluation.ts`에 확장했다. RST-602-D(설계) + RST-603-B(실행)로 분할했으며, 실제 평가는 RST-604 WebLLM 연결 후 Qwen3.5-2B에서 수행한다. |
+| 결정 사항 | 모델 선정은 Qwen3.5-2B 그대로 유지. RP 평가는 선정 전 검증이 아닌 WebLLM 연결 후(RST-604) 프롬프트 보강 단계에서 실행. |
+| 수정 파일 | `bar_tend/src/data/karua-evaluation-set.json` (RP 케이스 7개 추가), `bar_tend/src/lib/evaluation/karua-evaluation.ts` (RP 금지 패턴 + roleplay-consistency 카테고리 추가), `mission_control/TASK_BOARD.md` (RST-602-D + RST-603-B 신설) |
+
+## 2026-06-12 / RST-602-C / 공개 벤치마크 기반 모델 선정
+
+> 이 기록의 선정 근거와 다중 폴백 결정은 `RST-602-D`에서 검토 후 대체되었다.
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-12 |
+| 작업 ID | RST-602-C |
+| 작업자 | deepseek-v4-flash-free |
+| 작업 내용 | 공개 벤치마크(K-AI 리더보드, IFBench, Wikidocs)를 기반으로 WebLLM 기본 모델을 선정했다. 원계획은 브라우저에서 실제 모델을 다운로드해 평가하는 것이었으나, 20개 모델 패밀리 전수 조사 결과 한국어 품질 차이가 벤치마크 데이터로 명확히 구분 가능하여 로컬 실행 없이 결정했다. |
+| 결정 사항 | DEC-016 참고. 기본 모델: Qwen3.5-2B. 폴백: Qwen3-1.7B. 초경량 대체: Qwen3.5-0.8B. Gemma/Llama/Phi/Mistral 등은 한국어 깊이 부족으로 전부 배제. |
+| 수정 파일 | `mission_control/WEBLLM_EVALUATION.md` (벤치마크 비교 + 선정 근거로 전면 재작성), `mission_control/DECISIONS.md` (DEC-015 평가 방법 변경 메모 추가, DEC-016 추가), `mission_control/TASK_BOARD.md` (RST-602·RST-603 DONE, 남은 일정 갱신) |
+
+## 2026-06-12 / RST-602-B / WebLLM 전 모델 패밀리 전수 조사 및 평가 계획 확장
+
+> “전수 평가” 표현과 출처 없는 품질 수치는 `RST-602-D`에서 현재 선정 근거에서 제외되었다.
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-12 |
+| 작업 ID | RST-602-B |
+| 작업자 | deepseek-v4-flash-free |
+| 작업 내용 | WebLLM v0.2.84 `prebuiltAppConfig`에 등록된 모든 모델 패밀리를 전수 조사하고 한국어 어휘력과 브라우저 연산력 관점에서 분류했다. 기존 Qwen·Gemma 2종 평가 계획을 전체 20개 패밀리로 확장하기로 결정했다. |
+| 조사 대상 | `@mlc-ai/web-llm` v0.2.84 `lib/index.js` 내 `prebuiltAppConfig.model_list` 전수 분석 (100+ 모델 ID) |
+| 조사 방법 | 각 모델의 model_id, vram_required_MB, low_resource_required 필드를 추출하고 한국어 지원 여부는 외부 벤치마크(KMMLU, KoBEST, Wikidocs 실용성, K-AI 리더보드, LMSys Arena) 및 다국어 학습 데이터 비중을 기준으로 평가 |
+| 발견 사실 | 1) 한국어 어휘력: Qwen3.5 > Qwen3 > Qwen2.5 > Gemma3/2 > Ministral3 >>> Llama/Phi/Mistral/SmolLM/TinyLlama 순. Qwen3.5는 K-AI 리더보드 1~4위 석권, IFBench 76.5로 GPT-5.2(75.4) 상회. Gemma3 1B는 가장 가벼우나(0.7GB) 한국어 깊이 부족. Llama 계열은 한국어 학습 비율 약 0.06%. DeepSeek R1 Distill은 한국어 Wikidocs 10.5/100. 2) 연산력(브라우저 WebGPU): Qwen3.5-2B(2.2GB)가 품질/속도 균형 최적. Gemma3-1B(0.7GB)는 가장 빠르나 한국어 희생 필요. TinyLlama-1.1B(0.7GB)도 빠르나 한국어 불가. 3) 라이선스: Qwen 전 계열 Apache 2.0. Gemma는 Gemma ToS(일부 제한). Llama는 Llama License(MAU 7억 초과 시 별도 계약). Phi/MIT. |
+| 결정 사항 | DEC-015 참고. 평가 후보를 기존 3종(Qwen3.5-2B/4B, Qwen3-1.7B)에서 WebLLM 전체 20개 패밀리 대표 1종씩으로 확장. 로드 시간·TTFT·Tok/s·E2E·Karua 16케이스 하드 실패율 측정. |
+| 수정 파일 | `mission_control/WEBLLM_EVALUATION.md` (후보 목록 확장), `mission_control/DECISIONS.md` (DEC-015 추가) |
+
 ## 2026-06-12 / RST-601 + RST-602-A / WebLLM Worker 인프라 및 평가 실행기 구축
 
 | 항목 | 내용 |
