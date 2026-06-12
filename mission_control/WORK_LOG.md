@@ -7,6 +7,19 @@
 - 실패한 시도도 다음 작업자의 시간을 절약할 수 있도록 기록한다.
 - 수정 또는 생성 파일은 경로를 명시한다.
 
+## 2026-06-12 / RST-301 / 애플리케이션 로직 분리
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-12 |
+| 작업 ID | RST-301 |
+| 작업자 | 현재 작업자 |
+| 작업 내용 | `App.tsx`에 집중된 추천 진행과 대화·장면·도감 연결 로직을 전용 훅으로 분리했다. |
+| 수정 파일 | `bar_tend/src/App.tsx`, `src/hooks/useRecommendationSession.ts`, `src/hooks/useRestationController.ts`, `mission_control/TASK_BOARD.md`, `CURRENT_STATE.md`, `HANDOVER.md`, `ARCHITECTURE.md`, `WORK_LOG.md` |
+| 주요 변경 사항 | 추천 후보군과 질문 진행을 `useRecommendationSession`으로 이동하고, 메시지·표정·장면·추천 카드·도감 연결을 `useRestationController`로 이동했다. `App.tsx`는 화면 렌더링과 컴포넌트 연결 중심으로 축소했다. |
+| 검증 | `npm.cmd run lint`, `npm.cmd test` 9개, `npm.cmd run check`, `npm.cmd run build` 통과. 초기 JS 번들 275.26 kB. |
+| 후속 작업 제안 | RST-302에서 컨트롤러 타이머를 추적·취소하고, 이후 RST-203/RST-402에서 추천 상태 기반 JSON 질문으로 교체 |
+
 ## 2026-06-12 / PLAN-006 / 단계적 대화형 추천 질문 계약
 
 | 항목 | 내용 |

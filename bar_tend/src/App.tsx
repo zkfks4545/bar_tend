@@ -1,4 +1,3 @@
-import { useState, useCallback } from 'react'
 import BarExterior from '@/components/outside/BarExterior.jsx'
 import BarInterior from '@/components/inside/BarInterior.jsx'
 import BartenderSprite from '@/components/inside/BartenderSprite.jsx'
@@ -7,195 +6,26 @@ import DialogueBox from '@/components/inside/DialogueBox.jsx'
 import ChatInput from '@/components/inside/ChatInput.jsx'
 import CocktailCard from '@/components/inside/CocktailCard.jsx'
 import Sidebar from '@/components/sidebar/Sidebar.jsx'
-import { getCocktailResponse } from '@/lib/bartender/engine.js'
-import {
-  findCocktailByName,
-} from '@/lib/cocktails/database.js'
-import {
-  ingestTasteSignals,
-  isRecommendationIntent,
-  initCandidatePool,
-  filterPool,
-  nextFilterQuestion,
-  pickFromPool,
-  detectExpressedDimensions,
-} from '@/lib/akinator/engine.js'
-import { unlockCocktailId } from '@/lib/storage/codex-unlocks.js'
-import { useBarbotSession } from '@/hooks/useBarbotSession.js'
-import type { CocktailData, Message, Expression } from '@/types.js'
+import { useRestationController } from '@/hooks/useRestationController.js'
 
 export default function App() {
-  const [scene, setScene] = useState<'outside' | 'inside'>('outside')
-  const [messages, setMessages] = useState<Message[]>([])
-  const [expression, setExpression] = useState<Expression>('idle')
-  const [isBartenderTyping, setIsBartenderTyping] = useState(false)
-  const [isProcessing, setIsProcessing] = useState(false)
-  const [servedCocktail, setServedCocktail] = useState<CocktailData | null>(null)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [screenShake, setScreenShake] = useState(false)
-  const [candidatePool, setCandidatePool] = useState<CocktailData[] | null>(null)
-  const [filterCount, setFilterCount] = useState(0)
-
   const {
-    preference,
+    scene,
+    messages,
+    expression,
+    isBartenderTyping,
+    isProcessing,
+    servedCocktail,
+    sidebarOpen,
+    screenShake,
     unlockedIds,
-    setUnlockedIds,
-    ingestUserMessage,
-    resetNight,
-  } = useBarbotSession()
-
-  const bartenderReply = useCallback(
-    (text: string, exp: Expression, cocktail?: CocktailData | null) => {
-      setIsBartenderTyping(true)
-      setExpression('talk')
-      setTimeout(() => {
-        setMessages((prev) => [...prev, { role: 'bartender', text }])
-        setIsBartenderTyping(false)
-        setExpression(exp)
-        setIsProcessing(false)
-        if (cocktail) {
-          setTimeout(() => setServedCocktail(cocktail), 600)
-        }
-      }, text.length * 15 + 400)
-    },
-    [],
-  )
-
-  const handleEnter = useCallback(() => {
-    setScene('inside')
-    setMessages([
-      {
-        role: 'bartender',
-        text: '어? 손님이 먼저 찾아오셨네요.\nRe:Station입니다. 편하게 앉으세요. 의자는 아직 퇴근 전이니까요.',
-      },
-    ])
-  }, [])
-
-  const handleExit = useCallback(() => {
-    setIsProcessing(true)
-    bartenderReply('벌써 가세요? 또 오세요, 기다리고 있을게요. 알바니까요.', 'idle')
-    setTimeout(() => {
-      setScene('outside')
-      setMessages([])
-      setExpression('idle')
-      setIsProcessing(false)
-      setSidebarOpen(false)
-      setCandidatePool(null)
-      setFilterCount(0)
-    }, 2000)
-  }, [bartenderReply])
-
-  const handleResetNight = useCallback(() => {
-    resetNight()
-    setMessages([])
-    setExpression('idle')
-    setIsProcessing(false)
-    setIsBartenderTyping(false)
-    setServedCocktail(null)
-    setCandidatePool(null)
-    setFilterCount(0)
-    bartenderReply(
-      '새로운 밤이에요.\n기억은 리셋됐는데... 도감에 모은 칵테일은 건드리지 않았어요.\n(알바생에게 그런 권한은 없거든요.)',
-      'idle',
-    )
-  }, [resetNight, bartenderReply])
-
-  const handleSend = useCallback(
-    (text: string) => {
-      if (isProcessing) return
-      setIsProcessing(true)
-      setMessages((prev) => [...prev, { role: 'user', text }])
-      ingestUserMessage(text)
-
-      const lower = text.toLowerCase()
-      if (/나갈게|갈게|바이|끝|잘 있어|다음에|안녕히/.test(lower)) {
-        handleExit()
-        return
-      }
-
-      setExpression('thinking')
-      setTimeout(() => {
-        const tasteSnapshot = ingestTasteSignals(text, preference)
-        const { response, expression: exp } = getCocktailResponse(text, messages)
-
-        let cocktail: CocktailData | null = null
-        let finalReply = response
-        let finalExp = exp
-        const selectRecommendation = (record: CocktailData) => {
-          cocktail = record
-          setScreenShake(true)
-          setTimeout(() => setScreenShake(false), 500)
-          setCandidatePool(null)
-          setFilterCount(0)
-
-          finalReply = `취향이 슬슬 자백하네요.\n${cocktail.vibe}\n\n오늘의 추천: 「${cocktail.name}」\n${cocktail.story}\n\n아니면 다시 고르죠. 잔은 상처받지 않으니까요.`
-          finalExp = 'smirk'
-        }
-        // A named cocktail is the most specific intent, so it wins over preference search.
-        const explicitCocktail = findCocktailByName(text)
-        const isRecommendation = !explicitCocktail && (candidatePool !== null || isRecommendationIntent(text))
-
-        if (isRecommendation) {
-          const pool = candidatePool ?? initCandidatePool()
-
-          if (candidatePool === null) {
-            // ── First trigger ──────────────────────────────────
-            const expressed = detectExpressedDimensions(text)
-            const filtered = expressed.size > 0 ? filterPool(pool, text, 0) : pool
-            setCandidatePool(filtered)
-            const q = nextFilterQuestion(filtered, 0, expressed, text)
-            if (q) {
-              setFilterCount(q.index)
-              finalReply = q.question.text
-              finalExp = 'thinking'
-            } else {
-              const record = pickFromPool(filtered, tasteSnapshot)
-              if (record) selectRecommendation(record)
-            }
-          } else {
-            // ── Subsequent answer ──────────────────────────────
-            const filtered = filterPool(pool, text, filterCount)
-            const nextStart = filterCount + 1
-            setCandidatePool(filtered)
-            setFilterCount(nextStart)
-            const nextQuestion = nextFilterQuestion(filtered, nextStart, undefined, text)
-
-            if (!nextQuestion) {
-              // All questions answered — recommend
-              const record = pickFromPool(filtered, tasteSnapshot)
-              if (record) selectRecommendation(record)
-            } else {
-              finalReply = nextQuestion.question.text
-              finalExp = 'thinking'
-            }
-          }
-        } else if (explicitCocktail) {
-          // ── Not recommendation mode — serve named cocktail ──
-          cocktail = explicitCocktail
-          finalReply = `${explicitCocktail.vibe}\n\n「${explicitCocktail.name}」, 좋은 선택이에요.\n${explicitCocktail.story}`
-          finalExp = 'smirk'
-        }
-
-        if (cocktail) {
-          const ids = unlockCocktailId(cocktail.id)
-          setUnlockedIds(ids)
-        }
-
-        bartenderReply(finalReply, finalExp, cocktail)
-      }, 800 + Math.random() * 600)
-    },
-    [
-      isProcessing,
-      messages,
-      handleExit,
-      bartenderReply,
-      ingestUserMessage,
-      preference,
-      candidatePool,
-      filterCount,
-      setUnlockedIds,
-    ],
-  )
+    handleEnter,
+    handleExit,
+    handleResetNight,
+    handleSend,
+    setServedCocktail,
+    setSidebarOpen,
+  } = useRestationController()
 
   if (scene === 'outside') {
     return <BarExterior onEnter={handleEnter} />

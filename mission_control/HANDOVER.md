@@ -32,21 +32,22 @@
 - [x] **시에스타 이벤트 계약**: 예고 없는 난입, 짧은 만담, 업무 복귀 퇴장, 카루아에게 대화권 반환 흐름 확정.
 - [x] **RST-404**: 카루아 대사를 상세 계약으로 감사하고 직접 위로·정답형 표현을 수정했다. 안전 의도는 추천과 농담보다 먼저 처리하며 관련 회귀 테스트를 포함해 Vitest 9개가 통과한다.
 - [x] **PLAN-006**: 설문 느낌을 줄이기 위한 단계적 질문 계약 확정. WebLLM 전 JSON 질문, 도입 후 자연어 질문·상태 후보 추출, 추천 엔진 검증 경계를 문서화했다.
+- [x] **RST-301**: `App.tsx`를 화면 렌더링 중심으로 축소하고, 추천 진행을 `useRecommendationSession`, 대화·장면·도감 연결을 `useRestationController`로 분리했다.
 
 전체 리팩토링은 `TASK_BOARD.md`의 상위 프로그램 `RST-000`과 단계별 `RST-*` 작업을 기준으로 추적한다.
 
 ## 다음 작업
 
-`RST-301` 애플리케이션 로직 분리 — `App.tsx`의 대화, 추천, 도감, 장면 상태를 전용 훅으로 분리한다.
+`RST-302` 타이머, 로딩, 오류 상태 통합 — 분리된 컨트롤러의 지연 응답을 추적하고 퇴장·초기화 후 응답을 취소한다.
 
 ### 권장 순서
 
-1. 대화 응답 타이머와 메시지 상태의 소유권 정리
-2. 추천 세션 상태와 후보 필터 흐름 분리
-3. 장면 및 도감 상태 연결 유지
+1. `useRestationController`의 응답, 퇴장, 카드 표시, 화면 흔들림 타이머 추적
+2. 퇴장과 초기화 시 남은 타이머 및 지연 응답 취소
+3. 처리·타이핑 상태의 일관된 종료 보장
 4. lint + test + check + build 검증
 
-이후 `RST-203/RST-402`에서 고정 질문 배열을 추천 상태 기반 JSON 질문으로 교체한다. 질문 수를 무조건 한 개로 제한하지 않되, 직전 답변에 반응하고 이미 확인한 항목은 반복하지 않는다.
+이후 `RST-203/RST-402`에서 `useRecommendationSession`의 고정 질문 흐름을 추천 상태 기반 JSON 질문으로 교체한다.
 
 ## 먼저 읽을 파일
 
@@ -58,8 +59,10 @@
 | 4 | `bar_tend/src/lib/bartender/keywords.ts` | 키워드 규칙 응답 |
 | 5 | `bar_tend/src/lib/bartender/conversation.ts` | 일반 대화 템플릿 |
 | 6 | `bar_tend/src/lib/akinator/engine.ts` | 추천 질문 대사 |
-| 7 | `bar_tend/src/App.tsx` | 환영, 추천, 작별 대사와 집중된 로직 |
-| 8 | `bar_tend/src/lib/cocktails/database.test.ts` | 현재 회귀 테스트 패턴 |
+| 7 | `bar_tend/src/hooks/useRestationController.ts` | 대화, 장면, 도감 연결과 타이머 |
+| 8 | `bar_tend/src/hooks/useRecommendationSession.ts` | 추천 후보와 질문 진행 |
+| 9 | `bar_tend/src/App.tsx` | 화면 렌더링 |
+| 10 | `bar_tend/src/lib/cocktails/database.test.ts` | 현재 회귀 테스트 패턴 |
 
 ## 다중 작업 PC 동기화
 

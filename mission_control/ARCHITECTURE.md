@@ -53,10 +53,11 @@ prac/
 
 | 구성 요소 | 책임 | 주요 파일 |
 |---|---|---|
-| 애플리케이션 조정 | 장면, 메시지, 추천 후보, 모달, 사이드바 상태를 연결 | `src/App.tsx` |
+| 애플리케이션 조정 | 장면, 메시지, 모달, 사이드바와 저장 상태를 연결 | `src/hooks/useRestationController.ts` |
 | 외부 및 내부 UI | 바 입장 연출과 내부 무대 구성 | `src/components/outside/`, `src/components/inside/` |
 | 대화 엔진 | 키워드 규칙과 대화 문맥 기반 응답 생성 | `src/lib/bartender/engine.ts`, `conversation.ts`, `keywords.ts` |
 | 만담 이벤트 엔진 | 안전한 구간에서 시에스타 이벤트 발생 여부와 짧은 발화 시퀀스 결정 | 목표: `src/domain/character/events/` |
+| 추천 세션 | 후보군, 질문 진행, 최종 선택 흐름 연결 | `src/hooks/useRecommendationSession.ts` |
 | 추천 엔진 | 취향 신호 수집, 후보 필터, 다음 질문, 최종 선택 | `src/lib/akinator/engine.ts` |
 | 칵테일 데이터 계층 | JSON 데이터 접근, 단일 `CocktailData` 구성, 검색과 순위화 | `src/lib/cocktails/database.ts`, `cocktail-db.ts` |
 | 세션 저장 | 취향, 대화 메모리, 도감 해제를 브라우저에 저장 | `src/hooks/useBarbotSession.ts`, `src/lib/storage/` |
@@ -67,7 +68,7 @@ prac/
 ### 대화 및 추천
 
 1. 사용자가 `ChatInput`에서 텍스트를 전송한다.
-2. `App.tsx`가 메시지를 화면 상태에 추가하고 세션 취향 신호를 갱신한다.
+2. `useRestationController`가 메시지를 화면 상태에 추가하고 세션 취향 신호를 갱신한다.
 3. 퇴장 의도를 먼저 확인한다.
 4. 등록된 칵테일 이름 또는 별칭을 먼저 검색한다. 이름이 있으면 취향 추천보다 우선한다.
 5. 이름 검색 결과가 없고 추천 의도이면 `akinator/engine.ts`가 현재 후보군을 필터링하고 다음 질문 또는 결과를 정한다.
