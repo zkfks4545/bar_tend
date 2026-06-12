@@ -119,7 +119,12 @@ export default function App() {
               onCancelRecommendation={handleCancelRecommendation}
               recommendationState={recommendationState}
               onRemoveSignal={removeSignal}
-              surveyOnly={accessMode === 'survey' || webllm.status !== 'ready'}
+              surveyOnly={
+                accessMode === 'survey' ||
+                !webllm.loadedModelId ||
+                webllm.status === 'loading' ||
+                webllm.status === 'error'
+              }
               onStartSurvey={handleStartSurvey}
             />
             {errorMessage && (
@@ -137,7 +142,7 @@ export default function App() {
           >
             <button
               onClick={handleClearModelCache}
-              disabled={isClearingCache}
+              disabled={isClearingCache || webllm.status === 'loading' || webllm.status === 'generating'}
               className="exit-btn text-xs transition-all duration-200 cursor-pointer select-none disabled:opacity-50"
               style={{
                 color: '#8f8298',

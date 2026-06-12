@@ -17,6 +17,7 @@ let worker: Worker | null = null
 let engine: WebWorkerMLCEngine | null = null
 let _status: WebLLMStatus = 'unloaded'
 let statusListeners: Array<(status: WebLLMStatus) => void> = []
+let loadAttempt = 0
 
 function setStatus(newStatus: WebLLMStatus) {
   _status = newStatus
@@ -48,19 +49,33 @@ export async function loadModel(
 ): Promise<void> {
   if (engine) return
 
+  const attempt = ++loadAttempt
   setStatus('loading')
   callbacks?.onStatusChange?.('loading')
 
+  const w = createWorker()
   try {
-    const w = createWorker()
-    engine = await CreateWebWorkerMLCEngine(w, modelId, {
+    const loadedEngine = await CreateWebWorkerMLCEngine(w, modelId, {
       initProgressCallback: (report) => {
-        callbacks?.onLoadProgress?.(report.progress, report.text)
+        if (attempt === loadAttempt) {
+          callbacks?.onLoadProgress?.(report.progress, report.text)
+        }
       },
     })
+    if (attempt !== loadAttempt) {
+      try { await loadedEngine.unload() } catch { /* cancelled load cleanup */ }
+      throw new Error('Model load cancelled.')
+    }
+    engine = loadedEngine
     setStatus('ready')
     callbacks?.onStatusChange?.('ready')
   } catch (err) {
+    if (worker === w) {
+      worker.terminate()
+      worker = null
+    }
+    if (attempt !== loadAttempt) throw err
+    engine = null
     setStatus('error')
     const msg = err instanceof Error ? err.message : String(err)
     callbacks?.onError?.(msg)
@@ -113,7 +128,9 @@ export async function generate(
   const temperature = options?.temperature ?? DEFAULT_TEMPERATURE
   const topP = options?.topP ?? DEFAULT_TOP_P
 
+  let timedOut = false
   const timeoutId = setTimeout(() => {
+    timedOut = true
     engine?.interruptGenerate()
   }, timeoutMs)
 
@@ -140,10 +157,12 @@ export async function generate(
     callbacks?.onStatusChange?.('ready')
     return fullText.trim()
   } catch (err) {
-    setStatus('ready')
     const msg = err instanceof Error ? err.message : String(err)
+    const interrupted = timedOut || /interrupt|cancel|abort/i.test(msg)
+    const nextStatus: WebLLMStatus = interrupted ? 'ready' : 'error'
+    setStatus(nextStatus)
     callbacks?.onError?.(msg)
-    callbacks?.onStatusChange?.('ready')
+    callbacks?.onStatusChange?.(nextStatus)
     throw err
   } finally {
     clearTimeout(timeoutId)
@@ -151,10 +170,12 @@ export async function generate(
 }
 
 export async function unloadModel(): Promise<void> {
-  try {
-    await engine?.unload()
-  } catch { /* ignore */ }
+  loadAttempt += 1
+  const activeEngine = engine
   engine = null
+  try {
+    await activeEngine?.unload()
+  } catch { /* ignore */ }
   if (worker) {
     worker.terminate()
     worker = null

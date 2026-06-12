@@ -1,5 +1,19 @@
 ﻿# 작업 이력
 
+## 2026-06-12 / RST-605-B / WebLLM 런타임 생명주기 감사
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-12 |
+| 작업 ID | RST-605-B |
+| 작업자 | GPT-5 Codex |
+| 작업 내용 | WebLLM 로드·생성·취소·언로드·캐시 삭제·입장 모드 전환 경로를 코드 감사하고 자동 회귀 테스트를 추가함. |
+| 발견 및 수정 | 모델 로드 중 나가기·언로드 후 늦게 완료된 로드가 다시 READY로 살아나는 경쟁 상태를 로드 세대 번호로 차단함. 로드 실패 시 남은 Worker를 종료함. 나갈 때 캐시는 유지하고 실행 모델은 언로드해 RAM·VRAM을 반환함. 생성 중 `generating` 상태에서 자유 입력 UI가 설문 모드로 바뀌던 문제를 수정함. 치명적 생성 오류를 무조건 READY로 되돌려 반복 실패하던 문제를 ERROR 전환 및 재로드 경로로 수정함. |
+| 테스트 | `client.test.ts`에 로드 실패 정리, 진행 중 로드 취소, 전체 후보 캐시 삭제, 치명적 생성 오류 상태 전환 테스트 4개 추가 |
+| 수정 파일 | `bar_tend/src/App.tsx`, `bar_tend/src/hooks/useRestationController.ts`, `bar_tend/src/hooks/useWebLLMRuntime.ts`, `bar_tend/src/lib/webllm/client.ts`, `bar_tend/src/lib/webllm/client.test.ts`, `mission_control/TASK_BOARD.md`, `mission_control/HANDOVER.md`, `mission_control/WORK_LOG.md` |
+| 검증 | `npm.cmd run lint`, `npm.cmd run check`, `npm.cmd test` 34개, `npm.cmd run build`, `git diff --check` 통과. Chrome 헤드리스에서 로컬 앱 초기 화면 렌더링과 개발 서버 응답 확인. |
+| 미검증 | 실제 2B 모델 다운로드, WebGPU 기기별 추론, 스트리밍 출력 품질, 실제 캐시 사용량과 삭제 후 감소량은 대용량 모델 다운로드가 가능한 실제 브라우저 환경에서 별도 확인 필요 |
+
 ## 2026-06-12 / RST-605-A / AI 입장 선택과 모델 캐시 관리
 
 | 항목 | 내용 |

@@ -35,7 +35,7 @@ export function useWebLLMRuntime() {
 
     try {
       const client = await importClient()
-      if (loadedModelId && loadedModelId !== trimmedModelId) {
+      if (status === 'error' || (loadedModelId && loadedModelId !== trimmedModelId)) {
         await client.reloadModel(trimmedModelId, callbacks)
       } else {
         await client.loadModel(trimmedModelId, callbacks)
@@ -45,7 +45,10 @@ export function useWebLLMRuntime() {
       setLoadMessage('준비 완료')
     } catch (err) {
       setLoadedModelId(null)
-      setError(err instanceof Error ? err.message : String(err))
+      const client = await importClient()
+      if (client.getStatus() !== 'unloaded') {
+        setError(err instanceof Error ? err.message : String(err))
+      }
     }
   }, [loadedModelId, status])
 
@@ -84,11 +87,17 @@ export function useWebLLMRuntime() {
 
     try {
       setStatus('generating')
-      const text = await client.generate(input, history, options, callbacks)
+      const text = await client.generate(input, history, options, {
+        ...callbacks,
+        onStatusChange: setStatus,
+        onError: setError,
+      })
       setStatus('ready')
       return text || null
     } catch {
-      setStatus('ready')
+      const nextStatus = client.getStatus()
+      setStatus(nextStatus)
+      if (nextStatus === 'error') setLoadedModelId(null)
       return null
     }
   }, [])

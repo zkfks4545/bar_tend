@@ -107,6 +107,7 @@ export function useRestationController() {
 
   const handleExit = useCallback(() => {
     clearPendingWork()
+    void webllm.unload()
     setErrorMessage(null)
     setInteractionStatus('exiting')
     bartenderReply('벌써 가세요? 또 오세요, 기다리고 있을게요. 알바니까요.', 'idle', null, 'exiting')
@@ -119,7 +120,7 @@ export function useRestationController() {
       setServedCocktail(null)
       resetRecommendation()
     }, 2000)
-  }, [bartenderReply, clearPendingWork, resetRecommendation])
+  }, [bartenderReply, clearPendingWork, resetRecommendation, webllm])
 
   const handleResetNight = useCallback(() => {
     clearPendingWork()
