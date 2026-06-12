@@ -1,4 +1,4 @@
-# 작업 이력
+﻿# 작업 이력
 
 ## 작성 규칙
 
@@ -6,6 +6,20 @@
 - 확인한 사실과 해석을 구분한다.
 - 실패한 시도도 다음 작업자의 시간을 절약할 수 있도록 기록한다.
 - 수정 또는 생성 파일은 경로를 명시한다.
+- 작업자 항목에는 실제 작업 중인 AI 모델명을 기록한다. 모델명을 확인할 수 없는 과거 기록은 추측하지 않고 `AI 모델 미기록 (과거 기록)`으로 표시한다.
+
+## 2026-06-12 / DOC-002 / 작업자 AI 모델명 기록 규칙
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-12 |
+| 작업 ID | DOC-002 |
+| 작업자 | GPT-5 Codex |
+| 작업 내용 | 작업 로그의 작업자 항목에 추상적인 표현 대신 실제 작업 중인 AI 모델명을 기록하도록 운영 규칙을 변경했다. |
+| 수정 파일 | `mission_control/AI_WORKFLOW.md`, `WORK_LOG.md` |
+| 주요 변경 사항 | 모든 기존 작업이 Codex 세션에서 수행되었다는 사용자 확인에 따라 전체 작업자 기록을 `GPT-5 Codex`로 통일했다. |
+| 검증 | `현재 작업자` 잔여 표현 검색 및 Markdown 변경 diff 검사 |
+| 후속 작업 제안 | 이후 모든 작업 로그에서 실제 AI 모델명을 기록 |
 
 ## 2026-06-12 / RST-301 / 애플리케이션 로직 분리
 
@@ -13,7 +27,7 @@
 |---|---|
 | 날짜 | 2026-06-12 |
 | 작업 ID | RST-301 |
-| 작업자 | 현재 작업자 |
+| 작업자 | GPT-5 Codex |
 | 작업 내용 | `App.tsx`에 집중된 추천 진행과 대화·장면·도감 연결 로직을 전용 훅으로 분리했다. |
 | 수정 파일 | `bar_tend/src/App.tsx`, `src/hooks/useRecommendationSession.ts`, `src/hooks/useRestationController.ts`, `mission_control/TASK_BOARD.md`, `CURRENT_STATE.md`, `HANDOVER.md`, `ARCHITECTURE.md`, `WORK_LOG.md` |
 | 주요 변경 사항 | 추천 후보군과 질문 진행을 `useRecommendationSession`으로 이동하고, 메시지·표정·장면·추천 카드·도감 연결을 `useRestationController`로 이동했다. `App.tsx`는 화면 렌더링과 컴포넌트 연결 중심으로 축소했다. |
@@ -26,7 +40,7 @@
 |---|---|
 | 날짜 | 2026-06-12 |
 | 작업 ID | PLAN-006 |
-| 작업자 | 현재 작업자 |
+| 작업자 | GPT-5 Codex |
 | 작업 내용 | 설문 느낌을 줄이면서 여러 질문으로 취향을 좁힐 수 있도록 WebLLM 도입 전후의 추천 질문 책임을 분리했다. |
 | 수정 파일 | `mission_control/DECISIONS.md`, `PROJECT_VISION.md`, `TASK_BOARD.md`, `ARCHITECTURE.md`, `HANDOVER.md`, `CURRENT_STATE.md`, `WORK_LOG.md` |
 | 주요 변경 사항 | WebLLM 이전에는 카루아 말투가 포함된 JSON 질문과 규칙 기반 상태 반영을 사용한다. 도입 후에는 동일한 추천 상태 계약에서 WebLLM이 질문 표현과 자유 답변 상태 후보 추출을 담당하고 추천 엔진이 검증한다. |
@@ -39,7 +53,7 @@
 |---|---|
 | 날짜 | 2026-06-11 |
 | 작업 ID | RST-404 |
-| 작업자 | 현재 작업자 |
+| 작업자 | GPT-5 Codex |
 | 작업 내용 | `CHARACTER_DESIGN.md`의 농담 우선, 의미 비해설, 직접 위로 금지, 음주 해결책 금지, 안전 확인 기준으로 현재 카루아 대사를 감사했다. |
 | 수정 파일 | `bar_tend/src/App.tsx`, `src/lib/bartender/engine.ts`, `keywords.ts`, `conversation.ts`, `engine.test.ts`, `mission_control/TASK_BOARD.md`, `CURRENT_STATE.md`, `HANDOVER.md`, `WORK_LOG.md` |
 | 주요 변경 사항 | 직접 위로·정답형 감정 대사 수정, 강한 음주 요청에 천천히 마시는 경계 추가, 자해·즉각적 위험 표현을 추천과 농담보다 먼저 처리, 대표 상황 평가 테스트 5개 추가 |
@@ -53,7 +67,7 @@
 |---|---|
 | 날짜 | 2026-06-11 |
 | 작업 ID | DOC-001 |
-| 작업자 | 현재 작업자 |
+| 작업자 | GPT-5 Codex |
 | 작업 내용 | `mission_control`에 흩어진 전면 리팩토링 계획을 상위 프로그램으로 묶고 현재 코드 상태와 문서 표현을 동기화했다. |
 | 수정 파일 | `mission_control/TASK_BOARD.md`, `CURRENT_STATE.md`, `HANDOVER.md`, `ARCHITECTURE.md`, `WORK_LOG.md` |
 | 주요 변경 사항 | RST-000 추가, PLAN-003~005와 완료 RST 작업을 완료 표에 반영, 전체·잔여 일정 재산정, Vitest 4개로 동기화, 현재 계획에서 오래된 426개 데이터 표현과 한국어 손상 위험 제거, BAR-001~004 대체 상태 명시 |
@@ -66,7 +80,7 @@
 |---|---|
 | 날짜 | 2026-06-11 |
 | 작업 ID | PLAN-005 |
-| 작업자 | 현재 작업자 |
+| 작업자 | GPT-5 Codex |
 | 작업 내용 | 시에스타 이벤트를 손님-카루아 대화에 불쑥 난입하고, 카루아 또는 손님과 만담한 뒤 바 업무로 돌아가는 장면으로 상세화했다. |
 | 수정 파일 | `mission_control/CHARACTER_DESIGN.md`, `PROJECT_VISION.md`, `DECISIONS.md`, `TASK_BOARD.md`, `ARCHITECTURE.md`, `HANDOVER.md`, `CURRENT_STATE.md`, `WORK_LOG.md` |
 | 주요 변경 사항 | 예고 없는 난입, 대화 대상 선택, 2~4발화 만담, 창고 정리·청소·재고 확인 등 업무복귀 퇴장, 상태 흐름 `IDLE → INTERRUPTING → BANTER → EXITING → COOLDOWN` 확정 |
@@ -78,7 +92,7 @@
 |---|---|
 | 날짜 | 2026-06-11 |
 | 작업 ID | PLAN-004 |
-| 작업자 | 현재 작업자 |
+| 작업자 | GPT-5 Codex |
 | 작업 내용 | 시에스타를 MVP 이후 상시 캐릭터가 아니라 MVP 런타임의 낮은 빈도 만담 이벤트 캐릭터로 재정의했다. |
 | 수정 파일 | `mission_control/DECISIONS.md`, `PROJECT_VISION.md`, `CHARACTER_DESIGN.md`, `TASK_BOARD.md`, `HANDOVER.md`, `CURRENT_STATE.md`, `ARCHITECTURE.md`, `WORK_LOG.md` |
 | 주요 변경 사항 | DEC-012 및 RST-405 추가, 2~4발화 이벤트, 발생 금지 구간, 손님 참여, 카루아에게 대화권 반환 계약 확정 |
@@ -90,7 +104,7 @@
 |---|---|
 | 날짜 | 2026-06-11 |
 | 작업 ID | PLAN-003 |
-| 작업자 | 현재 작업자 |
+| 작업자 | GPT-5 Codex |
 | 작업 내용 | 칵테일 이름·별칭 검색을 취향 추천보다 우선하는 계약을 고정하고, OpenAI/Ollama에서 WebLLM으로 전환했음을 명시했다. WebLLM 체감 지연 최소화 설계와 성능 예산을 추가했다. |
 | 수정 파일 | `bar_tend/src/App.tsx`, `bar_tend/src/lib/cocktails/database.test.ts`, `bar_tend/README.md`, `mission_control/DECISIONS.md`, `PROJECT_VISION.md`, `ARCHITECTURE.md`, `TASK_BOARD.md`, `CURRENT_STATE.md`, `HANDOVER.md`, `WORK_LOG.md` |
 | 주요 변경 사항 | 이름 검색 우선 회귀 테스트, DEC-010/DEC-011, RST-606 추가, 즉시 규칙 첫 반응 + 추천 카드 선표시 + Worker 스트리밍 + 캐시 + 시간 예산 전략 |
@@ -102,7 +116,7 @@
 |---|---|
 | 날짜 | 2026-06-11 |
 | 작업 ID | RST-201, RST-202 |
-| 작업자 | 현재 작업자 |
+| 작업자 | GPT-5 Codex |
 | 작업 내용 | 추천과 UI가 단일 `CocktailData` 컬렉션을 사용하도록 통합하고, 명시적 이름 검색과 추천 의도 판정을 분리했다. 타입 검사 포함 빌드와 Vitest 회귀 테스트를 추가했다. |
 | 수정 파일 | `bar_tend/src/types.ts`, `src/lib/cocktails/database.ts`, `src/lib/akinator/engine.ts`, `src/App.tsx`, 칵테일 UI 컴포넌트, `package.json`, `README.md`, `mission_control/*` |
 | 생성 파일 | `bar_tend/src/lib/cocktails/database.test.ts` |
@@ -117,7 +131,7 @@
 |---|---|
 | 날짜 | 2026-06-11 |
 | 작업 ID | PLAN-002 |
-| 작업자 | 현재 작업자 |
+| 작업자 | GPT-5 Codex |
 | 작업 내용 | 시에스타와 카루아의 성격, 발화 알고리즘, 금지 패턴, 관계성, 생성 및 검수 기준을 설계에 반영 |
 | 수정 파일 | `mission_control/PROJECT_VISION.md`, `DECISIONS.md`, `TASK_BOARD.md`, `ARCHITECTURE.md`, `HANDOVER.md`, `WORK_LOG.md` |
 | 생성 파일 | `mission_control/CHARACTER_DESIGN.md` |
@@ -133,7 +147,7 @@
 |---|---|
 | 날짜 | 2026-06-11 |
 | 작업 ID | RST-101-1 |
-| 작업자 | 현재 작업자 |
+| 작업자 | GPT-5 Codex |
 | 작업 내용 | 프로젝트 전체 38개 소스 파일의 한국어 문자열 손상 여부를 전수 조사함 |
 | 조사 대상 | `src/` 전체 — UI 컴포넌트(TSX) 8개, bartender 엔진 5개, akinator 엔진 1개, idol 시스템 1개, 데이터 파일 3개, 저장소 모듈 2개, 훅 1개, 타입 3개, HTML 1개 |
 | 확인 방법 | 각 파일 직접 읽기(Read) 및 정규식 기반 패턴 검색 |
@@ -168,7 +182,7 @@
 |---|---|
 | 날짜 | 2026-06-11 |
 | 작업 ID | RST-401 |
-| 작업자 | 현재 작업자 |
+| 작업자 | GPT-5 Codex |
 | 작업 내용 | keywords.ts, conversation.ts, akinator/engine.ts, App.tsx의 모든 대화 응답/질문 문자열을 카루아 페르소나(반존대, 능청, 환기, 짧은 응답)로 재작성 |
 | 수정 파일 | `keywords.ts` (12개 규칙 응답), `conversation.ts` (감정/취향/일반 응답 30+개), `akinator/engine.ts` (질문/선택지/컨텍스트 문자열), `App.tsx` (환영/작별/리셋/추천 메시지) |
 | 생성 파일 | 없음 |
@@ -195,7 +209,7 @@
 |---|---|
 | 날짜 | 2026-06-11 |
 | 작업 ID | RST-102 |
-| 작업자 | 현재 작업자 |
+| 작업자 | GPT-5 Codex |
 | 작업 내용 | BarBot 브랜드명 및 CSS 클래스, localStorage 키를 Re:Station으로 교체 |
 | 수정 파일 | `index.html`, `src/App.tsx` (브랜드명 + CSS 클래스 4종), `src/components/sidebar/Sidebar.tsx` (CSS 클래스), `src/index.css` (CSS 클래스 5종), `src/lib/bartender/persona.ts` (페르소나 전체), `src/lib/storage/session-store.ts` (키 + 마이그레이션), `src/lib/storage/codex-unlocks.ts` (키 + 마이그레이션) |
 | 생성 파일 | 없음 |
@@ -219,7 +233,7 @@
 |---|---|
 | 날짜 | 2026-06-11 |
 | 작업 ID | PLAN-001 |
-| 작업자 | 현재 작업자 |
+| 작업자 | GPT-5 Codex |
 | 작업 내용 | 신규 카루아 MVP 프롬프트, 기존 리빌딩 계획, WebLLM 방향을 하나의 실행 계획으로 통합 |
 | 수정 파일 | `mission_control/PROJECT_VISION.md`, `CURRENT_STATE.md`, `DECISIONS.md`, `TASK_BOARD.md`, `HANDOVER.md`, `ARCHITECTURE.md`, `WORK_LOG.md` |
 | 생성 파일 | 없음 |
@@ -235,7 +249,7 @@
 |---|---|
 | 날짜 | 2026-06-11 |
 | 작업 ID | MC-001 |
-| 작업자 | 현재 작업자 |
+| 작업자 | GPT-5 Codex |
 | 작업 내용 | 프로젝트를 분석하고 교체 가능한 작업자를 위한 중앙 운영 문서 체계를 생성함 |
 | 수정 파일 | 없음 |
 | 생성 파일 | `mission_control/AI_WORKFLOW.md`, `CURRENT_STATE.md`, `PROJECT_VISION.md`, `ARCHITECTURE.md`, `DECISIONS.md`, `TASK_BOARD.md`, `HANDOVER.md`, `WORK_LOG.md` |
@@ -262,7 +276,7 @@
 |---|---|
 | 날짜 | YYYY-MM-DD |
 | 작업 ID | TASK-XXX |
-| 작업자 | 작성 필요 |
+| 작업자 | 실제 AI 모델명 |
 | 작업 내용 | 작성 필요 |
 | 수정 파일 | 없음 |
 | 생성 파일 | 없음 |
