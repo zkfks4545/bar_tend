@@ -63,6 +63,8 @@ export interface RecommendationReason {
   evidence: string[]
 }
 
+export type QuestionTopic = 'mood' | 'sweetness' | 'fizz' | 'alcohol' | 'sourness' | 'base'
+
 export interface RecommendationDecision {
   cocktail: CocktailData
   reasons: RecommendationReason[]

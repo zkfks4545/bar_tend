@@ -1,11 +1,10 @@
 import { useCallback, useState } from 'react'
 import {
-  detectExpressedDimensions,
-  filterPool,
+  applyAnswerToPool,
   ingestTasteSignals,
   initCandidatePool,
   isRecommendationIntent,
-  nextFilterQuestion,
+  pickNextQuestion,
   pickFromPool,
 } from '@/lib/akinator/engine.js'
 import { findCocktailByName } from '@/lib/cocktails/database.js'
@@ -20,7 +19,7 @@ import {
 } from '@/lib/recommendation/state.js'
 import type { CocktailData, Expression } from '@/types.js'
 import type { TastePreference } from '@/types/cocktail-db.js'
-import type { RecommendationDecision, RecommendationState } from '@/types/recommendation.js'
+import type { QuestionTopic, RecommendationDecision, RecommendationState } from '@/types/recommendation.js'
 
 export interface RecommendationResult {
   reply: string
@@ -31,14 +30,12 @@ export interface RecommendationResult {
 
 export function useRecommendationSession() {
   const [candidatePool, setCandidatePool] = useState<CocktailData[] | null>(null)
-  const [filterCount, setFilterCount] = useState(0)
   const [recommendationState, setRecommendationState] = useState<RecommendationState>(
     createRecommendationState,
   )
 
   const resetRecommendation = useCallback(() => {
     setCandidatePool(null)
-    setFilterCount(0)
     setRecommendationState(createRecommendationState())
   }, [])
 
@@ -65,8 +62,6 @@ export function useRecommendationSession() {
       if (candidatePool !== null) nextState = answerLatestQuestion(nextState, text)
       const pool = filterCocktailsByRecommendationState(candidatePool ?? initCandidatePool(), nextState)
       const combinedTaste = { ...tasteSnapshot, ...nextState.taste }
-      let filtered: CocktailData[]
-      let nextQuestion
 
       if (pool.length === 0) {
         resetRecommendation()
@@ -78,22 +73,18 @@ export function useRecommendationSession() {
         }
       }
 
-      if (candidatePool === null) {
-        const expressed = detectExpressedDimensions(text)
-        filtered = expressed.size > 0 ? filterPool(pool, text, 0) : pool
-        nextQuestion = nextFilterQuestion(filtered, 0, expressed, text)
-      } else {
-        filtered = filterPool(pool, text, filterCount)
-        nextQuestion = nextFilterQuestion(filtered, filterCount + 1, undefined, text)
-      }
+      const lastTopic = candidatePool !== null
+        ? nextState.questionHistory[nextState.questionHistory.length - 1]?.topic as QuestionTopic | undefined
+        : undefined
+      const filtered = candidatePool !== null && lastTopic
+        ? applyAnswerToPool(pool, text, lastTopic)
+        : pool
+      const nextQuestion = pickNextQuestion(filtered, nextState)
 
       if (nextQuestion) {
-        nextState = addQuestionHistory(nextState, {
-          topic: nextQuestion.question.dimension ?? `question-${nextQuestion.index}`,
-        })
+        nextState = addQuestionHistory(nextState, { topic: nextQuestion.topic })
         setRecommendationState(nextState)
         setCandidatePool(filtered)
-        setFilterCount(nextQuestion.index)
         return {
           cocktail: null,
           decision: null,
@@ -114,7 +105,7 @@ export function useRecommendationSession() {
         expression: 'smirk',
       }
     },
-    [candidatePool, filterCount, recommendationState, resetRecommendation],
+    [candidatePool, recommendationState, resetRecommendation],
   )
 
   return {

@@ -1,5 +1,34 @@
 ﻿# 작업 이력
 
+## 2026-06-12 / RST-402-B / 적응형 질문 코드 정리 및 개선
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-12 |
+| 작업 ID | RST-402-B |
+| 작업자 | Claude Code |
+| 작업 내용 | RST-402 완료 후 남은 문제점을 개선: `QuestionTopic` 중복 타입 통일, 데드코드(`detectExpressedDimensions`, `FilterQuestion.dimension`) 제거, Hook의 `lastTopic` 추출 단순화, Siesta 테스트와 프롬프트 불일치(`설교`→`훈계`) 수정 |
+| 주요 변경 사항 | `engine.ts`에서 자체 `QuestionTopic` 타입 삭제 후 `types/recommendation.ts`에서 import. `filterPool`, `FREE_TEXT_RULES`, `FilterRule` 타입 제거. `detectExpressedDimensions` 삭제. `useRecommendationSession.ts`의 `lastTopic`을 `filter().pop()` → `history[length-1]?.topic`으로 단순화. |
+| 수정 파일 | `bar_tend/src/lib/akinator/engine.ts`, `bar_tend/src/hooks/useRecommendationSession.ts`, `bar_tend/src/types/recommendation.ts`, `bar_tend/src/lib/webllm/prompts/character-prompts.test.ts` |
+| 검증 | `npm.cmd run lint`, `npm.cmd run check`, `npm.cmd test` 27개 통과 |
+| 후속 작업 | RST-501 선택 질문 버튼 UI |
+
+## 2026-06-12 / RST-604-A / 캐릭터 말투 WebLLM 프롬프트 초안
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-12 |
+| 작업 ID | RST-604-A |
+| 작업자 | GPT-5 Codex |
+| 작업 내용 | 완료된 RST-402의 적응형 질문 흐름과 기존 캐릭터 설계를 바탕으로, LLM이 카루아·시에스타의 말투를 읽고 반영할 용도별 예시 프롬프트를 작성했다. |
+| 주요 변경 사항 | 카루아 일반 대화, 시에스타 난입, 합동 만담, 질문 표현, 추천 설명, 상태 후보 JSON 추출 프롬프트를 분리했다. RP 평가 실행기가 평가 대상 캐릭터에 맞는 시스템 프롬프트를 선택하도록 연결했다. |
+| 책임 경계 | LLM은 표현과 상태 후보 추출만 담당하며 질문 주제·추천 상태·추천 결과를 임의로 변경하지 않는다. |
+| 초안 상태 | 이 프롬프트는 초기 예시이며 최종안이 아니다. RST-603-B RP 평가와 RST-604 실제 WebLLM 연결 결과에 따라 반드시 수정해야 한다. |
+| 생성 파일 | `bar_tend/src/lib/webllm/prompts/character-prompts.ts`, `character-prompts.test.ts`, `mission_control/WEBLLM_PROMPT_DRAFT.md` |
+| 수정 파일 | `bar_tend/src/lib/bartender/persona.ts`, `src/lib/webllm/evaluation.ts`, `mission_control/WORK_LOG.md` |
+| 검증 | `npm.cmd run lint`, `npm.cmd test` 27개, `npm.cmd run check`, `npm.cmd run build`, `git diff --check` 통과 |
+| 후속 작업 | 최종 후보 모델에서 RP 평가를 수행하고 예시 복제, 장문, 말투 혼합, JSON 형식 이탈, 프롬프트 길이를 측정한 뒤 초안을 수정한다. |
+
 ## 2026-06-12 / RST-602-F / 캐릭터 프롬프트 기반 RP 평가 계약 보완
 
 | 항목 | 내용 |
