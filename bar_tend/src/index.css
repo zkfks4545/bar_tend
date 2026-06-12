@@ -180,6 +180,11 @@ html::before {
   margin-left: 2px;
 }
 
+/* ── Mobile touch target size ── */
+.sidebar-tab, .sidebar-toggle, .reset-btn, .music-track, .exit-btn {
+  min-height: 44px;
+}
+
 /* ── Cyberpunk sidebar terminal ── */
 @keyframes glitch-border {
   0%, 100% { opacity: 1; transform: translateX(0); }
@@ -587,6 +592,69 @@ html::before {
   }
   .sidebar-toggle {
     display: inline-block;
+  }
+
+  /* Reduce sprite height on small screens to give chat more room */
+  .bartender-sprite__image {
+    height: clamp(120px, 28vh, 240px);
+  }
+
+  /* Tighter dialogue padding on mobile */
+  .restation-chat-dock {
+    min-height: 160px;
+  }
+  .restation-chat-dock > div:first-child {
+    padding: 12px 12px 8px !important;
+  }
+  .restation-chat-dock > div:first-child > div {
+    max-width: 90% !important;
+  }
+  .restation-chat-dock > div:first-child > div pre {
+    font-size: 13px;
+  }
+
+  /* Compact input on mobile */
+  .restation-chat-dock form {
+    padding: 8px 12px !important;
+  }
+  .restation-chat-dock form input {
+    padding: 10px 16px !important;
+    font-size: 14px;
+  }
+
+  /* Sidebar compact on mobile */
+  .sidebar-tab {
+    padding: 10px 2px;
+    font-size: 9px;
+  }
+  .sidebar-tab__sub {
+    font-size: 6px;
+  }
+  .sidebar-panel {
+    padding: 8px;
+  }
+
+  /* Header compact on mobile */
+  header {
+    padding: 8px 12px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .bartender-sprite__image {
+    height: clamp(100px, 24vh, 180px);
+  }
+  .restation-chat-dock {
+    min-height: 140px;
+  }
+}
+
+@media (max-width: 480px) {
+  .bartender-sprite__image {
+    height: clamp(100px, 24vh, 180px);
+  }
+  .restation-chat-dock {
+    min-height: 140px;
   }
 }
 

@@ -107,7 +107,7 @@ export default function App() {
           >
             <button
               onClick={handleExit}
-              className="text-xs transition-all duration-200 cursor-pointer select-none flex items-center gap-1"
+              className="exit-btn text-xs transition-all duration-200 cursor-pointer select-none flex items-center gap-1"
               style={{
                 color: '#b088d0',
                 textShadow: '0 0 6px rgba(120,80,180,0.25)',
