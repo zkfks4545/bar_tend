@@ -790,12 +790,18 @@ export function findCocktailByName(query: string): CocktailData | null {
   const norm = normalizeForSearch(query)
   if (norm.length < 2) return null
 
-  return cocktails.find((c) => {
-    const names = [c.name, c.nameEn, c.name_en, c.name_ko, ...(c.aliases ?? [])]
+  const matches = cocktails.flatMap((cocktail) => {
+    const names = [cocktail.name, cocktail.nameEn, cocktail.name_en, cocktail.name_ko, ...(cocktail.aliases ?? [])]
       .filter((name): name is string => Boolean(name))
       .map(normalizeForSearch)
-    return names.some((name) => norm === name || norm.includes(name))
-  }) ?? null
+      .filter((name) => norm === name || norm.includes(name))
+
+    const longestMatch = names.sort((a, b) => b.length - a.length)[0]
+    return longestMatch ? [{ cocktail, matchLength: longestMatch.length }] : []
+  })
+
+  matches.sort((a, b) => b.matchLength - a.matchLength)
+  return matches[0]?.cocktail ?? null
 }
 
 export function searchCocktail(query: string): CocktailData | null {

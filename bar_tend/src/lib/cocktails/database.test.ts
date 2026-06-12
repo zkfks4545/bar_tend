@@ -10,7 +10,8 @@ describe('cocktail data contract', () => {
   it('shares one hydrated collection between UI and recommendation', () => {
     expect(getAllCocktailData()).toBe(cocktails)
     expect(initCandidatePool()).toBe(cocktails)
-    expect(cocktails).toHaveLength(7)
+    expect(cocktails).toHaveLength(32)
+    expect(cocktails.filter((cocktail) => cocktail.type === 'CLASSIC')).toHaveLength(30)
 
     for (const cocktail of cocktails) {
       expect(cocktail.features).toBeDefined()
@@ -24,6 +25,8 @@ describe('explicit cocktail lookup', () => {
   it('matches cocktail names in a sentence', () => {
     expect(findCocktailByName('마티니 주세요')?.name).toBe('마티니')
     expect(findCocktailByName('Mojito 한 잔')?.nameEn).toBe('Mojito')
+    expect(findCocktailByName('라스트 워드 한 잔')?.nameEn).toBe('Last Word')
+    expect(findCocktailByName('Espresso Martini 부탁해')?.name).toBe('에스프레소 마티니')
   })
 
   it('does not steal preference-based recommendation requests', () => {
