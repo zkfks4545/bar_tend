@@ -5,6 +5,7 @@ import BarCounter from '@/components/inside/BarCounter.jsx'
 import DialogueBox from '@/components/inside/DialogueBox.jsx'
 import ChatInput from '@/components/inside/ChatInput.jsx'
 import CocktailCard from '@/components/inside/CocktailCard.jsx'
+import WebLLMControls from '@/components/inside/WebLLMControls.jsx'
 import Sidebar from '@/components/sidebar/Sidebar.jsx'
 import { useRestationController } from '@/hooks/useRestationController.js'
 
@@ -22,10 +23,15 @@ export default function App() {
     unlockedIds,
     activeQuestion,
     recommendationState,
+    webllm,
+    accessMode,
+    isClearingCache,
     handleEnter,
     handleExit,
     handleResetNight,
     handleCancelRecommendation,
+    handleStartSurvey,
+    handleClearModelCache,
     handleSend,
     removeSignal,
     setServedCocktail,
@@ -73,7 +79,21 @@ export default function App() {
           >
             Re:Station
           </div>
-          <div className="w-[52px]" aria-hidden />
+          {accessMode === 'ai' ? (
+            <WebLLMControls
+              status={webllm.status}
+              loadedModelId={webllm.loadedModelId}
+              loadProgress={webllm.loadProgress}
+              loadMessage={webllm.loadMessage}
+              error={webllm.error}
+              onLoad={webllm.load}
+              onUnload={webllm.unload}
+            />
+          ) : (
+            <span className="w-[88px] text-right text-[10px] tracking-wider text-white/30">
+              SURVEY ONLY
+            </span>
+          )}
         </header>
         <div className="flex-1 flex flex-col min-h-0 relative z-20">
           <div className="restation-stage">
@@ -99,6 +119,8 @@ export default function App() {
               onCancelRecommendation={handleCancelRecommendation}
               recommendationState={recommendationState}
               onRemoveSignal={removeSignal}
+              surveyOnly={accessMode === 'survey' || webllm.status !== 'ready'}
+              onStartSurvey={handleStartSurvey}
             />
             {errorMessage && (
               <p className="px-6 pb-3 text-xs text-red-300" role="alert">
@@ -107,12 +129,26 @@ export default function App() {
             )}
           </div>
           <div
-            className="flex justify-end px-4 pb-3 pt-0.5"
+            className="flex justify-end gap-2 px-4 pb-3 pt-0.5"
             style={{
               background:
                 'linear-gradient(to top, rgba(13,10,7,0.95), rgba(13,10,7,0.5))',
             }}
           >
+            <button
+              onClick={handleClearModelCache}
+              disabled={isClearingCache}
+              className="exit-btn text-xs transition-all duration-200 cursor-pointer select-none disabled:opacity-50"
+              style={{
+                color: '#8f8298',
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                padding: '4px 12px',
+                fontFamily: 'inherit',
+              }}
+            >
+              {isClearingCache ? '캐시 삭제 중...' : 'AI 모델 캐시 삭제'}
+            </button>
             <button
               onClick={handleExit}
               className="exit-btn text-xs transition-all duration-200 cursor-pointer select-none flex items-center gap-1"

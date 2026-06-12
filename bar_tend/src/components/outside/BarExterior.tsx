@@ -17,8 +17,11 @@ function RainDrop({ index }: { index: number }) {
   )
 }
 
-export default function BarExterior({ onEnter }: { onEnter: () => void }) {
+export type EntranceMode = 'ai' | 'survey'
+
+export default function BarExterior({ onEnter }: { onEnter: (mode: EntranceMode) => void }) {
   const [fadeIn, setFadeIn] = useState(false)
+  const [showEntranceOptions, setShowEntranceOptions] = useState(false)
 
   useEffect(() => {
     const t = setTimeout(() => setFadeIn(true), 100)
@@ -147,7 +150,7 @@ export default function BarExterior({ onEnter }: { onEnter: () => void }) {
 
             {/* Door */}
             <button
-              onClick={onEnter}
+              onClick={() => setShowEntranceOptions(true)}
               className="absolute cursor-pointer"
               style={{
                 left: '33%', top: '22%', width: '34%', height: '64%',
@@ -264,6 +267,57 @@ export default function BarExterior({ onEnter }: { onEnter: () => void }) {
         className="absolute inset-0 pointer-events-none"
         style={{ boxShadow: 'inset 0 0 100px 40px rgba(0,0,0,0.6)', zIndex: 25 }}
       />
+
+      {showEntranceOptions && (
+        <div
+          className="absolute inset-0 flex items-center justify-center p-4"
+          style={{ zIndex: 40, background: 'rgba(5,3,2,0.82)' }}
+        >
+          <div
+            className="w-full max-w-md space-y-4 rounded border p-5 text-sm"
+            style={{
+              color: '#eadcc8',
+              background: 'rgba(20,14,10,0.98)',
+              borderColor: 'rgba(196,163,90,0.35)',
+              boxShadow: '0 0 40px rgba(120,80,180,0.18)',
+            }}
+          >
+            <h2 className="text-base font-bold tracking-wider" style={{ color: '#C4A35A' }}>
+              입장 방식을 골라주세요
+            </h2>
+            <p className="leading-relaxed text-white/70">
+              AI 바텐더는 최초 이용 시 약 1.5GB의 모델 데이터를 브라우저 캐시에 저장하고,
+              실행 중 약 2.3GB 이상의 GPU 메모리를 사용할 수 있습니다. 이후 방문에서는
+              저장된 캐시를 재사용합니다.
+            </p>
+            <button
+              type="button"
+              onClick={() => onEnter('ai')}
+              className="w-full rounded border px-4 py-3 text-left"
+              style={{ borderColor: 'rgba(196,163,90,0.4)', color: '#C4A35A' }}
+            >
+              <strong className="block">AI 바텐더 준비하고 입장</strong>
+              <span className="text-xs text-white/50">모델 로드 중에는 추천 설문과 레시피북을 이용할 수 있습니다.</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onEnter('survey')}
+              className="w-full rounded border px-4 py-3 text-left"
+              style={{ borderColor: 'rgba(180,136,208,0.3)', color: '#b088d0' }}
+            >
+              <strong className="block">레시피북과 추천 설문만 이용</strong>
+              <span className="text-xs text-white/50">모델을 다운로드하지 않으며 자유 대화는 사용할 수 없습니다.</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowEntranceOptions(false)}
+              className="w-full py-2 text-xs text-white/40"
+            >
+              돌아가기
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

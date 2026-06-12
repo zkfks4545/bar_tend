@@ -9,6 +9,8 @@ interface ChatInputProps {
   onCancelRecommendation?: () => void
   recommendationState?: RecommendationState
   onRemoveSignal?: (index: number) => void
+  surveyOnly?: boolean
+  onStartSurvey?: () => void
 }
 
 export default function ChatInput({
@@ -18,6 +20,8 @@ export default function ChatInput({
   onCancelRecommendation,
   recommendationState,
   onRemoveSignal,
+  surveyOnly = false,
+  onStartSurvey,
 }: ChatInputProps) {
   const [val, setVal] = useState('')
   const placeholder = disabled ? '대답을 기다리는 중...' : '바텐더에게 말을 걸어보세요...'
@@ -121,7 +125,22 @@ export default function ChatInput({
         </div>
       )}
 
-      <form
+      {surveyOnly && !activeQuestion && (
+        <div className="flex items-center justify-between gap-3 border-t border-white/5 bg-black/30 px-4 py-3">
+          <p className="text-xs text-white/40">AI 모델이 준비되지 않아 자유 대화는 잠시 사용할 수 없습니다.</p>
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={onStartSurvey}
+            className="shrink-0 rounded-full border px-4 py-2 text-xs font-semibold disabled:opacity-50"
+            style={{ color: '#C4A35A', borderColor: 'rgba(196,163,90,0.25)' }}
+          >
+            추천 설문 시작
+          </button>
+        </div>
+      )}
+
+      {!surveyOnly && <form
         onSubmit={(e: FormEvent) => {
           e.preventDefault()
           if (val.trim()) {
@@ -142,7 +161,7 @@ export default function ChatInput({
           onFocus={(e) => (e.currentTarget.style.borderColor = 'rgba(180, 136, 208, 0.5)')}
           onBlur={(e) => (e.currentTarget.style.borderColor = '')}
         />
-      </form>
+      </form>}
     </div>
   )
 }

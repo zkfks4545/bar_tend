@@ -1,16 +1,17 @@
 import {
   CreateWebWorkerMLCEngine,
+  deleteModelAllInfoInCache,
   type ChatCompletion,
   type WebWorkerMLCEngine,
 } from '@mlc-ai/web-llm'
 import type { ChatCompletionMessageParam } from '@mlc-ai/web-llm'
 import type { WebLLMStatus, WebLLMEventCallbacks, WebLLMGenerateOptions, WebLLMMetrics } from './types.js'
 
-const DEFAULT_TIMEOUT_MS = 30_000
-const DEFAULT_MAX_TOKENS = 150
+const DEFAULT_TIMEOUT_MS = 5_000
+const DEFAULT_MAX_TOKENS = 64
 const DEFAULT_TEMPERATURE = 0.8
 const DEFAULT_TOP_P = 0.9
-const MAX_HISTORY_LENGTH = 6
+const MAX_HISTORY_LENGTH = 4
 
 let worker: Worker | null = null
 let engine: WebWorkerMLCEngine | null = null
@@ -129,17 +130,20 @@ export async function generate(
     let fullText = ''
     for await (const chunk of asyncIterable) {
       const delta = chunk.choices[0]?.delta?.content
-      if (delta) fullText += delta
+      if (delta) {
+        fullText += delta
+        callbacks?.onToken?.(delta, fullText)
+      }
     }
 
     setStatus('ready')
     callbacks?.onStatusChange?.('ready')
     return fullText.trim()
   } catch (err) {
-    setStatus('error')
+    setStatus('ready')
     const msg = err instanceof Error ? err.message : String(err)
     callbacks?.onError?.(msg)
-    callbacks?.onStatusChange?.('error')
+    callbacks?.onStatusChange?.('ready')
     throw err
   } finally {
     clearTimeout(timeoutId)
@@ -199,4 +203,11 @@ export async function generateNonStreaming(
 
 export function interruptGeneration(): void {
   engine?.interruptGenerate()
+}
+
+export async function clearModelCache(modelIds: readonly string[]): Promise<void> {
+  await unloadModel()
+  for (const modelId of modelIds) {
+    await deleteModelAllInfoInCache(modelId)
+  }
 }

@@ -1,5 +1,49 @@
 ﻿# 작업 이력
 
+## 2026-06-12 / RST-605-A / AI 입장 선택과 모델 캐시 관리
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-12 |
+| 작업 ID | RST-605-A |
+| 작업자 | GPT-5 Codex |
+| 작업 내용 | AI 모델 저장공간 부담을 입장 전에 알리고, AI 기능 선택 사용자만 모델을 자동 로드하며 모델 미사용자는 추천 설문과 레시피북만 이용하도록 접근 정책을 구현함. |
+| 주요 변경 사항 | 문 클릭 시 AI 입장과 설문 전용 입장을 선택하는 안내 화면 추가. AI 입장은 약 1.5GB 브라우저 캐시와 약 2.3GB GPU 메모리 예상치를 고지하고 기본 후보 모델 로드를 즉시 시작하며 기존 WebLLM 캐시를 재사용함. 설문 전용 입장, 모델 준비 전, 로드 실패 상태에서는 자유 입력창을 숨기고 추천 설문 시작 버튼과 레시피북만 제공함. |
+| 캐시 삭제 | 나가기 버튼 옆에 `AI 모델 캐시 삭제` 버튼을 추가함. 확인 후 실행 모델을 언로드하고 알려진 Qwen3.5 후보 3종의 WebLLM 캐시를 삭제하며 설문 전용 상태로 전환함. |
+| 생성 파일 | `bar_tend/src/lib/webllm/models.ts` |
+| 수정 파일 | `bar_tend/src/components/outside/BarExterior.tsx`, `bar_tend/src/components/inside/ChatInput.tsx`, `bar_tend/src/components/inside/WebLLMControls.tsx`, `bar_tend/src/App.tsx`, `bar_tend/src/hooks/useRestationController.ts`, `bar_tend/src/hooks/useWebLLMRuntime.ts`, `bar_tend/src/lib/webllm/client.ts`, `mission_control/TASK_BOARD.md`, `mission_control/HANDOVER.md`, `mission_control/WORK_LOG.md` |
+| 검증 | `npm.cmd run lint`, `npm.cmd run check`, `npm.cmd test` 30개, `npm.cmd run build`, `git diff --check` 통과 |
+| 남은 작업 | 다운로드 취소 UI, WebGPU 미지원 사전 판정, 실제 브라우저에서 캐시 재사용·삭제와 사용량 측정 |
+
+## 2026-06-12 / RST-606-A / WebLLM 즉시 응답과 스트리밍 표시
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-12 |
+| 작업 ID | RST-606-A |
+| 작업자 | GPT-5 Codex |
+| 작업 내용 | 모델 생성 완료까지 빈 화면으로 기다리던 흐름을 즉시 규칙 응답과 WebLLM 토큰 스트리밍 갱신 구조로 변경함. |
+| 주요 변경 사항 | 기존 입력 후 800~1400ms 인위적 대기와 문장 길이 기반 표시 지연을 제거해 규칙 응답을 약 80~100ms 안에 표시함. 준비된 WebLLM은 토큰 도착마다 같은 바텐더 메시지를 갱신하며, 실패·5초 초과·취소 시 이미 표시된 규칙 응답을 유지함. 일반 대화는 최대 64토큰·최근 이력 4개, 추천 설명은 최대 96토큰·대화 이력 제외로 축소함. 긴 평가용 프롬프트와 별도로 런타임용 축약 카루아 프롬프트를 추가함. |
+| 책임 경계 | 안전 입력과 추천 질문 진행은 스트리밍 생성 없이 규칙 엔진을 유지함. 추천 결과 결정권은 기존 추천 엔진에 있음. |
+| 수정 파일 | `bar_tend/src/hooks/useRestationController.ts`, `bar_tend/src/hooks/useWebLLMRuntime.ts`, `bar_tend/src/lib/webllm/client.ts`, `bar_tend/src/lib/webllm/types.ts`, `bar_tend/src/lib/webllm/prompts/character-prompts.ts`, `mission_control/TASK_BOARD.md`, `mission_control/HANDOVER.md`, `mission_control/WORK_LOG.md` |
+| 검증 | `npm.cmd run lint`, `npm.cmd run check`, `npm.cmd test` 30개, `npm.cmd run build`, `git diff --check` 통과 |
+| 남은 작업 | 실제 브라우저 후보 모델 로드 후 TTFT·Tok/s·프레임 저하 측정, 저사양 모델 정책, 다운로드 취소 UI |
+
+## 2026-06-12 / RST-604-B / 기본 WebLLM 런타임 연결
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-12 |
+| 작업 ID | RST-604-B |
+| 작업자 | GPT-5 Codex |
+| 작업 내용 | 기존 Web Worker WebLLM 클라이언트를 실제 React 대화 흐름에 연결하고, 최종 모델 확정 전 후보 모델을 수동으로 선택·로드할 수 있는 최소 UI를 추가함. |
+| 주요 변경 사항 | 헤더 WebLLM 제어 UI에서 Qwen3.5 후보 3종을 명시적으로 선택해 로드·언로드할 수 있음. 준비된 모델은 일반 대화와 추천 엔진이 확정한 추천 설명만 카루아 프롬프트로 생성함. 안전 입력과 추천 질문 진행은 규칙 엔진을 유지하며, 생성 오류·시간 초과·미로드 상태에서는 기존 규칙 응답으로 자동 복구함. 퇴장·리셋 시 진행 중 생성을 인터럽트함. WebLLM 라이브러리는 모델 기능을 처음 사용할 때 동적 로드해 초기 앱 번들과 분리함. |
+| 책임 경계 | 모델 자동 선택 없음. WebLLM은 추천 결과와 추천 상태를 결정하거나 변경하지 않음. |
+| 생성 파일 | `bar_tend/src/hooks/useWebLLMRuntime.ts`, `bar_tend/src/components/inside/WebLLMControls.tsx` |
+| 수정 파일 | `bar_tend/src/App.tsx`, `bar_tend/src/hooks/useRestationController.ts`, `bar_tend/src/lib/webllm/client.ts`, `mission_control/TASK_BOARD.md`, `mission_control/HANDOVER.md`, `mission_control/WORK_LOG.md` |
+| 검증 | `npm.cmd run lint`, `npm.cmd run check`, `npm.cmd test` 30개, `npm.cmd run build`, `git diff --check` 통과 |
+| 남은 작업 | 적응형 질문 자연어 표현, 자유 답변 상태 후보 JSON 추출·검증, 실제 브라우저 후보 모델 로드 및 RST-603-B RP 수용 검사 |
+
 ## 2026-06-12 / DATA-001 / IBA 기준 클래식 칵테일 목록 확장
 
 | 항목 | 내용 |

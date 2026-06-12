@@ -3,6 +3,7 @@ export type WebLLMStatus = 'unloaded' | 'loading' | 'ready' | 'generating' | 'er
 export interface WebLLMEventCallbacks {
   onLoadProgress?: (progress: number, text: string) => void
   onStatusChange?: (status: WebLLMStatus) => void
+  onToken?: (delta: string, fullText: string) => void
   onError?: (error: string) => void
 }
 

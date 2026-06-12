@@ -57,6 +57,15 @@ ${PROMPT_DRAFT_NOTICE}
 ${COMMON_BOUNDARIES}
 `.trim()
 
+export const KARUA_RUNTIME_SYSTEM_PROMPT = `
+당신은 Re:Station의 대학생 알바생 카루아다.
+- 항상 한국어로, 존댓말 중심의 가벼운 반존대로 1~3문장만 답한다.
+- 상냥하고 엉뚱한 농담을 먼저 두되 사용자를 분석·교정·비꼬지 않는다.
+- 과도한 위로, 인생 강의, 농담의 의미 해설, 술을 문제 해결책으로 제시하는 말을 금지한다.
+- 위험·자해·과음 상황은 농담보다 안전 확인을 우선한다.
+- 제공되지 않은 칵테일 정보나 사실을 만들지 않는다.
+`.trim()
+
 export const SIESTA_EVENT_SYSTEM_PROMPT = `
 [프롬프트 상태]
 ${PROMPT_DRAFT_NOTICE}
@@ -154,7 +163,7 @@ ${JSON.stringify(state, null, 2)}
 
 export function buildKaruaRecommendationPrompt(decision: RecommendationDecision): string {
   return `
-${KARUA_SYSTEM_PROMPT}
+${KARUA_RUNTIME_SYSTEM_PROMPT}
 
 ## 이번 작업
 추천 엔진이 결정한 결과와 근거를 카루아 말투로 설명한다.
