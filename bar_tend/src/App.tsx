@@ -15,6 +15,7 @@ export default function App() {
     expression,
     isBartenderTyping,
     isProcessing,
+    errorMessage,
     servedCocktail,
     sidebarOpen,
     screenShake,
@@ -88,6 +89,11 @@ export default function App() {
               onSend={handleSend}
               disabled={isProcessing || isBartenderTyping}
             />
+            {errorMessage && (
+              <p className="px-6 pb-3 text-xs text-red-300" role="alert">
+                {errorMessage}
+              </p>
+            )}
           </div>
           <div
             className="flex justify-end px-4 pb-3 pt-0.5"

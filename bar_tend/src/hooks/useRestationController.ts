@@ -1,19 +1,23 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { getCocktailResponse } from '@/lib/bartender/engine.js'
 import { unlockCocktailId } from '@/lib/storage/codex-unlocks.js'
+import { createTimerRegistry } from '@/lib/timing/timer-registry.js'
 import type { CocktailData, Expression, Message } from '@/types.js'
 import { useBarbotSession } from './useBarbotSession.js'
 import { useRecommendationSession } from './useRecommendationSession.js'
+
+type InteractionStatus = 'idle' | 'processing' | 'typing' | 'exiting'
 
 export function useRestationController() {
   const [scene, setScene] = useState<'outside' | 'inside'>('outside')
   const [messages, setMessages] = useState<Message[]>([])
   const [expression, setExpression] = useState<Expression>('idle')
-  const [isBartenderTyping, setIsBartenderTyping] = useState(false)
-  const [isProcessing, setIsProcessing] = useState(false)
+  const [interactionStatus, setInteractionStatus] = useState<InteractionStatus>('idle')
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [servedCocktail, setServedCocktail] = useState<CocktailData | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [screenShake, setScreenShake] = useState(false)
+  const timerRegistry = useRef(createTimerRegistry())
 
   const {
     preference,
@@ -24,17 +28,29 @@ export function useRestationController() {
   } = useBarbotSession()
   const { resetRecommendation, resolveRecommendation } = useRecommendationSession()
 
+  const clearPendingWork = useCallback(() => {
+    timerRegistry.current.clearAll()
+    setInteractionStatus('idle')
+    setScreenShake(false)
+  }, [])
+
+  useEffect(() => () => timerRegistry.current.clearAll(), [])
+
   const bartenderReply = useCallback(
-    (text: string, exp: Expression, cocktail?: CocktailData | null) => {
-      setIsBartenderTyping(true)
+    (
+      text: string,
+      exp: Expression,
+      cocktail?: CocktailData | null,
+      finishStatus: InteractionStatus = 'idle',
+    ) => {
+      setInteractionStatus('typing')
       setExpression('talk')
-      setTimeout(() => {
+      timerRegistry.current.schedule(() => {
         setMessages((prev) => [...prev, { role: 'bartender', text }])
-        setIsBartenderTyping(false)
         setExpression(exp)
-        setIsProcessing(false)
+        setInteractionStatus(finishStatus)
         if (cocktail) {
-          setTimeout(() => setServedCocktail(cocktail), 600)
+          timerRegistry.current.schedule(() => setServedCocktail(cocktail), 600)
         }
       }, text.length * 15 + 400)
     },
@@ -42,6 +58,8 @@ export function useRestationController() {
   )
 
   const handleEnter = useCallback(() => {
+    clearPendingWork()
+    setErrorMessage(null)
     setScene('inside')
     setMessages([
       {
@@ -49,39 +67,43 @@ export function useRestationController() {
         text: '어? 손님이 먼저 찾아오셨네요.\nRe:Station입니다. 편하게 앉으세요. 의자는 아직 퇴근 전이니까요.',
       },
     ])
-  }, [])
+  }, [clearPendingWork])
 
   const handleExit = useCallback(() => {
-    setIsProcessing(true)
-    bartenderReply('벌써 가세요? 또 오세요, 기다리고 있을게요. 알바니까요.', 'idle')
-    setTimeout(() => {
+    clearPendingWork()
+    setErrorMessage(null)
+    setInteractionStatus('exiting')
+    bartenderReply('벌써 가세요? 또 오세요, 기다리고 있을게요. 알바니까요.', 'idle', null, 'exiting')
+    timerRegistry.current.schedule(() => {
       setScene('outside')
       setMessages([])
       setExpression('idle')
-      setIsProcessing(false)
+      setInteractionStatus('idle')
       setSidebarOpen(false)
+      setServedCocktail(null)
       resetRecommendation()
     }, 2000)
-  }, [bartenderReply, resetRecommendation])
+  }, [bartenderReply, clearPendingWork, resetRecommendation])
 
   const handleResetNight = useCallback(() => {
+    clearPendingWork()
     resetNight()
     setMessages([])
     setExpression('idle')
-    setIsProcessing(false)
-    setIsBartenderTyping(false)
+    setErrorMessage(null)
     setServedCocktail(null)
     resetRecommendation()
     bartenderReply(
       '새로운 밤이에요.\n기억은 리셋됐는데... 도감에 모은 칵테일은 건드리지 않았어요.\n(알바생에게 그런 권한은 없거든요.)',
       'idle',
     )
-  }, [resetNight, resetRecommendation, bartenderReply])
+  }, [clearPendingWork, resetNight, resetRecommendation, bartenderReply])
 
   const handleSend = useCallback(
     (text: string) => {
-      if (isProcessing) return
-      setIsProcessing(true)
+      if (interactionStatus !== 'idle') return
+      setErrorMessage(null)
+      setInteractionStatus('processing')
       setMessages((prev) => [...prev, { role: 'user', text }])
       ingestUserMessage(text)
 
@@ -91,25 +113,31 @@ export function useRestationController() {
       }
 
       setExpression('thinking')
-      setTimeout(() => {
-        const recommendation = resolveRecommendation(text, preference)
-        const fallback = getCocktailResponse(text, messages)
-        const reply = recommendation?.reply ?? fallback.response
-        const nextExpression = recommendation?.expression ?? fallback.expression
-        const cocktail = recommendation?.cocktail ?? null
+      timerRegistry.current.schedule(() => {
+        try {
+          const recommendation = resolveRecommendation(text, preference)
+          const fallback = getCocktailResponse(text, messages)
+          const reply = recommendation?.reply ?? fallback.response
+          const nextExpression = recommendation?.expression ?? fallback.expression
+          const cocktail = recommendation?.cocktail ?? null
 
-        if (cocktail) {
-          setScreenShake(true)
-          setTimeout(() => setScreenShake(false), 500)
-          const ids = unlockCocktailId(cocktail.id)
-          setUnlockedIds(ids)
+          if (cocktail) {
+            setScreenShake(true)
+            timerRegistry.current.schedule(() => setScreenShake(false), 500)
+            const ids = unlockCocktailId(cocktail.id)
+            setUnlockedIds(ids)
+          }
+
+          bartenderReply(reply, nextExpression, cocktail)
+        } catch {
+          setExpression('idle')
+          setInteractionStatus('idle')
+          setErrorMessage('잠깐 잔을 놓쳤네요. 다시 한 번 말씀해 주세요.')
         }
-
-        bartenderReply(reply, nextExpression, cocktail)
       }, 800 + Math.random() * 600)
     },
     [
-      isProcessing,
+      interactionStatus,
       ingestUserMessage,
       handleExit,
       resolveRecommendation,
@@ -124,8 +152,9 @@ export function useRestationController() {
     scene,
     messages,
     expression,
-    isBartenderTyping,
-    isProcessing,
+    isBartenderTyping: interactionStatus === 'typing',
+    isProcessing: interactionStatus !== 'idle',
+    errorMessage,
     servedCocktail,
     sidebarOpen,
     screenShake,

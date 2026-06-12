@@ -8,6 +8,19 @@
 - 수정 또는 생성 파일은 경로를 명시한다.
 - 작업자 항목에는 실제 작업 중인 AI 모델명을 기록한다. 모델명을 확인할 수 없는 과거 기록은 추측하지 않고 `AI 모델 미기록 (과거 기록)`으로 표시한다.
 
+## 2026-06-12 / RST-302 / 타이머, 로딩, 오류 상태 통합
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-12 |
+| 작업 ID | RST-302 |
+| 작업자 | GPT-5 Codex |
+| 작업 내용 | 컨트롤러에 흩어진 지연 응답과 UI 효과 타이머를 관리형 레지스트리로 통합하고 처리 상태와 오류 복구를 정리했다. |
+| 수정 파일 | `bar_tend/src/hooks/useRestationController.ts`, `src/lib/timing/timer-registry.ts`, `timer-registry.test.ts`, `src/App.tsx`, `mission_control/TASK_BOARD.md`, `CURRENT_STATE.md`, `HANDOVER.md`, `ARCHITECTURE.md`, `WORK_LOG.md` |
+| 주요 변경 사항 | 퇴장·초기화·언마운트 시 남은 타이머 취소, `idle/processing/typing/exiting` 단일 상태 적용, 동기 처리 오류 시 입력 잠금 해제와 오류 안내 표시 |
+| 검증 | `npm.cmd run lint`, `npm.cmd test` 11개, `npm.cmd run check`, `npm.cmd run build` 통과. 초기 JS 번들 275.99 kB. |
+| 후속 작업 제안 | RST-203 추천 상태와 근거 모델 확장 후 RST-402 적응형 JSON 질문 구현 |
+
 ## 2026-06-12 / DOC-002 / 작업자 AI 모델명 기록 규칙
 
 | 항목 | 내용 |
