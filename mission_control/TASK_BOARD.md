@@ -24,10 +24,10 @@
 | 3 | 애플리케이션 로직 분리 | 완료 |
 | 4 | 카루아 규칙 기반 MVP 완성, 상세 계약 감사, 시에스타 이벤트 | 11~18일, RST-401/RST-404 완료 |
 | 5 | 추천 UX와 화면 개편 | 4~7일, RST-503 완료 |
-| 6 | WebLLM 모델 평가, 연결, 체감 지연 최소화 | 15~24일 |
+| 6 | WebLLM 말투 포장 계층 | 잠정 보류 |
 | 7 | 테스트와 성능 개선 | 6~9일 |
-| 전체 합계 | 배포 가능한 WebLLM MVP 원계획 | **51~79일** |
-| 남은 합계 | 완료 작업을 제외한 현재 잔여 계획 | **36~56일** |
+| 전체 합계 | WebLLM 작업을 포함한 과거 원계획 | **51~79일** |
+| 남은 합계 | WebLLM 잠정 보류를 제외한 현재 잔여 계획 | **21~32일** |
 
 ## 상위 프로그램
 
@@ -86,7 +86,7 @@
 | 예상 | 1일 |
 | 목적 | 제품 표시 이름과 카루아 초기 환영 메시지를 MVP 방향에 맞춤 |
 | 완료 조건 | 화면, 문서 제목, HTML 제목, 사용자 표시 문구에서 BarBot 제거 |
-| 변경 파일 | `index.html`, `App.tsx`, `Sidebar.tsx`, `index.css`, `persona.ts`, `session-store.ts`, `codex-unlocks.ts` |
+| 변경 파일 | `index.html`, `App.tsx`, `Sidebar.tsx`, `index.css`, `persona.ts`, `guest-session-store.ts`, `cocktail-unlocks.ts` |
 
 ## 단계 2: 데이터 모델과 추천 계약 통합
 
@@ -116,7 +116,7 @@
 | 상태 | DONE |
 | 예상 | 2~3일 |
 | 목적 | 기분, 상황, 맛, 무알코올, 제외 재료, 질문 이력과 추천 이유를 구조화 |
-| 완료 조건 | JSON 질문과 WebLLM 상태 추출이 함께 사용할 추천 상태 및 데이터 기반 근거 객체 반환 |
+| 완료 조건 | JSON 질문과 규칙 기반 자유 입력 해석이 함께 사용할 추천 상태 및 데이터 기반 근거 객체 반환 |
 | 변경 파일 | `types/recommendation.ts`, `lib/recommendation/state.ts`, `state.test.ts`, `useRecommendationSession.ts` |
 
 ## 단계 3: 애플리케이션 로직 분리
@@ -150,7 +150,7 @@
 | 예상 | 3~4일 |
 | 목적 | WebLLM 없이도 카루아다운 전체 대화 흐름 제공 |
 | 완료 조건 | 반존대, 짧은 응답, 농담 중심 환기, 상담 방지 규칙 검증 |
-| 변경 파일 | `keywords.ts`, `conversation.ts`, `akinator/engine.ts`, `App.tsx` |
+| 변경 파일 | `keywords.ts`, `conversation.ts`, `recommendation/question-engine.ts`, `App.tsx` |
 
 ### RST-404: 상세 캐릭터 계약 적합성 감사 및 보강
 
@@ -218,23 +218,25 @@
 | 예상 | 2~3일 (실제: 1일) |
 | 방향 | 기존 다크브라운/골드 "따뜻한 바" 분위기 유지. 그림자와 그라데이션 끝에 미묘한 보라 언더톤 추가. 드라마틱한 명암비와 은은한 네온 포인트로 신비로움을 더함. Karua 스프라이트 라이팅 조정. 결정 ID: DEC-014 |
 | 완료 조건 | 모바일 핵심 흐름 완료, 키보드와 포커스 사용 가능. 기존 따뜻한 분위기 유지 + 신비로운 느낌 추가 확인 |
-| 변경 파일 | `src/index.css`, `App.tsx`, `components/outside/BarExterior.tsx`, `components/inside/BarInterior.tsx`, `components/inside/CocktailCard.tsx`, `components/inside/ChatInput.tsx`, `components/inside/DialogueBox.tsx`, `mission_control/` 관련 문서 일괄 갱신 |
+| 변경 파일 | `src/index.css`, `App.tsx`, `components/entrance/BarExterior.tsx`, `components/bar/BarInterior.tsx`, `components/bar/CocktailCard.tsx`, `components/bar/ChatInput.tsx`, `components/bar/DialogueBox.tsx`, `mission_control/` 관련 문서 일괄 갱신 |
 
-## 단계 6: WebLLM 모델 평가 및 연결
+## 단계 6: WebLLM 말투 포장 계층 (잠정 보류)
+
+DEC-015에 따라 아래 작업은 모두 잠정 보류한다. 재개하더라도 JSON·DB·규칙 로직이 확정한 답안의 말투 포장만 허용하며, 입력 해석과 상태·추천 판단 책임은 포함하지 않는다.
 
 ### RST-601: WebLLM Worker 기반 구축
 
 | 항목 | 내용 |
 |---|---|
-| 상태 | TODO |
+| 상태 | DEFERRED |
 | 예상 | 3~4일 |
-| 완료 조건 | Web Worker에서 모델 로드와 스트리밍 대화 가능 |
+| 완료 조건 | 재개 결정 후 확정 답안의 말투 변환만 Web Worker에서 실행 가능 |
 
 ### RST-602: Qwen 및 Gemma 후보 실행 검증
 
 | 항목 | 내용 |
 |---|---|
-| 상태 | TODO |
+| 상태 | DEFERRED |
 | 예상 | 2~4일 |
 | 완료 조건 | 실제 WebLLM 지원 모델, 다운로드 크기, 메모리, 속도 기록 |
 
@@ -242,7 +244,7 @@
 
 | 항목 | 내용 |
 |---|---|
-| 상태 | TODO |
+| 상태 | DEFERRED |
 | 예상 | 3~5일 |
 | 평가 | `CHARACTER_DESIGN.md` 기반 한국어 자연스러움, 반존대, 농담 우선, 의미 비해설, 안전 경계, 짧은 응답, 추천 불변 |
 | 완료 조건 | 후보별 결과와 최종 기본 모델 결정 기록 |
@@ -251,15 +253,15 @@
 
 | 항목 | 내용 |
 |---|---|
-| 상태 | TODO |
+| 상태 | DEFERRED |
 | 예상 | 2~3일 |
-| 완료 조건 | 일반 대화, JSON 질문 주제의 자연어 표현, 자유 답변의 상태 갱신 후보 추출, 추천 설명 생성. 추천 상태와 결과는 엔진 검증 없이 변경 불가 |
+| 완료 조건 | JSON·규칙 로직이 확정한 원본 답안의 말투만 변환하며 의미·사실·추천 상태를 변경하지 않음 |
 
 ### RST-605: 모델 다운로드 UI와 복구 경로
 
 | 항목 | 내용 |
 |---|---|
-| 상태 | TODO |
+| 상태 | DEFERRED |
 | 예상 | 2~3일 |
 | 완료 조건 | 진행률, 취소, WebGPU 미지원, 오류, 규칙 응답 복구 처리 |
 
@@ -267,7 +269,7 @@
 
 | 항목 | 내용 |
 |---|---|
-| 상태 | TODO |
+| 상태 | DEFERRED |
 | 예상 | 3~5일 |
 | 목적 | 실제 생성 시간이 남아 있어도 사용자가 기다린다고 느끼는 시간을 최소화 |
 | 구현 | 즉시 규칙 첫 반응, Worker 스트리밍, 추천 카드 선표시, 세션 모델/KV 캐시 유지, 짧은 출력 제한, 시간 예산 및 취소 |
@@ -282,7 +284,7 @@
 |---|---|
 | 상태 | TODO |
 | 예상 | 4~6일 |
-| 범위 | 추천, 검색, 저장, 재추천, 무알코올, 제외 재료, WebLLM 복구 |
+| 범위 | 추천, 검색, 저장, 재추천, 무알코올, 제외 재료. WebLLM 복구 테스트는 재개 시 추가 |
 
 ### RST-702: 데이터 지연 로딩과 번들 최적화
 
@@ -290,7 +292,7 @@
 |---|---|
 | 상태 | TODO |
 | 예상 | 2~3일 |
-| 완료 조건 | 현재 번들 데이터, WebLLM, 부가 패널의 로딩 비용을 측정하고 필요한 항목만 지연 로딩하며 초기 번들 경고를 해결하거나 유지 근거 기록 |
+| 완료 조건 | 현재 번들 데이터와 부가 패널의 로딩 비용을 측정하고 필요한 항목만 지연 로딩하며 초기 번들 경고를 해결하거나 유지 근거 기록 |
 
 ## MVP 이후 연기
 

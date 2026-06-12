@@ -11,30 +11,30 @@
 - [x] MVP의 주 대화 캐릭터는 카루아이며, 시에스타는 낮은 빈도의 만담 이벤트로만 등장한다.
 - [x] 상담이 아니라 농담과 추천을 통한 환기를 제공한다.
 - [x] 추천 결과와 근거는 DB 및 추천 엔진이 결정한다.
-- [x] WebLLM은 일반 대화와 추천 설명만 생성한다.
-- [x] WebLLM은 브라우저의 Web Worker에서 실행한다.
+- [x] WebLLM은 확정된 답안의 말투 포장만 허용하며 구현은 잠정 보류한다.
+- [x] WebLLM 재개 시 브라우저의 Web Worker에서 선택적으로 실행한다.
 - [x] OpenAI API 및 Ollama 후보에서 WebLLM 기반 생성형 표현 계층으로 전환한다.
 - [x] Qwen과 Gemma 후보를 실제 평가한 후 기본 모델을 결정한다.
 - [x] WebLLM 실패 시 규칙 기반 엔진으로 복구한다.
 - [x] 백엔드는 MVP 범위에서 사용하지 않는다.
 - [x] 캐릭터 대화 생성과 검수는 `CHARACTER_DESIGN.md`를 기준으로 한다.
-- [x] WebLLM 도입 전에는 카루아 말투가 포함된 JSON 질문으로 추천 상태를 수집하고, 도입 후에는 같은 계약에서 WebLLM이 질문 표현과 상태 후보 추출만 담당한다.
+- [x] JSON 질문과 규칙 기반 자유 입력 해석으로 추천 상태를 수집하며 WebLLM은 입력을 해석하지 않는다.
 
 ## 완료된 작업
 
 - [x] **RST-101-1**: 한국어 문자열 손상 전수 조사 완료. **손상 없음.** 38개 소스 파일 모두 UTF-8 정상.
 - [x] **RST-102**: BarBot → Re:Station 브랜드 교체 완료. `<title>`, 헤더명, CSS 클래스, 페르소나, localStorage 키 모두 변경.
-- [x] **RST-401**: 카루아 규칙 기반 대화 응답 엔진 완료. keywords.ts(12규칙), conversation.ts(30+템플릿), akinator/engine.ts(질문/선택지), App.tsx(환영/작별/추천) 모두 카루아 말투 적용.
+- [x] **RST-401**: 카루아 규칙 기반 대화 응답 엔진 완료. keywords.ts(12규칙), conversation.ts(30+템플릿), recommendation/question-engine.ts(질문/선택지), App.tsx(환영/작별/추천) 모두 카루아 말투 적용.
 - [x] **PLAN-002**: 시에스타·카루아 발화 알고리즘, 금지 패턴, 관계성, 평가 기준 문서화.
 - [x] **RST-201/RST-202**: 단일 `CocktailData` 컬렉션을 추천, 검색, 카드, 도감에 적용하고 `toLegacyCocktail()` 공개 변환 계층 제거.
 - [x] **검증 강화**: `npm run build`에 타입 검사 포함, 추천 검색 및 이름 우선순위 회귀 테스트 4개 추가, 초기 JS 번들 276.06 kB로 감소.
 - [x] **검색 및 WebLLM 계약**: 이름·별칭 검색 우선, OpenAI/Ollama에서 WebLLM 전환, 즉시 규칙 반응과 스트리밍 기반 체감 지연 최소화 방향 확정.
 - [x] **시에스타 이벤트 계약**: 예고 없는 난입, 짧은 만담, 업무 복귀 퇴장, 카루아에게 대화권 반환 흐름 확정.
 - [x] **RST-404**: 카루아 대사를 상세 계약으로 감사하고 직접 위로·정답형 표현을 수정했다. 안전 의도는 추천과 농담보다 먼저 처리하며 관련 회귀 테스트를 포함해 Vitest 9개가 통과한다.
-- [x] **PLAN-006**: 설문 느낌을 줄이기 위한 단계적 질문 계약 확정. WebLLM 전 JSON 질문, 도입 후 자연어 질문·상태 후보 추출, 추천 엔진 검증 경계를 문서화했다.
+- [x] **PLAN-006**: WebLLM을 확정 답안의 말투 포장 전용으로 제한하고 관련 구현을 잠정 보류했다.
 - [x] **RST-301**: `App.tsx`를 화면 렌더링 중심으로 축소하고, 추천 진행을 `useRecommendationSession`, 대화·장면·도감 연결을 `useRestationController`로 분리했다.
 - [x] **RST-302**: 컨트롤러의 모든 지연 작업을 관리형 타이머로 통합하고 퇴장, 초기화, 언마운트 시 취소한다. 처리 상태를 단일 상태로 통합하고 오류 시 입력 잠금 해제와 안내 문구를 제공한다.
-- [x] **RST-203**: JSON 질문과 WebLLM 상태 추출이 공유할 `RecommendationState`, 구조화 신호, 질문 이력, 추천 근거 객체를 추가하고 기존 추천 세션에 연결했다.
+- [x] **RST-203**: JSON 질문과 규칙 기반 입력 해석이 공유할 `RecommendationState`, 구조화 신호, 질문 이력, 추천 근거 객체를 추가하고 기존 추천 세션에 연결했다.
 
 전체 리팩토링은 `TASK_BOARD.md`의 상위 프로그램 `RST-000`과 단계별 `RST-*` 작업을 기준으로 추적한다.
 
@@ -60,11 +60,11 @@
 | 3 | `mission_control/TASK_BOARD.md` | 단계, 완료 조건, 견적 |
 | 4 | `bar_tend/src/lib/bartender/keywords.ts` | 키워드 규칙 응답 |
 | 5 | `bar_tend/src/lib/bartender/conversation.ts` | 일반 대화 템플릿 |
-| 6 | `bar_tend/src/lib/akinator/engine.ts` | 추천 질문 대사 |
+| 6 | `bar_tend/src/lib/recommendation/question-engine.ts` | 추천 질문과 후보 필터 |
 | 7 | `bar_tend/src/hooks/useRestationController.ts` | 대화, 장면, 도감 연결과 타이머 |
 | 8 | `bar_tend/src/hooks/useRecommendationSession.ts` | 추천 후보와 질문 진행 |
 | 9 | `bar_tend/src/lib/recommendation/state.ts` | 추천 상태, 신호 검증, 후보 필터, 근거 생성 |
-| 10 | `bar_tend/src/types/recommendation.ts` | JSON 질문과 WebLLM이 공유할 추천 계약 |
+| 10 | `bar_tend/src/types/recommendation.ts` | JSON 질문과 규칙 입력 해석이 공유할 추천 계약 |
 | 11 | `bar_tend/src/App.tsx` | 화면 렌더링 |
 
 ## 다중 작업 PC 동기화
@@ -101,7 +101,7 @@ git stash pop
 - [ ] 카루아 대사는 농담을 먼저 두고 의미를 직접 해설하지 않는다.
 - [ ] WebLLM 연결 전에 규칙 기반 전체 흐름을 완성한다.
 - [ ] WebLLM이 추천 결과를 선택하거나 변경하게 만들지 않는다.
-- [ ] WebLLM이 추출한 추천 상태 후보를 검증 없이 반영하지 않는다.
+- [ ] WebLLM에 사용자 입력 해석이나 추천 상태 변경 책임을 추가하지 않는다.
 - [ ] Qwen 또는 Gemma 모델명을 평가 없이 코드에 고정하지 않는다.
 - [ ] 모델 다운로드는 자동 시작하지 않고 사용자에게 크기와 진행 상태를 보여준다.
 - [ ] WebLLM을 기다리느라 추천 카드나 규칙 기반 첫 반응 표시를 늦추지 않는다.

@@ -31,13 +31,13 @@ prac/
    ├─ scripts/                      # 칵테일 데이터 생성 및 보강 스크립트
    ├─ src/
    │  ├─ components/
-   │  │  ├─ inside/                # 바 내부, 대화, 카드 UI
-   │  │  ├─ outside/               # 바 외부 진입 UI
+   │  │  ├─ bar/                   # 바 내부, 대화, 카드 UI
+   │  │  ├─ entrance/              # 바 입장 UI
    │  │  └─ sidebar/               # 도감, 레시피, 음악, 초기화 UI
    │  ├─ data/                      # 정규화된 칵테일 및 제휴 바 JSON
    │  ├─ hooks/                     # 세션 상태 훅
    │  ├─ lib/
-   │  │  ├─ akinator/              # 질문 기반 후보 필터 및 점수화
+   │  │  ├─ recommendation/        # 추천 상태, 질문, 후보 필터 및 점수화
    │  │  ├─ bartender/             # 규칙 기반 대화 응답
    │  │  ├─ cocktails/             # 데이터 접근, 검색, 순위화
    │  │  ├─ idol/                  # 대화 메모리 갱신
@@ -54,14 +54,14 @@ prac/
 | 구성 요소 | 책임 | 주요 파일 |
 |---|---|---|
 | 애플리케이션 조정 | 장면, 메시지, 모달, 사이드바와 저장 상태를 연결 | `src/hooks/useRestationController.ts` |
-| 외부 및 내부 UI | 바 입장 연출과 내부 무대 구성 | `src/components/outside/`, `src/components/inside/` |
+| 입장 및 바 UI | 바 입장 연출과 내부 무대 구성 | `src/components/entrance/`, `src/components/bar/` |
 | 대화 엔진 | 키워드 규칙과 대화 문맥 기반 응답 생성 | `src/lib/bartender/engine.ts`, `conversation.ts`, `keywords.ts` |
 | 만담 이벤트 엔진 | 안전한 구간에서 시에스타 이벤트 발생 여부와 짧은 발화 시퀀스 결정 | 목표: `src/domain/character/events/` |
 | 추천 세션 | 후보군, 질문 진행, 최종 선택 흐름 연결 | `src/hooks/useRecommendationSession.ts` |
 | 추천 상태와 근거 | 기분, 상황, 취향, 제약, 질문 이력, 구조화 근거 관리 | `src/lib/recommendation/state.ts`, `src/types/recommendation.ts` |
-| 추천 엔진 | 취향 신호 수집, 후보 필터, 다음 질문, 최종 선택 | `src/lib/akinator/engine.ts` |
+| 추천 질문 엔진 | 취향 신호 수집, 후보 필터, 다음 질문, 최종 선택 | `src/lib/recommendation/question-engine.ts` |
 | 칵테일 데이터 계층 | JSON 데이터 접근, 단일 `CocktailData` 구성, 검색과 순위화 | `src/lib/cocktails/database.ts`, `cocktail-db.ts` |
-| 세션 저장 | 취향, 대화 메모리, 도감 해제를 브라우저에 저장 | `src/hooks/useBarbotSession.ts`, `src/lib/storage/` |
+| 손님 취향 세션 | 취향, 대화 메모리, 칵테일 해제를 브라우저에 저장 | `src/hooks/useGuestPreferenceSession.ts`, `src/lib/storage/` |
 | 부가 기능 | 도감, 레시피, 음악, 밤 초기화 | `src/components/sidebar/` |
 
 ## 데이터 흐름
@@ -72,7 +72,7 @@ prac/
 2. `useRestationController`가 메시지를 화면 상태에 추가하고 세션 취향 신호를 갱신한다.
 3. 퇴장 의도를 먼저 확인한다.
 4. 등록된 칵테일 이름 또는 별칭을 먼저 검색한다. 이름이 있으면 취향 추천보다 우선한다.
-5. 이름 검색 결과가 없고 추천 의도이면 `akinator/engine.ts`가 현재 후보군을 필터링하고 다음 질문 또는 결과를 정한다.
+5. 이름 검색 결과가 없고 추천 의도이면 `recommendation/question-engine.ts`가 현재 후보군을 필터링하고 다음 질문 또는 결과를 정한다.
 6. 추천 엔진과 UI는 초기 로딩 시 구성된 동일한 `CocktailData` 객체를 사용한다.
 7. 추천 결과는 메시지와 `CocktailCard`에 표시되고 도감 해제 ID가 저장된다.
 8. 추천 질문과 안전 흐름이 아닌 구간에는 이벤트 엔진이 시에스타 만담 이벤트 발생 여부를 판단할 수 있다.
@@ -181,14 +181,14 @@ src/
 추천 상태 + 질문 이력
 └─ 추천 엔진: 다음 질문 주제 결정
    ├─ WebLLM 도입 전: JSON 질문의 카루아식 문구와 선택지 표시
-   └─ WebLLM 도입 후: WebLLM이 질문 표현 + 자유 답변 상태 후보 추출
+   └─ WebLLM 재개 후: 확정된 원본 답안의 말투만 포장
       └─ 추천 엔진이 허용 값, 신뢰도, 충돌을 검증한 뒤 상태 반영
 ```
 
 - 질문 JSON은 주제, 카루아식 반응, 질문 문구, 선택지, 상태 갱신 규칙을 포함한다.
 - 질문은 고정 순서로 진행하지 않고 이미 확인한 상태와 직전 답변에 따라 선택한다.
-- WebLLM 도입 후에도 질문 상태 계약과 추천 결정권은 추천 엔진에 남는다.
-- WebLLM과 JSON 질문은 `RecommendationSignal` 후보를 만들며, `RecommendationState` 반영 전 신뢰도와 허용 필드를 검증한다.
+- 질문 상태 계약, 자유 입력 해석, 추천 결정권은 규칙 엔진에 남는다.
+- WebLLM은 `RecommendationSignal` 후보를 만들거나 `RecommendationState`를 변경하지 않는다.
 - 추천 결과는 `RecommendationDecision`으로 칵테일, 검증된 상태, 데이터 기반 근거를 함께 반환한다.
 - 기분과 상황은 대응하는 DB 태그가 추가되기 전까지 질문과 설명 맥락으로만 보관하고 추천 적합성 근거로 과장하지 않는다.
 
@@ -197,7 +197,7 @@ src/
 | 영역 | 원칙 |
 |---|---|
 | 백엔드 | MVP에서 사용하지 않음 |
-| WebLLM | Web Worker에서 일반 대화와 추천 설명만 생성 |
+| WebLLM | 잠정 보류. 재개 시 확정된 답안의 말투만 포장 |
 | 추천 엔진 | WebLLM과 독립적으로 동작 |
 | 모델 후보 | Qwen 및 Gemma를 평가 후 선택 |
 | 복구 경로 | WebGPU 미지원, 모델 미준비, 오류 시 규칙 엔진 |

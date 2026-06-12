@@ -325,6 +325,35 @@
 
 ## 새 로그 템플릿
 
+## 2026-06-13 / REF-001 / 역할 중심 소스 경로 정리
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-13 |
+| 작업 ID | REF-001 |
+| 작업자 | GPT-5 Codex |
+| 작업 내용 | 위치나 과거 기능명을 사용하던 폴더·파일을 현재 역할이 드러나는 이름으로 변경했다. |
+| 수정 파일 | `bar_tend/src/App.tsx`, 관련 훅·테스트 import, `bar_tend/README.md`, `mission_control/ARCHITECTURE.md`, `HANDOVER.md`, `TASK_BOARD.md`, `WORK_LOG.md` |
+| 이동 경로 | `components/inside`→`components/bar`, `components/outside`→`components/entrance`, `lib/akinator/engine.ts`→`lib/recommendation/question-engine.ts`, `useBarbotSession.ts`→`useGuestPreferenceSession.ts`, `codex-unlocks.ts`→`cocktail-unlocks.ts`, `session-store.ts`→`guest-session-store.ts` |
+| 주요 결정 | 기능과 저장 키는 변경하지 않고 파일 역할과 import 경로만 명확하게 정리했다. 과거 로그의 경로 기록은 당시 사실이므로 유지했다. |
+| 후속 작업 제안 | `idol`, 칵테일 데이터 계층, 공통 타입 이름은 실제 책임 계약을 먼저 정한 뒤 별도 작업으로 검토 |
+
+## 2026-06-13 / PLAN-006 / WebLLM 말투 포장 전용 및 잠정 보류
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-13 |
+| 작업 ID | PLAN-006 |
+| 작업자 | GPT-5 Codex |
+| 작업 내용 | WebLLM의 역할을 JSON·DB·규칙 로직이 확정한 답안의 말투 포장으로 제한하고 관련 구현 작업을 잠정 보류했다. |
+| 수정 파일 | `mission_control/DECISIONS.md`, `CURRENT_STATE.md`, `TASK_BOARD.md`, `WORK_LOG.md` |
+| 생성 파일 | 없음 |
+| 삭제 파일 | 없음 |
+| 주요 변경 사항 | DEC-015 추가, DEC-013의 자유 입력 신호 추출 책임 폐기, RST-601~606 DEFERRED 전환, 현재 우선순위에서 WebLLM 제거 |
+| 실패한 시도 | 없음 |
+| 발견한 문제 | 기존 DEC-013과 RST-604가 WebLLM의 사용자 입력 해석과 상태 후보 추출을 허용해 새 경계와 충돌했다. |
+| 후속 작업 제안 | RST-402 JSON 질문 기반 적응형 질문 구현 |
+
 ### YYYY-MM-DD / TASK-XXX / 작업명
 
 | 항목 | 내용 |
