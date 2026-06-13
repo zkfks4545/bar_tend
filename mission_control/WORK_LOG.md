@@ -1,5 +1,20 @@
 ﻿# 작업 이력
 
+## 2026-06-13 / DISC-001-B / JSON 규모 통제와 역할 분리 논의
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-13 |
+| 작업 ID | DISC-001-B |
+| 작업자 | GPT-5 Codex |
+| 작업 내용 | JSON 중심 대화 구조가 방대해지는 것을 막기 위한 최소 계약과 검색 API·코드·WebLLM 역할 분리를 기존 논의에 추가했다. |
+| 수정 파일 | `mission_control/DECISIONS.md`, `TASK_BOARD.md`, `HANDOVER.md`, `CURRENT_STATE.md`, `WORK_LOG.md` |
+| 주요 변경 사항 | 대사 전문 JSON 저장 금지, `responseGoal + facts + forbidden` 중심 WebLLM 입력, 전체 대화 대신 상태 요약 전달, 소수 기본 템플릿 복구, 검색 API·코드·WebLLM 책임 구분 |
+| 결정 상태 | 논의 중. DLG-801/DATA-802 승인 시 완료 조건에 반영할 제안 |
+| 실패한 시도 | 없음 |
+| 검증 | 문서 간 역할 경계와 작업 상태 대조, `git diff --check` 예정 |
+| 후속 작업 제안 | DLG-801 설계 시 JSON Schema 예시와 최대 필드·컨텍스트 크기 예산을 명시 |
+
 ## 2026-06-13 / DISC-001 / JSON 대화 계약과 미등록 칵테일 발견 논의
 
 | 항목 | 내용 |
