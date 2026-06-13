@@ -54,12 +54,13 @@ prac/
 | 구성 요소 | 책임 | 주요 파일 |
 |---|---|---|
 | 애플리케이션 조정 | 장면, 메시지, 모달, 사이드바와 저장 상태를 연결 | `src/hooks/useRestationController.ts` |
-| 입장 및 바 UI | 바 입장 연출과 내부 무대 구성 | `src/components/entrance/`, `src/components/bar/` |
+| 공통 입력 라우팅 | 안전, 퇴장, 이름 검색, 추천, 일반 대화의 처리 우선순위 결정 | `src/lib/dialogue/input-router.ts` |
+| 입장 및 바 UI | 바 입장 연출, 내부 무대, 적응형 추천 선택지와 자유 입력 구성 | `src/components/entrance/`, `src/components/bar/` |
 | 대화 엔진 | 키워드 규칙과 대화 문맥 기반 응답 생성 | `src/lib/bartender/engine.ts`, `conversation.ts`, `keywords.ts` |
 | 만담 이벤트 엔진 | 안전한 구간에서 시에스타 이벤트 발생 여부와 짧은 발화 시퀀스 결정 | 목표: `src/domain/character/events/` |
 | 추천 세션 | 후보군, 질문 진행, 최종 선택 흐름 연결 | `src/hooks/useRecommendationSession.ts` |
 | 추천 상태와 근거 | 기분, 상황, 취향, 제약, 질문 이력, 구조화 근거 관리 | `src/lib/recommendation/state.ts`, `src/types/recommendation.ts` |
-| 추천 질문 엔진 | 취향 신호 수집, 후보 필터, 다음 질문, 최종 선택 | `src/lib/recommendation/question-engine.ts` |
+| 추천 질문 엔진 | JSON 질문 정의, 취향 신호 수집, 상태·이력·후보 분별력 기반 다음 질문, 최종 선택 | `src/data/recommendation-questions.json`, `src/lib/recommendation/question-engine.ts` |
 | 칵테일 데이터 계층 | JSON 데이터 접근, 단일 `CocktailData` 구성, 검색과 순위화 | `src/lib/cocktails/database.ts`, `cocktail-db.ts` |
 | 손님 취향 세션 | 취향, 대화 메모리, 칵테일 해제를 브라우저에 저장 | `src/hooks/useGuestPreferenceSession.ts`, `src/lib/storage/` |
 | 부가 기능 | 도감, 레시피, 음악, 밤 초기화 | `src/components/sidebar/` |
@@ -70,11 +71,11 @@ prac/
 
 1. 사용자가 `ChatInput`에서 텍스트를 전송한다.
 2. `useRestationController`가 메시지를 화면 상태에 추가하고 세션 취향 신호를 갱신한다.
-3. 퇴장 의도를 먼저 확인한다.
-4. 등록된 칵테일 이름 또는 별칭을 먼저 검색한다. 이름이 있으면 취향 추천보다 우선한다.
+3. 공통 입력 라우터가 안전, 퇴장, 등록된 칵테일 이름 또는 별칭, 추천, 일반 대화 순서로 처리 경로를 결정한다.
+4. 안전 입력은 퇴장과 추천보다 먼저 규칙 기반 안전 응답으로 전달한다.
 5. 이름 검색 결과가 없고 추천 의도이면 `recommendation/question-engine.ts`가 현재 후보군을 필터링하고 다음 질문 또는 결과를 정한다.
 6. 추천 엔진과 UI는 초기 로딩 시 구성된 동일한 `CocktailData` 객체를 사용한다.
-7. 추천 결과는 메시지와 `CocktailCard`에 표시되고 도감 해제 ID가 저장된다.
+7. 카루아식 추천 멘트와 추천 이유는 메시지에 표시하고, `CocktailCard`는 DB 기반 중립 설명과 기존 상세 정보를 표시한다. 도감 해제 ID도 저장한다.
 8. 추천 질문과 안전 흐름이 아닌 구간에는 이벤트 엔진이 시에스타 만담 이벤트 발생 여부를 판단할 수 있다.
 
 ### 시에스타 이벤트 상태 흐름
@@ -122,6 +123,7 @@ IDLE
 |---|---|
 | React 및 React DOM | 주 실행 경로에서 사용 |
 | TheCocktailDB | 과거 정적 데이터 생성·보강 출처. 현재 런타임 API 모듈은 제거됨 |
+| IBA 공식 칵테일 목록 | 클래식 칵테일 레시피 수치와 공식 분류 출처. URL을 정적 데이터에 기록 |
 | WebLLM | 아직 미연결, Web Worker 기반 표현 계층으로 연결 예정 |
 | 외부 이미지 URL | 일부 칵테일 이미지에 사용 |
 | 지도 링크 | 시그니처 칵테일의 제휴 바 위치에 사용 |
@@ -141,6 +143,7 @@ IDLE
 - [ ] 지원 브라우저와 최소 화면 크기
 - [ ] 실제 WebLLM 지원 Qwen 및 Gemma 후보와 배포 모델 아티팩트
 - [ ] TheCocktailDB 데이터를 갱신하는 운영 절차
+- [ ] IBA 공식 목록 변경 시 기존 레시피를 재검수하는 운영 절차
 - [ ] 사용자 분석, 오류 추적, 성능 측정 도구
 - [ ] 제휴 바 데이터의 실제 운영 책임과 갱신 절차
 
@@ -173,7 +176,7 @@ src/
 2. 정보가 부족하면 추천 엔진이 현재 추천 상태와 질문 이력을 바탕으로 최대 1~3개의 추가 질문 주제를 결정한다.
 3. 추천 엔진이 DB에서 칵테일과 추천 근거를 결정한다.
 4. WebLLM 또는 규칙 엔진이 결정된 근거를 카루아식 문장으로 표현한다.
-5. UI가 대화와 추천 카드를 표시한다.
+5. UI가 카루아식 추천 대화와 중립적인 상세 정보 카드를 분리해 표시한다.
 
 ### 단계적 질문 구조
 
@@ -187,6 +190,8 @@ src/
 
 - 질문 JSON은 주제, 카루아식 반응, 질문 문구, 선택지, 상태 갱신 규칙을 포함한다.
 - 질문은 고정 순서로 진행하지 않고 이미 확인한 상태와 직전 답변에 따라 선택한다.
+- 조기 종료가 아닌 각 선택지는 최소 한 실제 후보를 가져야 하며, 모든 칵테일은 각 질문에서 최소 한 선택지에 대응해야 한다.
+- `잘 모르겠어요`는 현재 질문만 건너뛰고, `카루아에게 맡기기`는 추가 질문을 종료한 뒤 이전까지 수집한 상태로 즉시 추천한다.
 - 질문 상태 계약, 자유 입력 해석, 추천 결정권은 규칙 엔진에 남는다.
 - WebLLM은 `RecommendationSignal` 후보를 만들거나 `RecommendationState`를 변경하지 않는다.
 - 추천 결과는 `RecommendationDecision`으로 칵테일, 검증된 상태, 데이터 기반 근거를 함께 반환한다.

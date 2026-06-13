@@ -1,5 +1,30 @@
 ﻿# 작업 이력
 
+## 2026-06-13 / RST-402 / 질문 선택지 전체 후보 커버리지
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-13 |
+| 작업 ID | RST-402 |
+| 작업자 | GPT-5 Codex |
+| 작업 내용 | 25종 추천 후보가 모든 질문에서 최소 한 일반 선택지에 대응하도록 질문 선택지를 재구성하고 양방향 커버리지 계약 테스트를 추가했다. |
+| 수정 파일 | `bar_tend/src/data/recommendation-questions.json`, `bar_tend/src/lib/recommendation/question-engine.test.ts`, `mission_control/ARCHITECTURE.md`, `CURRENT_STATE.md`, `TASK_BOARD.md`, `HANDOVER.md`, `WORK_LOG.md` |
+| 생성 파일 | 없음 |
+| 삭제 파일 | 없음 |
+| 주요 변경 사항 | 베이스 질문을 실제 후보 데이터에 맞춰 `데킬라 또는 보드카`, `브랜디·리큐르·시그니처` 선택지로 재구성했다. 각 질문의 모든 일반 선택지가 최소 한 후보를 갖고, 모든 칵테일이 각 질문에서 최소 한 일반 선택지에 매핑되는지 전수 검사한다. |
+| 실패한 시도 | 최초 분석 명령에서 PowerShell이 대시 문자를 정규식 와일드카드처럼 전달해 파싱에 실패했다. 쉼표 기준 분석으로 재실행했으며 파일 변경은 없었다. |
+| 발견한 문제 | 기존 베이스 질문은 진·럼·위스키·데킬라만 선택할 수 있어 보드카·브랜디·리큐르·시그니처 베이스 후보가 어떤 일반 선택지에도 대응하지 않았다. |
+| 후속 작업 제안 | 후보군이나 질문 선택지를 변경할 때 양방향 커버리지 테스트를 유지하고 의도적인 미대응 후보는 별도 계약으로 명시할 것 |
+
+### 검증 결과
+
+| 검증 | 결과 |
+|---|---|
+| `npm.cmd run lint` | 통과 |
+| `npm.cmd test` | 통과, Vitest 29개 |
+| `npm.cmd run check` | 통과 |
+| `npm.cmd run build` | 통과, JS 295.06 kB |
+
 ## 2026-06-12 / RST-603-A / 카루아 한국어 모델 평가 기반 구축
 
 | 항목 | 내용 |
@@ -325,6 +350,56 @@
 
 ## 새 로그 템플릿
 
+## 2026-06-13 / RST-501 / 선택 질문 버튼과 선택 필터
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-13 |
+| 작업 ID | RST-501 |
+| 작업자 | GPT-5 Codex |
+| 작업 내용 | 적응형 JSON 질문의 활성 선택지를 채팅 입력 영역에 클릭 가능한 버튼으로 표시하고 보조·취소 입력을 연결했다. |
+| 수정 파일 | `bar_tend/src/App.tsx`, `bar_tend/src/components/bar/ChatInput.tsx`, `bar_tend/src/hooks/useRecommendationSession.ts`, `bar_tend/src/hooks/useRestationController.ts`, `bar_tend/src/index.css`, `bar_tend/src/lib/recommendation/question-engine.ts`, `bar_tend/src/lib/recommendation/question-engine.test.ts`, `mission_control/ARCHITECTURE.md`, `CURRENT_STATE.md`, `TASK_BOARD.md`, `HANDOVER.md`, `WORK_LOG.md` |
+| 생성 파일 | 없음 |
+| 삭제 파일 | 없음 |
+| 주요 변경 사항 | 활성 질문·선택지 UI 노출, 선택 버튼을 기존 `handleSend` 경로에 연결, `잘 모르겠어요`와 추천 질문 취소 추가, 질문 대화문의 중복 번호 목록 제거, 첫 선택지 키보드 포커스, 모바일 줄바꿈·스크롤 스타일 적용 |
+| 실패한 시도 | 인앱 브라우저가 현재 세션에서 제공되지 않아 실제 클릭 및 모바일 화면 검증을 수행하지 못했다. |
+| 발견한 문제 | 없음 |
+| 후속 작업 제안 | RST-701 저장 및 주요 사용자 흐름 테스트 확대 |
+
+### 검증 결과
+
+| 검증 | 결과 |
+|---|---|
+| `npm.cmd run lint` | 통과 |
+| `npm.cmd test` | 통과, Vitest 20개 |
+| `npm run check` | 통과 |
+| `npm run build` | 통과, JS 284.39 kB |
+| 브라우저 수동 검증 | 미실행, 현재 세션에서 인앱 브라우저 연결 불가 |
+
+## 2026-06-13 / RST-402 / 추천 상태 기반 적응형 JSON 질문
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-13 |
+| 작업 ID | RST-402 |
+| 작업자 | GPT-5 Codex |
+| 작업 내용 | 고정 순서 추천 질문을 JSON 질문 계약과 상태·질문 이력·후보 분별력 기반 적응형 선택으로 교체했다. |
+| 수정 파일 | `bar_tend/src/hooks/useRecommendationSession.ts`, `bar_tend/src/lib/recommendation/question-engine.ts`, `bar_tend/src/lib/recommendation/state.ts`, `bar_tend/src/types/recommendation.ts`, `mission_control/ARCHITECTURE.md`, `CURRENT_STATE.md`, `TASK_BOARD.md`, `HANDOVER.md`, `WORK_LOG.md` |
+| 생성 파일 | `bar_tend/src/data/recommendation-questions.json`, `bar_tend/src/lib/recommendation/question-engine.test.ts` |
+| 삭제 파일 | 없음 |
+| 주요 변경 사항 | 질문 문구·선택지·상태 갱신 신호 JSON 분리, 이미 파악한 주제와 질문 이력 제외, 후보군 분별력 기반 질문 선택, 최대 3개 제한, 번호·자유 입력 답변 지원, 맛 축과 선호 베이스 후보 필터 연결 |
+| 실패한 시도 | 최초 테스트가 항상 질문 3개를 요구했으나 실제 계약은 정보가 충분하면 1~3개 안에서 종료하는 것이므로 계약에 맞게 수정했다. |
+| 발견한 문제 | 구조화된 맛 축 신호가 근거에는 사용되지만 후보 필터에는 연결되지 않았던 문제를 발견해 함께 연결했다. |
+| 후속 작업 제안 | RST-501 선택 질문 버튼과 선택 필터 |
+
+### 검증 결과
+
+| 검증 | 결과 |
+|---|---|
+| `npm.cmd run lint` | 통과 |
+| `npm.cmd test` | 통과, Vitest 20개 |
+| `npm run build` | 통과, 타입 검사 포함, JS 283.19 kB |
+
 ## 2026-06-13 / REF-001 / 역할 중심 소스 경로 정리
 
 | 항목 | 내용 |
@@ -377,3 +452,123 @@
 - [ ] 주요 변경과 검증 결과가 기록되어 있다.
 - [ ] 실패한 시도와 발견한 문제가 숨겨져 있지 않다.
 - [ ] 후속 작업이 필요하면 작업 보드에 연결했다.
+## 2026-06-13 / RST-701 / 공통 입력 라우팅 및 충돌 테스트
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-13 |
+| 작업 ID | RST-701 |
+| 작업자 | GPT-5 Codex |
+| 작업 내용 | 공통 입력 라우터를 추가하고 안전 입력이 퇴장과 추천보다 먼저 처리되도록 컨트롤러 흐름을 정리했다. |
+| 수정 파일 | `bar_tend/src/hooks/useRestationController.ts`, `bar_tend/src/lib/bartender/engine.ts`, `bar_tend/src/lib/bartender/conversation.ts`, `mission_control/ARCHITECTURE.md`, `CURRENT_STATE.md`, `TASK_BOARD.md`, `HANDOVER.md`, `WORK_LOG.md` |
+| 생성 파일 | `bar_tend/src/lib/dialogue/input-router.ts`, `bar_tend/src/lib/dialogue/input-router.test.ts` |
+| 삭제 파일 | 없음 |
+| 주요 변경 사항 | 안전 → 퇴장 → 이름 검색 → 추천 → 일반 대화 우선순위 통합, `끝내고 싶어` 안전 처리, 안전 입력 시 진행 중 추천 종료, 일반적인 `끝났어` 퇴장 오인 방지, 활성 추천 답변 라우팅 테스트 추가 |
+| 실패한 시도 | 없음 |
+| 발견한 문제 | 컨트롤러의 넓은 `끝` 정규식이 안전 표현과 일반적인 종료 표현을 퇴장으로 오인할 수 있었다. |
+| 후속 작업 제안 | RST-701 저장 실패 경계와 추천 선택·취소·완료 흐름 테스트 확대 |
+
+### 검증 결과
+
+| 검증 | 결과 |
+|---|---|
+| `npm.cmd run lint` | 통과 |
+| `npm.cmd test` | 통과, Vitest 24개 |
+| `npm.cmd run check` | 통과 |
+| `npm.cmd run build` | 통과, JS 284.62 kB |
+## 2026-06-13 / RST-501 / 카루아에게 맡기기 즉시 추천
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-13 |
+| 작업 ID | RST-501 |
+| 작업자 | GPT-5 Codex |
+| 작업 내용 | `카루아에게 맡기기`를 추가 질문 종료 후 즉시 추천하는 선택지로 변경했다. |
+| 수정 파일 | `bar_tend/src/data/recommendation-questions.json`, `bar_tend/src/types/recommendation.ts`, `bar_tend/src/lib/recommendation/question-engine.ts`, `bar_tend/src/lib/recommendation/question-engine.test.ts`, `bar_tend/src/hooks/useRecommendationSession.ts`, `mission_control/ARCHITECTURE.md`, `PROJECT_VISION.md`, `CURRENT_STATE.md`, `TASK_BOARD.md`, `HANDOVER.md`, `WORK_LOG.md` |
+| 생성 파일 | 없음 |
+| 삭제 파일 | 없음 |
+| 주요 변경 사항 | 질문 선택지에 조기 종료 계약 추가, 맡기기 선택 시 다음 질문 생략, 이전까지의 추천 상태와 후보군으로 즉시 추천, 맡기기 전용 반응을 최종 추천 문구에 반영 |
+| 실패한 시도 | 없음 |
+| 발견한 문제 | 기존에는 `잘 모르겠어요`와 `카루아에게 맡기기`가 모두 신호 없이 다음 질문으로 진행해 기능 차이가 거의 없었다. |
+| 후속 작업 제안 | RST-701 추천 선택·취소·완료 흐름 테스트 확대 |
+
+### 검증 결과
+
+| 검증 | 결과 |
+|---|---|
+| `npm.cmd run lint` | 통과 |
+| `npm.cmd test` | 통과, Vitest 25개 |
+| `npm.cmd run check` | 통과 |
+| `npm.cmd run build` | 통과, JS 284.87 kB |
+## 2026-06-13 / DATA-001 / IBA 공식 레시피 기반 클래식 확장
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-13 |
+| 작업 ID | DATA-001 |
+| 작업자 | GPT-5 Codex |
+| 작업 내용 | IBA 공식 레시피를 기준으로 클래식 칵테일 10종을 정규화 DB와 실제 추천 후보군에 추가했다. |
+| 수정 파일 | `bar_tend/src/data/cocktail-db.json`, `bar_tend/src/types.ts`, `bar_tend/src/types/cocktail-db.ts`, `bar_tend/src/lib/cocktails/database.ts`, `bar_tend/src/lib/cocktails/database.test.ts`, `bar_tend/src/lib/recommendation/question-engine.test.ts`, `bar_tend/src/components/sidebar/RecipeInfoTab.tsx`, `mission_control/DECISIONS.md`, `ARCHITECTURE.md`, `CURRENT_STATE.md`, `TASK_BOARD.md`, `HANDOVER.md`, `WORK_LOG.md` |
+| 생성 파일 | 없음 |
+| 삭제 파일 | 없음 |
+| 주요 변경 사항 | 아메리카노, 라스트 워드, 팔로마, 에비에이션, 불바디에, 화이트 레이디, 블랙 러시안, 페이퍼 플레인, 진 피즈, 페니실린 추가. IBA URL·공식 분류 저장 및 레시피 패널 표시 |
+| 실패한 시도 | 데이터 확장 후 진 베이스 필터 테스트가 과거 후보 수에 고정돼 실패했으며, 실제 계약인 베이스 일치와 후보 축소를 검증하도록 수정했다. |
+| 발견한 문제 | 정규화 DB가 클래식 5종으로 제한되어 코드에 존재하던 표시용 레거시 칵테일 다수가 실제 추천 후보가 아니었다. |
+| 후속 작업 제안 | 다음 IBA 확장 전 맛 프로필 검수 기준과 데이터 갱신 절차 정의 |
+
+### 검증 결과
+
+| 검증 | 결과 |
+|---|---|
+| `npm.cmd run lint` | 통과 |
+| `npm.cmd test` | 통과, Vitest 26개 |
+| `npm.cmd run check` | 통과 |
+| `npm.cmd run build` | 통과, JS 290.28 kB |
+## 2026-06-13 / DATA-002 / 추천 후보군 25종 확장
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-13 |
+| 작업 ID | DATA-002 |
+| 작업자 | GPT-5 Codex |
+| 작업 내용 | IBA 공식 레시피 기반 클래식 8종을 추가해 실제 추천 후보군을 25종으로 확장했다. |
+| 수정 파일 | `bar_tend/src/data/cocktail-db.json`, `bar_tend/src/lib/cocktails/database.test.ts`, `bar_tend/src/lib/recommendation/state.ts`, `bar_tend/src/lib/recommendation/question-engine.test.ts`, `mission_control/CURRENT_STATE.md`, `TASK_BOARD.md`, `HANDOVER.md`, `WORK_LOG.md` |
+| 생성 파일 | 없음 |
+| 삭제 파일 | 없음 |
+| 주요 변경 사항 | 사이드카, 다이키리, 위스키 사워, 피나 콜라다, 코스모폴리탄, 벨리니, 모스크바 뮬, 마이타이 추가. 클래식 23종과 시그니처 2종 구성 |
+| 실패한 시도 | 확장 직후 진 베이스 필터 테스트가 실패해 원인을 조사했다. |
+| 발견한 문제 | `진` 선호가 `신선한` 재료 문자열에 부분 일치해 다이키리 등 다른 베이스를 포함했다. 베이스 및 재료 정확 일치로 수정했다. |
+| 후속 작업 제안 | 25종 후보군에서 추천 분포와 맛 프로필 수동 검수 |
+
+### 검증 결과
+
+| 검증 | 결과 |
+|---|---|
+| `npm.cmd run lint` | 통과 |
+| `npm.cmd test` | 통과, Vitest 26개 |
+| `npm.cmd run check` | 통과 |
+| `npm.cmd run build` | 통과, JS 294.35 kB |
+## 2026-06-13 / RST-502 / 추천 카드와 카루아 대화 문구 분리
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-13 |
+| 작업 ID | RST-502 |
+| 작업자 | GPT-5 Codex |
+| 작업 내용 | 추천 카드의 기존 상세 정보를 유지하면서 설명을 중립 문구로 분리하고, 카루아식 추천 멘트와 추천 이유 표현을 대화창으로 분리했다. |
+| 수정 파일 | `bar_tend/src/types.ts`, `bar_tend/src/lib/cocktails/database.ts`, `bar_tend/src/hooks/useRecommendationSession.ts`, `bar_tend/src/components/bar/CocktailCard.tsx`, `mission_control/DECISIONS.md`, `ARCHITECTURE.md`, `PROJECT_VISION.md`, `CURRENT_STATE.md`, `TASK_BOARD.md`, `HANDOVER.md`, `WORK_LOG.md` |
+| 생성 파일 | `bar_tend/src/lib/recommendation/response.ts`, `bar_tend/src/lib/recommendation/response.test.ts` |
+| 삭제 파일 | 없음 |
+| 주요 변경 사항 | 정규화 DB 설명을 `CocktailData.description`으로 연결, 카드 상세 정보는 유지하고 문장형 설명만 중립화, 구조화 추천 이유 기반 카루아 대화 포맷터 추가 |
+| 실패한 시도 | 최초 해석에서 카드 상세 정보까지 제거했으나 사용자 의도에 맞춰 즉시 복원했다. |
+| 발견한 문제 | 기존 카드의 장문 `story`에는 카루아식 말투가 섞여 있어 중립 정보 카드와 캐릭터 대화의 책임이 섞여 있었다. |
+| 후속 작업 제안 | 브라우저에서 카드 높이와 대화 멘트 표시 순서 수동 확인 |
+
+### 검증 결과
+
+| 검증 | 결과 |
+|---|---|
+| `npm.cmd run lint` | 통과 |
+| `npm.cmd test` | 통과, Vitest 28개 |
+| `npm.cmd run check` | 통과 |
+| `npm.cmd run build` | 통과, JS 294.61 kB |

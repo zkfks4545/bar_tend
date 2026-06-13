@@ -107,6 +107,330 @@
       "image": "https://www.thecocktaildb.com/images/media/drink/qgdu971561574065.jpg"
     },
     {
+      "id": "cocktail_classic_006",
+      "name": "Americano",
+      "name_en": "Americano",
+      "name_ko": "아메리카노",
+      "type": "CLASSIC",
+      "base_spirit": "리큐르",
+      "recipe": "캄파리 30ml, 스위트 레드 베르무트 30ml, 소다수 약간",
+      "description": "쌉싸름한 캄파리와 달콤한 베르무트에 탄산이 가볍게 이어지는 아페리티프.",
+      "recipe_source_url": "https://iba-world.com/iba-cocktail/americano/",
+      "official_category": "The Unforgettables",
+      "features": {
+        "sweetness": 0.35,
+        "alcohol_strength": 0.35,
+        "fizz": 0.45,
+        "sourness": 0.15
+      }
+    },
+    {
+      "id": "cocktail_classic_007",
+      "name": "Last Word",
+      "name_en": "Last Word",
+      "name_ko": "라스트 워드",
+      "type": "CLASSIC",
+      "base_spirit": "진",
+      "recipe": "진 22.5ml, 그린 샤르트뢰즈 22.5ml, 마라스키노 룩사르도 22.5ml, 신선한 라임 주스 22.5ml",
+      "description": "허브 향과 체리 리큐르, 라임의 산미가 같은 비율로 맞물리는 선명한 칵테일.",
+      "recipe_source_url": "https://iba-world.com/iba-cocktail/last-word/",
+      "official_category": "The Unforgettables",
+      "features": {
+        "sweetness": 0.45,
+        "alcohol_strength": 0.75,
+        "fizz": 0.0,
+        "sourness": 0.75
+      }
+    },
+    {
+      "id": "cocktail_classic_008",
+      "name": "Paloma",
+      "name_en": "Paloma",
+      "name_ko": "팔로마",
+      "type": "CLASSIC",
+      "base_spirit": "데킬라",
+      "recipe": "100% 아가베 데킬라 50ml, 신선한 라임 5ml, 소금 한 꼬집, 핑크 자몽 소다 100ml",
+      "description": "데킬라와 자몽 소다, 소금이 함께 만드는 밝고 청량한 롱드링크.",
+      "recipe_source_url": "https://iba-world.com/iba-cocktail/paloma/",
+      "official_category": "New Era",
+      "features": {
+        "sweetness": 0.4,
+        "alcohol_strength": 0.45,
+        "fizz": 0.85,
+        "sourness": 0.65
+      }
+    },
+    {
+      "id": "cocktail_classic_009",
+      "name": "Aviation",
+      "name_en": "Aviation",
+      "name_ko": "에비에이션",
+      "type": "CLASSIC",
+      "base_spirit": "진",
+      "recipe": "진 45ml, 마라스키노 룩사르도 15ml, 신선한 레몬 주스 15ml, 크렘 드 바이올렛 바 스푼 1개",
+      "description": "진과 바이올렛의 꽃향기에 레몬 산미가 얇게 겹치는 향긋한 칵테일.",
+      "recipe_source_url": "https://iba-world.com/iba-cocktail/aviation/",
+      "official_category": "The Unforgettables",
+      "features": {
+        "sweetness": 0.35,
+        "alcohol_strength": 0.7,
+        "fizz": 0.0,
+        "sourness": 0.6
+      }
+    },
+    {
+      "id": "cocktail_classic_010",
+      "name": "Boulevardier",
+      "name_en": "Boulevardier",
+      "name_ko": "불바디에",
+      "type": "CLASSIC",
+      "base_spirit": "위스키",
+      "recipe": "버번 또는 라이 위스키 45ml, 캄파리 30ml, 스위트 레드 베르무트 30ml",
+      "description": "위스키의 묵직함 위에 캄파리와 베르무트의 쌉싸름한 균형을 얹은 칵테일.",
+      "recipe_source_url": "https://iba-world.com/iba-cocktail/boulevardier/",
+      "official_category": "The Unforgettables",
+      "features": {
+        "sweetness": 0.3,
+        "alcohol_strength": 0.8,
+        "fizz": 0.0,
+        "sourness": 0.15
+      }
+    },
+    {
+      "id": "cocktail_classic_011",
+      "name": "White Lady",
+      "name_en": "White Lady",
+      "name_ko": "화이트 레이디",
+      "type": "CLASSIC",
+      "base_spirit": "진",
+      "recipe": "진 40ml, 트리플 섹 30ml, 신선한 레몬 주스 20ml",
+      "description": "진과 오렌지 리큐르를 레몬 산미로 정리한 깔끔하고 드라이한 칵테일.",
+      "recipe_source_url": "https://iba-world.com/iba-cocktail/white-lady/",
+      "official_category": "The Unforgettables",
+      "features": {
+        "sweetness": 0.35,
+        "alcohol_strength": 0.7,
+        "fizz": 0.0,
+        "sourness": 0.7
+      }
+    },
+    {
+      "id": "cocktail_classic_012",
+      "name": "Black Russian",
+      "name_en": "Black Russian",
+      "name_ko": "블랙 러시안",
+      "type": "CLASSIC",
+      "base_spirit": "보드카",
+      "recipe": "보드카 50ml, 커피 리큐르 20ml",
+      "description": "보드카의 단단한 질감과 커피 리큐르의 달고 쌉싸름한 향이 직접 만나는 칵테일.",
+      "recipe_source_url": "https://iba-world.com/iba-cocktail/black-russian/",
+      "official_category": "Contemporary Classics",
+      "features": {
+        "sweetness": 0.55,
+        "alcohol_strength": 0.8,
+        "fizz": 0.0,
+        "sourness": 0.0
+      }
+    },
+    {
+      "id": "cocktail_classic_013",
+      "name": "Paper Plane",
+      "name_en": "Paper Plane",
+      "name_ko": "페이퍼 플레인",
+      "type": "CLASSIC",
+      "base_spirit": "위스키",
+      "recipe": "버번 위스키 30ml, 아마로 노니노 30ml, 아페롤 30ml, 신선한 레몬 주스 30ml",
+      "description": "버번과 두 종류의 쌉싸름한 리큐르, 레몬이 같은 비율로 이어지는 모던 클래식.",
+      "recipe_source_url": "https://iba-world.com/iba-cocktail/paper-plane/",
+      "official_category": "New Era",
+      "features": {
+        "sweetness": 0.4,
+        "alcohol_strength": 0.65,
+        "fizz": 0.0,
+        "sourness": 0.7
+      }
+    },
+    {
+      "id": "cocktail_classic_014",
+      "name": "Gin Fizz",
+      "name_en": "Gin Fizz",
+      "name_ko": "진 피즈",
+      "type": "CLASSIC",
+      "base_spirit": "진",
+      "recipe": "진 45ml, 신선한 레몬 주스 30ml, 심플 시럽 10ml, 소다수 약간",
+      "description": "진과 레몬, 가벼운 단맛을 탄산으로 길게 펼친 상쾌한 칵테일.",
+      "recipe_source_url": "https://iba-world.com/iba-cocktail/gin-fizz/",
+      "official_category": "The Unforgettables",
+      "features": {
+        "sweetness": 0.3,
+        "alcohol_strength": 0.45,
+        "fizz": 0.75,
+        "sourness": 0.75
+      }
+    },
+    {
+      "id": "cocktail_classic_015",
+      "name": "Penicillin",
+      "name_en": "Penicillin",
+      "name_ko": "페니실린",
+      "type": "CLASSIC",
+      "base_spirit": "위스키",
+      "recipe": "블렌디드 스카치 위스키 60ml, 라가불린 16년 7.5ml, 신선한 레몬 주스 22.5ml, 허니 시럽 22.5ml, 생강 2~3조각",
+      "description": "스카치의 스모키함에 꿀, 레몬, 생강을 겹친 따뜻하고 강한 인상의 칵테일.",
+      "recipe_source_url": "https://iba-world.com/iba-cocktail/penicillin/",
+      "official_category": "New Era",
+      "features": {
+        "sweetness": 0.45,
+        "alcohol_strength": 0.75,
+        "fizz": 0.0,
+        "sourness": 0.6
+      }
+    },
+    {
+      "id": "cocktail_classic_016",
+      "name": "Sidecar",
+      "name_en": "Sidecar",
+      "name_ko": "사이드카",
+      "type": "CLASSIC",
+      "base_spirit": "브랜디",
+      "recipe": "코냑 50ml, 트리플 섹 20ml, 신선한 레몬 주스 20ml",
+      "description": "코냑의 깊이와 오렌지 리큐르, 레몬 산미가 단정하게 맞물리는 클래식.",
+      "recipe_source_url": "https://iba-world.com/iba-cocktail/sidecar/",
+      "official_category": "The Unforgettables",
+      "features": {
+        "sweetness": 0.35,
+        "alcohol_strength": 0.75,
+        "fizz": 0.0,
+        "sourness": 0.65
+      }
+    },
+    {
+      "id": "cocktail_classic_017",
+      "name": "Daiquiri",
+      "name_en": "Daiquiri",
+      "name_ko": "다이키리",
+      "type": "CLASSIC",
+      "base_spirit": "럼",
+      "recipe": "화이트 쿠반 럼 60ml, 신선한 라임 주스 20ml, 고운 설탕 바 스푼 2개",
+      "description": "럼, 라임, 설탕의 세 재료로 산뜻하고 명확한 균형을 보여주는 클래식.",
+      "recipe_source_url": "https://iba-world.com/iba-cocktail/daiquiri/",
+      "official_category": "The Unforgettables",
+      "features": {
+        "sweetness": 0.35,
+        "alcohol_strength": 0.7,
+        "fizz": 0.0,
+        "sourness": 0.75
+      }
+    },
+    {
+      "id": "cocktail_classic_018",
+      "name": "Whiskey Sour",
+      "name_en": "Whiskey Sour",
+      "name_ko": "위스키 사워",
+      "type": "CLASSIC",
+      "base_spirit": "위스키",
+      "recipe": "버번 위스키 45ml, 신선한 레몬 주스 25ml, 설탕 시럽 20ml, 달걀 흰자 약간 선택",
+      "description": "버번의 묵직함을 레몬과 단맛으로 부드럽게 정리하는 대표적인 사워.",
+      "recipe_source_url": "https://iba-world.com/iba-cocktail/whiskey-sour/",
+      "official_category": "The Unforgettables",
+      "features": {
+        "sweetness": 0.45,
+        "alcohol_strength": 0.6,
+        "fizz": 0.0,
+        "sourness": 0.75
+      }
+    },
+    {
+      "id": "cocktail_classic_019",
+      "name": "Pina Colada",
+      "name_en": "Pina Colada",
+      "name_ko": "피나 콜라다",
+      "type": "CLASSIC",
+      "base_spirit": "럼",
+      "recipe": "화이트 럼 50ml, 코코넛 크림 30ml, 신선한 파인애플 주스 50ml",
+      "description": "럼에 코코넛 크림과 파인애플을 섞은 부드럽고 달콤한 트로피컬 칵테일.",
+      "recipe_source_url": "https://iba-world.com/iba-cocktail/pina-colada/",
+      "official_category": "Contemporary Classics",
+      "features": {
+        "sweetness": 0.85,
+        "alcohol_strength": 0.4,
+        "fizz": 0.0,
+        "sourness": 0.25
+      }
+    },
+    {
+      "id": "cocktail_classic_020",
+      "name": "Cosmopolitan",
+      "name_en": "Cosmopolitan",
+      "name_ko": "코스모폴리탄",
+      "type": "CLASSIC",
+      "base_spirit": "보드카",
+      "recipe": "시트론 보드카 40ml, 쿠앵트로 15ml, 신선한 라임 주스 15ml, 크랜베리 주스 30ml",
+      "description": "시트론 보드카와 크랜베리의 과일 향을 라임 산미로 또렷하게 만든 칵테일.",
+      "recipe_source_url": "https://iba-world.com/iba-cocktail/cosmopolitan/",
+      "official_category": "Contemporary Classics",
+      "features": {
+        "sweetness": 0.5,
+        "alcohol_strength": 0.6,
+        "fizz": 0.0,
+        "sourness": 0.65
+      }
+    },
+    {
+      "id": "cocktail_classic_021",
+      "name": "Bellini",
+      "name_en": "Bellini",
+      "name_ko": "벨리니",
+      "type": "CLASSIC",
+      "base_spirit": "리큐르",
+      "recipe": "프로세코 100ml, 화이트 피치 퓌레 50ml",
+      "description": "복숭아 퓌레와 프로세코가 만드는 가볍고 부드러운 과일 탄산 칵테일.",
+      "recipe_source_url": "https://iba-world.com/iba-cocktail/bellini/",
+      "official_category": "Contemporary Classics",
+      "features": {
+        "sweetness": 0.7,
+        "alcohol_strength": 0.25,
+        "fizz": 0.8,
+        "sourness": 0.2
+      }
+    },
+    {
+      "id": "cocktail_classic_022",
+      "name": "Moscow Mule",
+      "name_en": "Moscow Mule",
+      "name_ko": "모스크바 뮬",
+      "type": "CLASSIC",
+      "base_spirit": "보드카",
+      "recipe": "보드카 45ml, 진저 비어 120ml, 신선한 라임 주스 10ml",
+      "description": "보드카에 진저 비어의 매콤한 탄산과 라임을 더한 선명하고 청량한 롱드링크.",
+      "recipe_source_url": "https://iba-world.com/iba-cocktail/moscow-mule/",
+      "official_category": "Contemporary Classics",
+      "features": {
+        "sweetness": 0.35,
+        "alcohol_strength": 0.4,
+        "fizz": 0.9,
+        "sourness": 0.5
+      }
+    },
+    {
+      "id": "cocktail_classic_023",
+      "name": "Mai-Tai",
+      "name_en": "Mai-Tai",
+      "name_ko": "마이타이",
+      "type": "CLASSIC",
+      "base_spirit": "럼",
+      "recipe": "앰버 자메이카 럼 30ml, 마르티니크 몰라세스 럼 30ml, 오렌지 큐라소 15ml, 오르젯 시럽 15ml, 신선한 라임 주스 30ml, 심플 시럽 7.5ml",
+      "description": "두 종류의 럼과 오르젯, 라임이 풍성하게 겹치는 대표적인 티키 칵테일.",
+      "recipe_source_url": "https://iba-world.com/iba-cocktail/mai-tai/",
+      "official_category": "Contemporary Classics",
+      "features": {
+        "sweetness": 0.6,
+        "alcohol_strength": 0.7,
+        "fizz": 0.0,
+        "sourness": 0.65
+      }
+    },
+    {
       "id": "cocktail_signature_042",
       "name": "PUKEY Goddess Shot",
       "name_ko": "푸키 여신 샷",

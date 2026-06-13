@@ -1,0 +1,149 @@
+[
+  {
+    "id": "base-spirit",
+    "topic": "base",
+    "prompt": "베이스는 어느 쪽이 당기세요? 술도 출신 성분을 꽤 따지거든요.",
+    "choices": [
+      {
+        "label": "진",
+        "acknowledgement": "진이군요. 깔끔한 척은 꽤 잘하죠.",
+        "signals": [{ "field": "preferredIngredients", "value": "진", "confidence": 1, "source": "question" }]
+      },
+      {
+        "label": "럼",
+        "acknowledgement": "럼, 알겠어요. 휴양지는 잔 안에 넣죠.",
+        "signals": [{ "field": "preferredIngredients", "value": "럼", "confidence": 1, "source": "question" }]
+      },
+      {
+        "label": "위스키",
+        "acknowledgement": "위스키군요. 잔이 갑자기 오래 살아 보이네요.",
+        "signals": [{ "field": "preferredIngredients", "value": "위스키", "confidence": 1, "source": "question" }]
+      },
+      {
+        "label": "데킬라 또는 보드카",
+        "acknowledgement": "선명하게 가는 쪽, 접수했어요.",
+        "signals": [
+          { "field": "preferredIngredients", "value": "데킬라", "confidence": 1, "source": "question" },
+          { "field": "preferredIngredients", "value": "보드카", "confidence": 1, "source": "question" }
+        ]
+      },
+      {
+        "label": "브랜디·리큐르·시그니처",
+        "acknowledgement": "조금 다른 병들을 열어보죠.",
+        "signals": [
+          { "field": "preferredIngredients", "value": "브랜디", "confidence": 1, "source": "question" },
+          { "field": "preferredIngredients", "value": "리큐르", "confidence": 1, "source": "question" },
+          { "field": "preferredIngredients", "value": "시그니처", "confidence": 1, "source": "question" }
+        ]
+      },
+      {
+        "label": "카루아에게 맡기기",
+        "acknowledgement": "제 판단력을 믿으시다니, 서로 대담하네요.",
+        "signals": [],
+        "finishRecommendation": true
+      }
+    ]
+  },
+  {
+    "id": "sweetness",
+    "topic": "sweetness",
+    "prompt": "단맛은 어느 정도로 둘까요? 잔에도 당 조절은 필요하니까요.",
+    "choices": [
+      {
+        "label": "달콤하게",
+        "acknowledgement": "달콤하게. 잔이 먼저 친한 척하겠네요.",
+        "signals": [{ "field": "taste.sweetness", "value": 0.8, "confidence": 1, "source": "question" }]
+      },
+      {
+        "label": "적당하게",
+        "acknowledgement": "적당히, 가장 어려운 주문이죠.",
+        "signals": [{ "field": "taste.sweetness", "value": 0.5, "confidence": 1, "source": "question" }]
+      },
+      {
+        "label": "드라이하고 쌉쌀하게",
+        "acknowledgement": "드라이하게. 표정 관리가 쉬운 맛이죠.",
+        "signals": [{ "field": "taste.sweetness", "value": 0.2, "confidence": 1, "source": "question" }]
+      },
+      {
+        "label": "카루아에게 맡기기",
+        "acknowledgement": "단맛의 운명까지 맡기시네요.",
+        "signals": [],
+        "finishRecommendation": true
+      }
+    ]
+  },
+  {
+    "id": "alcohol-strength",
+    "topic": "alcohol",
+    "prompt": "도수는 가볍게 갈까요, 존재감 있게 갈까요?",
+    "choices": [
+      {
+        "label": "가볍게",
+        "acknowledgement": "가볍게. 잔도 야근은 싫어하거든요.",
+        "signals": [{ "field": "alcoholPreference", "value": "low", "confidence": 1, "source": "question" }]
+      },
+      {
+        "label": "적당하게",
+        "acknowledgement": "적당히. 아주 책임감 있는 애매함이네요.",
+        "signals": [{ "field": "alcoholPreference", "value": "medium", "confidence": 1, "source": "question" }]
+      },
+      {
+        "label": "강하게, 천천히",
+        "acknowledgement": "강하게, 대신 천천히요. 잔에 브레이크는 없어서.",
+        "signals": [{ "field": "alcoholPreference", "value": "high", "confidence": 1, "source": "question" }]
+      },
+      {
+        "label": "카루아에게 맡기기",
+        "acknowledgement": "도수계도 제게 넘기셨네요.",
+        "signals": [],
+        "finishRecommendation": true
+      }
+    ]
+  },
+  {
+    "id": "sourness",
+    "topic": "sourness",
+    "prompt": "상큼한 쪽은 어떠세요? 입안에 작은 날씨 하나 두는 셈으로요.",
+    "choices": [
+      {
+        "label": "상큼하고 새콤하게",
+        "acknowledgement": "상큼하게. 표정이 먼저 깨어나겠네요.",
+        "signals": [{ "field": "taste.sourness", "value": 0.8, "confidence": 1, "source": "question" }]
+      },
+      {
+        "label": "산미는 순하게",
+        "acknowledgement": "산미는 조용히 앉혀둘게요.",
+        "signals": [{ "field": "taste.sourness", "value": 0.2, "confidence": 1, "source": "question" }]
+      },
+      {
+        "label": "카루아에게 맡기기",
+        "acknowledgement": "날씨 선택권도 받았습니다.",
+        "signals": [],
+        "finishRecommendation": true
+      }
+    ]
+  },
+  {
+    "id": "fizz",
+    "topic": "fizz",
+    "prompt": "탄산은 필요하세요? 조용한 잔과 수다스러운 잔 중에서요.",
+    "choices": [
+      {
+        "label": "톡 쏘고 청량하게",
+        "acknowledgement": "수다스러운 잔으로 가죠.",
+        "signals": [{ "field": "taste.fizz", "value": 0.8, "confidence": 1, "source": "question" }]
+      },
+      {
+        "label": "탄산 없이 부드럽게",
+        "acknowledgement": "조용한 잔으로 둘게요.",
+        "signals": [{ "field": "taste.fizz", "value": 0.1, "confidence": 1, "source": "question" }]
+      },
+      {
+        "label": "카루아에게 맡기기",
+        "acknowledgement": "기포의 발언권도 제가 정하죠.",
+        "signals": [],
+        "finishRecommendation": true
+      }
+    ]
+  }
+]

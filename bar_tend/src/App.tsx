@@ -15,6 +15,7 @@ export default function App() {
     expression,
     isBartenderTyping,
     isProcessing,
+    activeQuestion,
     errorMessage,
     servedCocktail,
     sidebarOpen,
@@ -23,6 +24,7 @@ export default function App() {
     handleEnter,
     handleExit,
     handleResetNight,
+    handleCancelRecommendation,
     handleSend,
     setServedCocktail,
     setSidebarOpen,
@@ -90,6 +92,8 @@ export default function App() {
             <DialogueBox messages={messages} isTyping={isBartenderTyping} />
             <ChatInput
               onSend={handleSend}
+              onCancelRecommendation={handleCancelRecommendation}
+              activeQuestion={activeQuestion}
               disabled={isProcessing || isBartenderTyping}
             />
             {errorMessage && (

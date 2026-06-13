@@ -21,6 +21,9 @@ export interface CocktailRecordBase {
   name_ko?: string
   /** Base spirit keyword for spirit-based filtering */
   base_spirit?: string
+  /** Provenance for an official standardized recipe */
+  recipe_source_url?: string
+  official_category?: string
 }
 
 export interface ClassicCocktailRecord extends CocktailRecordBase {

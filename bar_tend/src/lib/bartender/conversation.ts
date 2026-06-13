@@ -1,4 +1,5 @@
 import { cocktails } from '../cocktails/database.js'
+import { detectExitIntent } from '../dialogue/input-router.js'
 import type { Cocktail, Message, BartenderResponse, ConversationContext } from '../../types.js'
 
 const kf = (patterns: string[]) => new RegExp(patterns.map(
@@ -7,7 +8,7 @@ const kf = (patterns: string[]) => new RegExp(patterns.map(
 
 function detectIntent(input: string): string {
   const lower = input.toLowerCase()
-  if (kf(['나갈게', '갈게', '바이', '끝', '잘 있어', '다음에', '안녕히']).test(lower)) return 'exit-intent'
+  if (detectExitIntent(lower)) return 'exit-intent'
   if (kf(['추천', '뭐가 좋아', '칵테일', '마실', '취하', '주문']).test(lower)) return 'cocktail-query'
   if (kf(['달콤', '쓰다', '신맛', '짠맛', '향', '맛', '상큼', '청량', '순하', '강하', '진하']).test(lower)) return 'taste-query'
   if (kf(['어떻게', '재료', '만들', '레시피', '뭐가 들']).test(lower)) return 'recipe-query'

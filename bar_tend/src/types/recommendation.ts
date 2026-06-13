@@ -40,6 +40,20 @@ export interface RecommendationSignal {
   evidence?: string
 }
 
+export interface RecommendationQuestionChoice {
+  label: string
+  acknowledgement: string
+  signals: RecommendationSignal[]
+  finishRecommendation?: boolean
+}
+
+export interface RecommendationQuestion {
+  id: string
+  topic: string
+  prompt: string
+  choices: RecommendationQuestionChoice[]
+}
+
 export interface QuestionHistoryEntry {
   topic: string
   answer?: string

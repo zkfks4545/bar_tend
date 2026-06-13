@@ -35,9 +35,11 @@ export default function CocktailCard({ cocktail, onClose }: { cocktail: Cocktail
         <p className="text-white/50 text-sm mb-4 italic">{cocktail.vibe}</p>
 
         <div className="space-y-2 mb-4">
-          <p className="text-sm text-white/70 leading-relaxed">{cocktail.story}</p>
+          <p className="text-sm text-white/70 leading-relaxed">{cocktail.description}</p>
           {cocktail.popCulture && (
-            <p className="text-xs" style={{ color: 'rgba(180, 136, 208, 0.65)' }}>🎬 {cocktail.popCulture}</p>
+            <p className="text-xs" style={{ color: 'rgba(180, 136, 208, 0.65)' }}>
+              관련 정보: {cocktail.popCulture}
+            </p>
           )}
         </div>
 

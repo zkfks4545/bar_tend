@@ -726,6 +726,8 @@ function createCocktailData(record: CocktailRecord): CocktailData {
     name_en: record.name_en,
     name_ko: record.name_ko,
     base_spirit: record.base_spirit,
+    recipe_source_url: record.recipe_source_url,
+    official_category: record.official_category,
     bar_id: isSignatureCocktail(record) ? record.bar_id : undefined,
     bar_name: isSignatureCocktail(record) ? record.bar_name : undefined,
     bar_location_link: isSignatureCocktail(record) ? record.bar_location_link : undefined,
@@ -748,6 +750,7 @@ function createCocktailData(record: CocktailRecord): CocktailData {
         ? `Signature @ ${record.bar_name}`
         : 'Classic cocktail'
     ),
+    description: record.description,
     popCulture: legacyMatch?.popCulture ?? (
       isSignatureCocktail(record) ? record.bar_location_link : undefined
     ),

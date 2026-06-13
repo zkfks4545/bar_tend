@@ -575,6 +575,73 @@ html::before {
   flex-shrink: 0;
 }
 
+.chat-input-shell form {
+  padding: 12px 16px 16px;
+}
+.recommendation-choices {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px 0;
+}
+.recommendation-choices__list {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  gap: 7px;
+  min-width: 0;
+}
+.recommendation-choice,
+.recommendation-cancel {
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+.recommendation-choice {
+  min-height: 34px;
+  padding: 7px 11px;
+  color: rgba(245, 230, 211, 0.82);
+  background: rgba(120, 80, 180, 0.08);
+  border: 1px solid rgba(180, 136, 208, 0.25);
+  border-radius: 999px;
+  font-size: 11px;
+}
+.recommendation-choice--quiet {
+  color: rgba(245, 230, 211, 0.55);
+  background: rgba(255, 255, 255, 0.025);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+.recommendation-cancel {
+  flex: 0 0 auto;
+  min-height: 34px;
+  padding: 7px 4px;
+  color: rgba(245, 230, 211, 0.42);
+  background: transparent;
+  border: 0;
+  font-size: 10px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.recommendation-choice:hover,
+.recommendation-choice:focus-visible {
+  color: #f5e6d3;
+  border-color: rgba(180, 136, 208, 0.6);
+  background: rgba(120, 80, 180, 0.2);
+  box-shadow: 0 0 14px rgba(120, 80, 180, 0.16);
+  outline: none;
+}
+.recommendation-cancel:hover,
+.recommendation-cancel:focus-visible {
+  color: #b088d0;
+  outline: 1px solid rgba(180, 136, 208, 0.4);
+  outline-offset: 2px;
+}
+.recommendation-choice:disabled,
+.recommendation-cancel:disabled {
+  cursor: wait;
+  opacity: 0.35;
+}
+
 @media (max-width: 768px) {
   .restation-sidebar {
     position: fixed;
@@ -614,12 +681,30 @@ html::before {
   }
 
   /* Compact input on mobile */
-  .restation-chat-dock form {
+  .chat-input-shell form {
     padding: 8px 12px !important;
   }
-  .restation-chat-dock form input {
+  .chat-input-shell form input {
     padding: 10px 16px !important;
     font-size: 14px;
+  }
+  .recommendation-choices {
+    display: block;
+    padding: 8px 12px 0;
+  }
+  .recommendation-choices__list {
+    gap: 6px;
+    max-height: 86px;
+    overflow-y: auto;
+  }
+  .recommendation-choice {
+    min-height: 32px;
+    padding: 6px 9px;
+    font-size: 10px;
+  }
+  .recommendation-cancel {
+    min-height: 28px;
+    margin-top: 4px;
   }
 
   /* Sidebar compact on mobile */

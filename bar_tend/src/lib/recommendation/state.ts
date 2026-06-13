@@ -25,6 +25,8 @@ const FEATURE_LABELS: Record<FeatureKey, string> = {
   sourness: '산미',
 }
 
+const FEATURE_FILTER_TOLERANCE = 0.35
+
 const MOOD_PATTERNS: Array<[RecommendationMood, RegExp]> = [
   ['depressed', /우울|기분.*별로|침울/],
   ['tired', /피곤|지쳤|지침|퇴근/],
@@ -62,9 +64,12 @@ const TASTE_PATTERNS: Array<[FeatureKey, number, RegExp]> = [
 
 const ALCOHOL_PATTERNS: Array<[AlcoholPreference, RegExp]> = [
   ['non-alcoholic', /무알코올|논알|non.?alcohol/],
-  ['low', /도수.*낮|약한 술|순한 술/],
-  ['high', /도수.*높|독한 술|강한 술/],
+  ['low', /도수.*낮|약한 술|순한 술|가볍게/],
+  ['medium', /도수.*적당|적당한 도수/],
+  ['high', /도수.*높|독한 술|강한 술|강하게/],
 ]
+
+const INGREDIENT_PATTERNS = ['진', '럼', '위스키', '데킬라', '보드카'] as const
 
 export function createRecommendationState(): RecommendationState {
   return {
@@ -93,6 +98,11 @@ export function extractRecommendationSignals(text: string): RecommendationSignal
   }
   for (const [preference, pattern] of ALCOHOL_PATTERNS) {
     if (pattern.test(text)) signals.push(createSignal('alcoholPreference', preference, text))
+  }
+  for (const ingredient of INGREDIENT_PATTERNS) {
+    if (new RegExp(`(?:${ingredient}).*(?:베이스|추천|좋아|원해)|(?:베이스|추천).*(?:${ingredient})`).test(text)) {
+      signals.push(createSignal('preferredIngredients', ingredient, text))
+    }
   }
 
   const excluded =
@@ -174,11 +184,29 @@ export function filterCocktailsByRecommendationState(
   state: RecommendationState,
 ): CocktailData[] {
   return pool.filter((cocktail) => {
+    for (const feature of Object.keys(state.taste) as FeatureKey[]) {
+      const target = state.taste[feature]
+      if (
+        target !== undefined
+        && Math.abs(cocktail.features[feature] - target) > FEATURE_FILTER_TOLERANCE
+      ) return false
+    }
+
     if (state.alcoholPreference === 'non-alcoholic' && !isNonAlcoholic(cocktail)) return false
     if (state.alcoholPreference === 'low' && cocktail.features.alcohol_strength > 0.4) return false
+    if (state.alcoholPreference === 'medium' && (
+      cocktail.features.alcohol_strength < 0.3 || cocktail.features.alcohol_strength > 0.7
+    )) return false
     if (state.alcoholPreference === 'high' && cocktail.features.alcohol_strength < 0.6) return false
 
     const ingredients = cocktail.ingredients.map(normalize)
+    const normalizedBase = normalize(cocktail.base_spirit ?? '')
+    if (state.preferredIngredients.length > 0 && !state.preferredIngredients.some((preferred) => {
+      const normalizedPreferred = normalize(preferred)
+      return normalizedBase === normalizedPreferred
+        || ingredients.some((ingredient) => ingredient === normalizedPreferred)
+    })) return false
+
     return !state.excludedIngredients.some((excluded) =>
       ingredients.some((ingredient) => ingredient.includes(normalize(excluded))),
     )

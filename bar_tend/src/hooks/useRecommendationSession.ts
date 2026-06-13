@@ -1,14 +1,19 @@
 import { useCallback, useState } from 'react'
 import {
-  detectExpressedDimensions,
-  filterPool,
+  applyQuestionAnswer,
+  formatQuestion,
+  getQuestionById,
   ingestTasteSignals,
   initCandidatePool,
   isRecommendationIntent,
-  nextFilterQuestion,
   pickFromPool,
+  selectNextQuestion,
 } from '@/lib/recommendation/question-engine.js'
 import { findCocktailByName } from '@/lib/cocktails/database.js'
+import {
+  formatExplicitCocktailReply,
+  formatRecommendationReply,
+} from '@/lib/recommendation/response.js'
 import {
   addQuestionHistory,
   answerLatestQuestion,
@@ -31,14 +36,14 @@ export interface RecommendationResult {
 
 export function useRecommendationSession() {
   const [candidatePool, setCandidatePool] = useState<CocktailData[] | null>(null)
-  const [filterCount, setFilterCount] = useState(0)
+  const [activeQuestionId, setActiveQuestionId] = useState<string | null>(null)
   const [recommendationState, setRecommendationState] = useState<RecommendationState>(
     createRecommendationState,
   )
 
   const resetRecommendation = useCallback(() => {
     setCandidatePool(null)
-    setFilterCount(0)
+    setActiveQuestionId(null)
     setRecommendationState(createRecommendationState())
   }, [])
 
@@ -52,7 +57,7 @@ export function useRecommendationSession() {
         return {
           cocktail: explicitCocktail,
           decision: createRecommendationDecision(explicitCocktail, recommendationState),
-          reply: `${explicitCocktail.vibe}\n\n「${explicitCocktail.name}」, 좋은 선택이에요.\n${explicitCocktail.story}`,
+          reply: formatExplicitCocktailReply(explicitCocktail),
           expression: 'smirk',
         }
       }
@@ -60,13 +65,21 @@ export function useRecommendationSession() {
       if (!isRecommendation) return null
 
       const tasteSnapshot = ingestTasteSignals(text, preference)
-      const signals = extractRecommendationSignals(text)
-      let nextState = applyRecommendationSignals(recommendationState, signals)
-      if (candidatePool !== null) nextState = answerLatestQuestion(nextState, text)
+      let nextState = recommendationState
+      let acknowledgement: string | null = null
+      let finishRecommendation = false
+      const activeQuestion = getQuestionById(activeQuestionId)
+      if (candidatePool !== null && activeQuestion) {
+        nextState = answerLatestQuestion(nextState, text)
+        const applied = applyQuestionAnswer(nextState, activeQuestion, text)
+        nextState = applied.state
+        acknowledgement = applied.acknowledgement
+        finishRecommendation = applied.finishRecommendation
+      } else {
+        nextState = applyRecommendationSignals(nextState, extractRecommendationSignals(text))
+      }
       const pool = filterCocktailsByRecommendationState(candidatePool ?? initCandidatePool(), nextState)
       const combinedTaste = { ...tasteSnapshot, ...nextState.taste }
-      let filtered: CocktailData[]
-      let nextQuestion
 
       if (pool.length === 0) {
         resetRecommendation()
@@ -78,31 +91,24 @@ export function useRecommendationSession() {
         }
       }
 
-      if (candidatePool === null) {
-        const expressed = detectExpressedDimensions(text)
-        filtered = expressed.size > 0 ? filterPool(pool, text, 0) : pool
-        nextQuestion = nextFilterQuestion(filtered, 0, expressed, text)
-      } else {
-        filtered = filterPool(pool, text, filterCount)
-        nextQuestion = nextFilterQuestion(filtered, filterCount + 1, undefined, text)
-      }
+      const nextQuestion = finishRecommendation ? null : selectNextQuestion(pool, nextState)
 
       if (nextQuestion) {
         nextState = addQuestionHistory(nextState, {
-          topic: nextQuestion.question.dimension ?? `question-${nextQuestion.index}`,
+          topic: nextQuestion.topic,
         })
         setRecommendationState(nextState)
-        setCandidatePool(filtered)
-        setFilterCount(nextQuestion.index)
+        setCandidatePool(pool)
+        setActiveQuestionId(nextQuestion.id)
         return {
           cocktail: null,
           decision: null,
-          reply: nextQuestion.question.text,
+          reply: formatQuestion(nextQuestion, acknowledgement),
           expression: 'thinking',
         }
       }
 
-      const cocktail = pickFromPool(filtered, combinedTaste)
+      const cocktail = pickFromPool(pool, combinedTaste)
       if (!cocktail) return null
       const decision = createRecommendationDecision(cocktail, nextState)
       resetRecommendation()
@@ -110,14 +116,15 @@ export function useRecommendationSession() {
       return {
         cocktail,
         decision,
-        reply: `취향이 슬슬 자백하네요.\n${cocktail.vibe}\n\n오늘의 추천: 「${cocktail.name}」\n${cocktail.story}\n\n아니면 다시 고르죠. 잔은 상처받지 않으니까요.`,
+        reply: formatRecommendationReply(decision, acknowledgement),
         expression: 'smirk',
       }
     },
-    [candidatePool, filterCount, recommendationState, resetRecommendation],
+    [activeQuestionId, candidatePool, recommendationState, resetRecommendation],
   )
 
   return {
+    activeQuestion: getQuestionById(activeQuestionId),
     resetRecommendation,
     resolveRecommendation,
   }

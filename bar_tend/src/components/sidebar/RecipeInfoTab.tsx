@@ -90,6 +90,21 @@ export default function RecipeInfoTab() {
               )}
               <dt>레시피</dt>
               <dd>{c.recipeText ?? c.ingredients.join(', ')}</dd>
+              {c.recipe_source_url && (
+                <>
+                  <dt>공식 출처</dt>
+                  <dd>
+                    <a
+                      href={c.recipe_source_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{ color: '#b088d0' }}
+                    >
+                      IBA {c.official_category ?? 'Official Cocktail'}
+                    </a>
+                  </dd>
+                </>
+              )}
             </dl>
             <div className="recipe-features">
               <span className="recipe-feature-pill">단맛 {tasteStars(c.taste.sweet)}</span>

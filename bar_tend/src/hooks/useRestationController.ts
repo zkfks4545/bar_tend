@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { getCocktailResponse } from '@/lib/bartender/engine.js'
+import { routeUserInput } from '@/lib/dialogue/input-router.js'
 import { unlockCocktailId } from '@/lib/storage/cocktail-unlocks.js'
 import { createTimerRegistry } from '@/lib/timing/timer-registry.js'
 import type { CocktailData, Expression, Message } from '@/types.js'
@@ -26,7 +27,7 @@ export function useRestationController() {
     ingestUserMessage,
     resetNight,
   } = useGuestPreferenceSession()
-  const { resetRecommendation, resolveRecommendation } = useRecommendationSession()
+  const { activeQuestion, resetRecommendation, resolveRecommendation } = useRecommendationSession()
 
   const clearPendingWork = useCallback(() => {
     timerRegistry.current.clearAll()
@@ -99,6 +100,13 @@ export function useRestationController() {
     )
   }, [clearPendingWork, resetNight, resetRecommendation, bartenderReply])
 
+  const handleCancelRecommendation = useCallback(() => {
+    if (interactionStatus !== 'idle' || !activeQuestion) return
+    resetRecommendation()
+    setMessages((prev) => [...prev, { role: 'user', text: '추천 질문 취소' }])
+    bartenderReply('추천 질문은 접어둘게요. 메뉴판도 가끔 쉬어야죠.', 'idle')
+  }, [activeQuestion, bartenderReply, interactionStatus, resetRecommendation])
+
   const handleSend = useCallback(
     (text: string) => {
       if (interactionStatus !== 'idle') return
@@ -107,7 +115,13 @@ export function useRestationController() {
       setMessages((prev) => [...prev, { role: 'user', text }])
       ingestUserMessage(text)
 
-      if (/나갈게|갈게|바이|끝|잘 있어|다음에|안녕히/.test(text.toLowerCase())) {
+      const inputRoute = routeUserInput(text, { recommendationActive: activeQuestion !== null })
+
+      if (inputRoute === 'safety') {
+        resetRecommendation()
+      }
+
+      if (inputRoute === 'exit') {
         handleExit()
         return
       }
@@ -115,7 +129,10 @@ export function useRestationController() {
       setExpression('thinking')
       timerRegistry.current.schedule(() => {
         try {
-          const recommendation = resolveRecommendation(text, preference)
+          const recommendation =
+            inputRoute === 'explicit-cocktail' || inputRoute === 'recommendation'
+              ? resolveRecommendation(text, preference)
+              : null
           const fallback = getCocktailResponse(text, messages)
           const reply = recommendation?.reply ?? fallback.response
           const nextExpression = recommendation?.expression ?? fallback.expression
@@ -138,8 +155,10 @@ export function useRestationController() {
     },
     [
       interactionStatus,
+      activeQuestion,
       ingestUserMessage,
       handleExit,
+      resetRecommendation,
       resolveRecommendation,
       preference,
       messages,
@@ -154,6 +173,7 @@ export function useRestationController() {
     expression,
     isBartenderTyping: interactionStatus === 'typing',
     isProcessing: interactionStatus !== 'idle',
+    activeQuestion,
     errorMessage,
     servedCocktail,
     sidebarOpen,
@@ -162,6 +182,7 @@ export function useRestationController() {
     handleEnter,
     handleExit,
     handleResetNight,
+    handleCancelRecommendation,
     handleSend,
     setServedCocktail,
     setSidebarOpen,

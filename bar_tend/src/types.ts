@@ -27,6 +27,7 @@ export interface Cocktail {
   recipeText?: string
   story: string
   vibe: string
+  description?: string
   popCulture?: string
   image?: string
   glass?: string
@@ -37,6 +38,7 @@ export interface Cocktail {
 }
 
 export interface CocktailData extends Cocktail {
+  description: string
   type: 'CLASSIC' | 'SIGNATURE'
   features: {
     sweetness: number
@@ -47,6 +49,8 @@ export interface CocktailData extends Cocktail {
   name_en?: string
   name_ko?: string
   base_spirit?: string
+  recipe_source_url?: string
+  official_category?: string
   bar_id?: string
   bar_name?: string
   bar_location_link?: string
