@@ -45,19 +45,19 @@
     ]
   },
   {
-    "id": "sweetness",
-    "topic": "sweetness",
-    "prompt": "단맛은 어느 정도로 둘까요? 잔에도 당 조절은 필요하니까요.",
+    "id": "flavor-profile",
+    "topic": "flavor",
+    "prompt": "오늘은 어떤 맛의 인상이 당기세요? 잔의 첫인상부터 정해보죠.",
     "choices": [
       {
-        "label": "달콤하게",
-        "acknowledgement": "달콤하게. 잔이 먼저 친한 척하겠네요.",
+        "label": "달콤하고 과일향 나게",
+        "acknowledgement": "달콤하고 과일향 있게. 잔이 먼저 친한 척하겠네요.",
         "signals": [{ "field": "taste.sweetness", "value": 0.8, "confidence": 1, "source": "question" }]
       },
       {
-        "label": "적당하게",
-        "acknowledgement": "적당히, 가장 어려운 주문이죠.",
-        "signals": [{ "field": "taste.sweetness", "value": 0.5, "confidence": 1, "source": "question" }]
+        "label": "상큼하고 시트러스하게",
+        "acknowledgement": "상큼하게. 표정이 먼저 깨어나겠네요.",
+        "signals": [{ "field": "taste.sourness", "value": 0.8, "confidence": 1, "source": "question" }]
       },
       {
         "label": "드라이하고 쌉쌀하게",
@@ -65,8 +65,16 @@
         "signals": [{ "field": "taste.sweetness", "value": 0.2, "confidence": 1, "source": "question" }]
       },
       {
+        "label": "균형 잡히고 부드럽게",
+        "acknowledgement": "균형 있게. 튀는 재료들은 잠깐 앉혀둘게요.",
+        "signals": [
+          { "field": "taste.sweetness", "value": 0.5, "confidence": 1, "source": "question" },
+          { "field": "taste.sourness", "value": 0.4, "confidence": 1, "source": "question" }
+        ]
+      },
+      {
         "label": "카루아에게 맡기기",
-        "acknowledgement": "단맛의 운명까지 맡기시네요.",
+        "acknowledgement": "첫인상까지 제게 맡기시네요.",
         "signals": [],
         "finishRecommendation": true
       }
@@ -101,32 +109,9 @@
     ]
   },
   {
-    "id": "sourness",
-    "topic": "sourness",
-    "prompt": "상큼한 쪽은 어떠세요? 입안에 작은 날씨 하나 두는 셈으로요.",
-    "choices": [
-      {
-        "label": "상큼하고 새콤하게",
-        "acknowledgement": "상큼하게. 표정이 먼저 깨어나겠네요.",
-        "signals": [{ "field": "taste.sourness", "value": 0.8, "confidence": 1, "source": "question" }]
-      },
-      {
-        "label": "산미는 순하게",
-        "acknowledgement": "산미는 조용히 앉혀둘게요.",
-        "signals": [{ "field": "taste.sourness", "value": 0.2, "confidence": 1, "source": "question" }]
-      },
-      {
-        "label": "카루아에게 맡기기",
-        "acknowledgement": "날씨 선택권도 받았습니다.",
-        "signals": [],
-        "finishRecommendation": true
-      }
-    ]
-  },
-  {
     "id": "fizz",
     "topic": "fizz",
-    "prompt": "탄산은 필요하세요? 조용한 잔과 수다스러운 잔 중에서요.",
+    "prompt": "마시는 느낌은 어느 쪽이 좋아요? 기포가 수다스러울지, 잔잔할지요.",
     "choices": [
       {
         "label": "톡 쏘고 청량하게",
@@ -134,7 +119,7 @@
         "signals": [{ "field": "taste.fizz", "value": 0.8, "confidence": 1, "source": "question" }]
       },
       {
-        "label": "탄산 없이 부드럽게",
+        "label": "탄산 없이 잔잔하게",
         "acknowledgement": "조용한 잔으로 둘게요.",
         "signals": [{ "field": "taste.fizz", "value": 0.1, "confidence": 1, "source": "question" }]
       },

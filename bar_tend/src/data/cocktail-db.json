@@ -431,6 +431,114 @@
       }
     },
     {
+      "id": "cocktail_classic_024",
+      "name": "French 75",
+      "name_en": "French 75",
+      "name_ko": "프렌치 75",
+      "type": "CLASSIC",
+      "base_spirit": "진",
+      "recipe": "진 30ml, 신선한 레몬 주스 15ml, 설탕 시럽 15ml, 샴페인 60ml",
+      "description": "진과 레몬, 설탕 시럽을 샴페인으로 길게 이어 가볍고 화사하게 마시는 칵테일.",
+      "recipe_source_url": "https://iba-world.com/iba-cocktail/french-75/",
+      "official_category": "Contemporary Classics",
+      "features": {
+        "sweetness": 0.55,
+        "alcohol_strength": 0.4,
+        "fizz": 0.8,
+        "sourness": 0.6
+      }
+    },
+    {
+      "id": "cocktail_classic_025",
+      "name": "Irish Coffee",
+      "name_en": "Irish Coffee",
+      "name_ko": "아이리시 커피",
+      "type": "CLASSIC",
+      "base_spirit": "위스키",
+      "recipe": "아이리시 위스키 50ml, 뜨거운 커피 120ml, 차가운 생크림 50ml, 설탕 1티스푼",
+      "description": "따뜻한 커피와 아이리시 위스키 위에 차가운 크림층을 올린 달콤하고 부드러운 칵테일.",
+      "recipe_source_url": "https://iba-world.com/iba-cocktail/irish-coffee/",
+      "official_category": "Contemporary Classics",
+      "features": {
+        "sweetness": 0.7,
+        "alcohol_strength": 0.4,
+        "fizz": 0.0,
+        "sourness": 0.1
+      }
+    },
+    {
+      "id": "cocktail_classic_026",
+      "name": "Dark 'N' Stormy",
+      "name_en": "Dark 'N' Stormy",
+      "name_ko": "다크 앤 스토미",
+      "type": "CLASSIC",
+      "base_spirit": "럼",
+      "recipe": "고슬링 럼 60ml, 진저 비어 100ml",
+      "description": "진저 비어 위에 진한 럼을 띄워 달콤한 향신료와 탄산을 선명하게 즐기는 롱드링크.",
+      "recipe_source_url": "https://iba-world.com/iba-cocktail/dark-n-stormy/",
+      "official_category": "New Era",
+      "features": {
+        "sweetness": 0.55,
+        "alcohol_strength": 0.45,
+        "fizz": 0.85,
+        "sourness": 0.25
+      }
+    },
+    {
+      "id": "cocktail_classic_027",
+      "name": "Horse's Neck",
+      "name_en": "Horse's Neck",
+      "name_ko": "홀스 넥",
+      "type": "CLASSIC",
+      "base_spirit": "브랜디",
+      "recipe": "코냑 40ml, 진저 에일 120ml, 앙고스투라 비터스 약간 선택",
+      "description": "코냑을 진저 에일로 길게 펼쳐 가볍고 은은한 향신료 탄산을 즐기는 칵테일.",
+      "recipe_source_url": "https://iba-world.com/iba-cocktail/horses-neck/",
+      "official_category": "Contemporary Classics",
+      "features": {
+        "sweetness": 0.45,
+        "alcohol_strength": 0.35,
+        "fizz": 0.8,
+        "sourness": 0.15
+      }
+    },
+    {
+      "id": "cocktail_classic_028",
+      "name": "Tequila Sunrise",
+      "name_en": "Tequila Sunrise",
+      "name_ko": "데킬라 선라이즈",
+      "type": "CLASSIC",
+      "base_spirit": "데킬라",
+      "recipe": "데킬라 45ml, 신선한 오렌지 주스 90ml, 그레나딘 시럽 15ml",
+      "description": "오렌지 주스와 그레나딘이 만드는 선명한 층과 부드러운 단맛이 특징인 데킬라 칵테일.",
+      "recipe_source_url": "https://iba-world.com/iba-cocktail/tequila-sunrise/",
+      "official_category": "Contemporary Classics",
+      "features": {
+        "sweetness": 0.75,
+        "alcohol_strength": 0.4,
+        "fizz": 0.0,
+        "sourness": 0.3
+      }
+    },
+    {
+      "id": "cocktail_classic_029",
+      "name": "Sea Breeze",
+      "name_en": "Sea Breeze",
+      "name_ko": "씨 브리즈",
+      "type": "CLASSIC",
+      "base_spirit": "보드카",
+      "recipe": "보드카 40ml, 크랜베리 주스 120ml, 자몽 주스 30ml",
+      "description": "보드카에 크랜베리와 자몽 주스를 더해 가볍고 과일 산미가 또렷한 롱드링크.",
+      "recipe_source_url": "https://iba-world.com/iba-cocktail/sea-breeze/",
+      "official_category": "Contemporary Classics",
+      "features": {
+        "sweetness": 0.55,
+        "alcohol_strength": 0.3,
+        "fizz": 0.0,
+        "sourness": 0.65
+      }
+    },
+    {
       "id": "cocktail_signature_042",
       "name": "PUKEY Goddess Shot",
       "name_ko": "푸키 여신 샷",

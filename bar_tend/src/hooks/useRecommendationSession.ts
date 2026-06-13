@@ -5,6 +5,7 @@ import {
   getQuestionById,
   ingestTasteSignals,
   initCandidatePool,
+  isRecommendationDecisive,
   isRecommendationIntent,
   pickFromPool,
   selectNextQuestion,
@@ -22,6 +23,7 @@ import {
   createRecommendationState,
   extractRecommendationSignals,
   filterCocktailsByRecommendationState,
+  resolveCocktailsByRecommendationState,
 } from '@/lib/recommendation/state.js'
 import type { CocktailData, Expression } from '@/types.js'
 import type { TastePreference } from '@/types/cocktail-db.js'
@@ -78,7 +80,12 @@ export function useRecommendationSession() {
       } else {
         nextState = applyRecommendationSignals(nextState, extractRecommendationSignals(text))
       }
-      const pool = filterCocktailsByRecommendationState(candidatePool ?? initCandidatePool(), nextState)
+      const sourcePool = candidatePool ?? initCandidatePool()
+      const exactPool = filterCocktailsByRecommendationState(sourcePool, nextState)
+      const resolved = exactPool.length > 0
+        ? { cocktails: exactPool, exactMatch: true }
+        : resolveCocktailsByRecommendationState(sourcePool, nextState)
+      const pool = resolved.cocktails
       const combinedTaste = { ...tasteSnapshot, ...nextState.taste }
 
       if (pool.length === 0) {
@@ -91,7 +98,11 @@ export function useRecommendationSession() {
         }
       }
 
-      const nextQuestion = finishRecommendation ? null : selectNextQuestion(pool, nextState)
+      const nextQuestion = finishRecommendation
+        || !resolved.exactMatch
+        || isRecommendationDecisive(pool, nextState)
+        ? null
+        : selectNextQuestion(pool, nextState)
 
       if (nextQuestion) {
         nextState = addQuestionHistory(nextState, {
@@ -116,7 +127,11 @@ export function useRecommendationSession() {
       return {
         cocktail,
         decision,
-        reply: formatRecommendationReply(decision, acknowledgement),
+        reply: formatRecommendationReply(
+          decision,
+          acknowledgement,
+          resolved.exactMatch ? 'exact' : 'nearest',
+        ),
         expression: 'smirk',
       }
     },

@@ -14,6 +14,11 @@ import {
 } from './state.js'
 
 const NUDGE = 0.2
+const DECISIVE_MAX_DISTANCE = 0.1
+const DECISIVE_MIN_MARGIN = 0.15
+const QUESTION_UX_BONUS: Record<string, number> = {
+  flavor: 150,
+}
 export const MAX_RECOMMENDATION_QUESTIONS = 3
 export const RECOMMENDATION_QUESTIONS = questionsJson as RecommendationQuestion[]
 
@@ -108,6 +113,22 @@ export function selectNextQuestion(
     ?.question ?? null
 }
 
+export function isRecommendationDecisive(
+  pool: CocktailData[],
+  state: RecommendationState,
+): boolean {
+  if (pool.length <= 1) return true
+  if (countKnownPreferenceTopics(state) < 2) return false
+
+  const ranked = pool
+    .map((cocktail) => ({ cocktail, distance: preferenceDistance(cocktail, state) }))
+    .sort((a, b) => a.distance - b.distance)
+  const [first, second] = ranked
+
+  return first.distance <= DECISIVE_MAX_DISTANCE
+    && second.distance - first.distance >= DECISIVE_MIN_MARGIN
+}
+
 export function formatQuestion(
   question: RecommendationQuestion,
   acknowledgement?: string | null,
@@ -135,12 +156,33 @@ function findChoice(
 
 function getKnownTopics(state: RecommendationState): Set<string> {
   const topics = new Set<string>()
-  if (state.taste.sweetness !== undefined) topics.add('sweetness')
-  if (state.taste.sourness !== undefined) topics.add('sourness')
+  if (state.taste.sweetness !== undefined || state.taste.sourness !== undefined) topics.add('flavor')
   if (state.taste.fizz !== undefined) topics.add('fizz')
   if (state.taste.alcohol_strength !== undefined || state.alcoholPreference !== 'any') topics.add('alcohol')
   if (state.preferredIngredients.length > 0) topics.add('base')
   return topics
+}
+
+function countKnownPreferenceTopics(state: RecommendationState): number {
+  return getKnownTopics(state).size
+}
+
+function preferenceDistance(cocktail: CocktailData, state: RecommendationState): number {
+  const targets: Array<[number | undefined, number]> = [
+    [state.taste.sweetness, cocktail.features.sweetness],
+    [state.taste.sourness, cocktail.features.sourness],
+    [state.taste.fizz, cocktail.features.fizz],
+  ]
+
+  if (state.alcoholPreference === 'low') targets.push([0.25, cocktail.features.alcohol_strength])
+  if (state.alcoholPreference === 'medium') targets.push([0.5, cocktail.features.alcohol_strength])
+  if (state.alcoholPreference === 'high') targets.push([0.8, cocktail.features.alcohol_strength])
+
+  const expressed = targets.filter((entry): entry is [number, number] => entry[0] !== undefined)
+  if (expressed.length === 0) return Number.POSITIVE_INFINITY
+
+  return expressed.reduce((total, [target, actual]) => total + Math.abs(target - actual), 0)
+    / expressed.length
 }
 
 function scoreQuestion(
@@ -158,7 +200,9 @@ function scoreQuestion(
 
   if (groupSizes.length < 2) return 0
   const largestGroup = Math.max(...groupSizes)
-  return groupSizes.length * 100 + (pool.length - largestGroup)
+  return groupSizes.length * 100
+    + (pool.length - largestGroup)
+    + (QUESTION_UX_BONUS[question.topic] ?? 0)
 }
 
 export function pickFromPool(pool: CocktailData[], preference: TastePreference): CocktailData | null {

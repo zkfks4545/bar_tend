@@ -8,9 +8,13 @@ export function formatExplicitCocktailReply(cocktail: CocktailData): string {
 export function formatRecommendationReply(
   decision: RecommendationDecision,
   acknowledgement?: string | null,
+  matchType: 'exact' | 'nearest' = 'exact',
 ): string {
   const reason = decision.reasons.find((item) => item.code !== 'context')
   const opening = acknowledgement ?? '취향이 슬슬 자백하네요.'
+  if (matchType === 'nearest') {
+    return `${opening}\n완전히 같은 잔은 없어서 가장 가까운 「${decision.cocktail.name}」로 골랐어요.\n몇 조건은 살짝 양보했지만, 없는 술을 발명하는 것보단 낫죠.`
+  }
   const reasonLine = reason
     ? `${reason.detail} 잔이 제법 눈치가 빠르죠.`
     : '지금까지 들은 걸로 제가 골라봤어요. 틀리면 잔 탓을 하죠.'

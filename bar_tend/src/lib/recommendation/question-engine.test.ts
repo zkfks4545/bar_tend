@@ -4,6 +4,7 @@ import {
   applyQuestionAnswer,
   formatQuestion,
   getQuestionById,
+  isRecommendationDecisive,
   selectNextQuestion,
 } from './question-engine.js'
 import {
@@ -11,9 +12,14 @@ import {
   applyRecommendationSignals,
   createRecommendationState,
   filterCocktailsByRecommendationState,
+  resolveCocktailsByRecommendationState,
 } from './state.js'
 
 describe('adaptive recommendation questions', () => {
+  it('starts with an accessible flavor question before specialist terminology', () => {
+    expect(selectNextQuestion(getAllCocktailData(), createRecommendationState())?.topic).toBe('flavor')
+  })
+
   it('skips topics already known from recommendation state', () => {
     const state = applyRecommendationSignals(createRecommendationState(), [
       { field: 'taste.sweetness', value: 0.8, confidence: 1, source: 'rule' },
@@ -22,7 +28,7 @@ describe('adaptive recommendation questions', () => {
 
     const question = selectNextQuestion(getAllCocktailData(), state)
 
-    expect(question?.topic).not.toBe('sweetness')
+    expect(question?.topic).not.toBe('flavor')
     expect(question?.topic).not.toBe('base')
   })
 
@@ -39,7 +45,7 @@ describe('adaptive recommendation questions', () => {
       state = addQuestionHistory(state, { topic: question!.topic, answer: '카루아에게 맡기기' })
     }
 
-    const cappedState = ['base', 'sweetness', 'alcohol'].reduce(
+    const cappedState = ['base', 'flavor', 'alcohol'].reduce(
       (current, topic) => addQuestionHistory(current, { topic, answer: '카루아에게 맡기기' }),
       createRecommendationState(),
     )
@@ -108,9 +114,8 @@ describe('adaptive recommendation questions', () => {
 
     for (const question of [
       getQuestionById('base-spirit'),
-      getQuestionById('sweetness'),
+      getQuestionById('flavor-profile'),
       getQuestionById('alcohol-strength'),
-      getQuestionById('sourness'),
       getQuestionById('fizz'),
     ]) {
       expect(question).not.toBeNull()
@@ -129,5 +134,64 @@ describe('adaptive recommendation questions', () => {
         expect(mapped, `${cocktail.name} has no answer for ${question!.id}`).toBe(true)
       }
     }
+  })
+
+  it('returns at least one result for every complete choice combination', () => {
+    const cocktails = getAllCocktailData()
+    const questions = [
+      getQuestionById('base-spirit'),
+      getQuestionById('flavor-profile'),
+      getQuestionById('alcohol-strength'),
+      getQuestionById('fizz'),
+    ]
+
+    expect(questions.every(Boolean)).toBe(true)
+    const combinations = questions.reduce<Array<Array<NonNullable<(typeof questions)[number]>['choices'][number]>>>(
+      (paths, question) => paths.flatMap((path) =>
+        question!.choices
+          .filter((choice) => !choice.finishRecommendation)
+          .map((choice) => [...path, choice]),
+      ),
+      [[]],
+    )
+
+    expect(combinations).toHaveLength(120)
+    for (const choices of combinations) {
+      const state = choices.reduce(
+        (current, choice) => applyRecommendationSignals(current, choice.signals),
+        createRecommendationState(),
+      )
+      const resolved = resolveCocktailsByRecommendationState(cocktails, state)
+
+      expect(
+        resolved.cocktails.length,
+        choices.map((choice) => choice.label).join(' > '),
+      ).toBeGreaterThan(0)
+    }
+  })
+
+  it('stops asking when two answers make one candidate clearly dominant', () => {
+    const baseQuestion = getQuestionById('base-spirit')!
+    const flavorQuestion = getQuestionById('flavor-profile')!
+    const baseState = applyQuestionAnswer(
+      createRecommendationState(),
+      baseQuestion,
+      '데킬라 또는 보드카',
+    ).state
+    const state = applyQuestionAnswer(baseState, flavorQuestion, '달콤하고 과일향 나게').state
+    const pool = filterCocktailsByRecommendationState(getAllCocktailData(), state)
+
+    expect(pool.length).toBeGreaterThan(1)
+    expect(isRecommendationDecisive(pool, state)).toBe(true)
+    expect(pool.some((cocktail) => cocktail.name === '데킬라 선라이즈')).toBe(true)
+  })
+
+  it('keeps asking when only a broad base preference is known', () => {
+    const question = getQuestionById('base-spirit')!
+    const state = applyQuestionAnswer(createRecommendationState(), question, '진').state
+    const pool = filterCocktailsByRecommendationState(getAllCocktailData(), state)
+
+    expect(isRecommendationDecisive(pool, state)).toBe(false)
+    expect(selectNextQuestion(pool, state)).not.toBeNull()
   })
 })

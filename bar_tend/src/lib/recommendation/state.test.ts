@@ -6,6 +6,7 @@ import {
   createRecommendationState,
   extractRecommendationSignals,
   filterCocktailsByRecommendationState,
+  resolveCocktailsByRecommendationState,
 } from './state.js'
 
 describe('recommendation state', () => {
@@ -49,5 +50,20 @@ describe('recommendation state', () => {
     )
 
     expect(state.excludedIngredients).toEqual(['민트'])
+  })
+
+  it('keeps hard constraints when recovering from an empty exact match', () => {
+    const state = applyRecommendationSignals(createRecommendationState(), [
+      { field: 'preferredIngredients', value: '진', confidence: 1, source: 'question' },
+      { field: 'taste.sweetness', value: 0.8, confidence: 1, source: 'question' },
+      { field: 'taste.sourness', value: 0.2, confidence: 1, source: 'question' },
+      { field: 'taste.fizz', value: 0.1, confidence: 1, source: 'question' },
+      { field: 'alcoholPreference', value: 'low', confidence: 1, source: 'question' },
+    ])
+    const resolved = resolveCocktailsByRecommendationState(getAllCocktailData(), state)
+
+    expect(resolved.exactMatch).toBe(false)
+    expect(resolved.cocktails.length).toBeGreaterThan(0)
+    expect(resolved.cocktails.every((cocktail) => cocktail.base_spirit === '진')).toBe(true)
   })
 })

@@ -25,4 +25,17 @@ describe('recommendation dialogue copy', () => {
     expect(reply).toContain('눈치가 빠르죠')
     expect(reply).not.toContain(cocktail.description)
   })
+
+  it('uses distinct copy for a nearest fallback recommendation', () => {
+    const cocktail = getCocktailById('cocktail_classic_028')!
+    const reply = formatRecommendationReply(
+      createRecommendationDecision(cocktail, createRecommendationState()),
+      null,
+      'nearest',
+    )
+
+    expect(reply).toContain('완전히 같은 잔은 없어서')
+    expect(reply).toContain('몇 조건은 살짝 양보')
+    expect(reply).not.toContain('눈치가 빠르죠')
+  })
 })

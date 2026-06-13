@@ -1,5 +1,79 @@
 ﻿# 작업 이력
 
+## 2026-06-13 / DEC-018 / 추천 질문 4축 간소화
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-13 |
+| 작업 ID | DEC-018 |
+| 작업자 | GPT-5 Codex |
+| 작업 내용 | 현재 질문 분류와 맛·도수·탄산 및 질감·롱숏·베이스 기준표를 비교하고, DB와 UX에 맞는 4축 질문 구조로 개편했다. |
+| 수정 파일 | `bar_tend/src/data/recommendation-questions.json`, `src/lib/recommendation/question-engine.ts`, `question-engine.test.ts`, `mission_control/DECISIONS.md`, `PROJECT_VISION.md`, `ARCHITECTURE.md`, `CURRENT_STATE.md`, `TASK_BOARD.md`, `HANDOVER.md`, `WORK_LOG.md` |
+| 주요 변경 사항 | 단맛·산미 질문을 맛과 풍미 질문으로 통합, 맛 질문 첫 순서 우선, 탄산 질문을 마시는 느낌 중심으로 표현, 롱·숏 질문 제외 |
+| 비교 결과 | 기존 5축은 180조합 중 정확 일치 74개·최근접 106개, 새 4축은 120조합 중 정확 일치 70개·최근접 50개다. |
+| 제외 근거 | 롱·숏 드링크는 현재 DB에 검수된 독립 필드가 없고 탄산·도수와 의미가 겹치며 초심자에게 전문 용어다. |
+| 실패한 시도 | 없음 |
+| 후속 작업 제안 | 향후 `serving_style`과 질감 데이터를 전 칵테일에 검수해 추가한 뒤 별도 질문의 정보 이득을 재평가할 것 |
+
+### 검증 결과
+
+| 검증 | 결과 |
+|---|---|
+| 전체 조합 감사 | 120개 모두 결과 존재, 정확 70개·최근접 50개 |
+| `npm.cmd test` | 통과, Vitest 35개 |
+| `npm.cmd run check` | 통과 |
+| `npm.cmd run lint` | 통과 |
+| `npm.cmd run build` | 통과, JS 299.78 kB |
+
+## 2026-06-13 / RST-402 / 확정 후보 조기 추천과 최근접 전용 대사
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-13 |
+| 작업 ID | RST-402 |
+| 작업자 | GPT-5 Codex |
+| 작업 내용 | 명확한 1위 후보가 나온 상황에서 추가 질문을 생략하고, 최근접 복구 추천에는 정확 추천과 다른 카루아 대사를 사용하도록 개선했다. |
+| 수정 파일 | `bar_tend/src/lib/recommendation/question-engine.ts`, `question-engine.test.ts`, `src/lib/recommendation/response.ts`, `response.test.ts`, `src/hooks/useRecommendationSession.ts`, `mission_control/ARCHITECTURE.md`, `CURRENT_STATE.md`, `TASK_BOARD.md`, `HANDOVER.md`, `WORK_LOG.md` |
+| 주요 변경 사항 | 베이스 포함 최소 두 취향 주제와 1·2위 거리 차이를 기준으로 사실상 확정 후보를 판정한다. 최근접 추천은 일부 조건을 양보했음을 별도 대사로 명시한다. |
+| 대표 회귀 | `데킬라 또는 보드카 + 달콤하게`에서 데킬라 선라이즈가 명확히 앞서면 추가 질문 없이 추천하고, 베이스 선호만 있는 경우에는 질문을 계속한다. |
+| 실패한 시도 | 없음 |
+| 발견한 문제 | 기존에는 최근접 추천이 일반 추천 대사와 섞였고, 후보가 이미 명확해도 후보 수가 2개 이상이면 추가 질문이 이어질 수 있었다. |
+| 후속 작업 제안 | 실제 사용자 로그가 생기면 조기 종료 거리 임계값을 조정할 것 |
+
+### 검증 결과
+
+| 검증 | 결과 |
+|---|---|
+| `npm.cmd test` | 통과, Vitest 34개 |
+| `npm.cmd run check` | 통과 |
+| `npm.cmd run lint` | 통과 |
+| `npm.cmd run build` | 통과, JS 300.03 kB |
+
+## 2026-06-13 / DATA-003 / 전체 선택 조합 결과 보장
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-06-13 |
+| 작업 ID | DATA-003 |
+| 작업자 | GPT-5 Codex |
+| 작업 내용 | IBA 공식 레시피 6종을 추가하고 모든 추천 선택 조합에서 최소 한 결과를 반환하는 최근접 복구 계약을 구현했다. |
+| 수정 파일 | `bar_tend/src/data/cocktail-db.json`, `src/lib/recommendation/state.ts`, `src/hooks/useRecommendationSession.ts`, `src/lib/cocktails/database.test.ts`, `src/lib/recommendation/question-engine.test.ts`, `mission_control/ARCHITECTURE.md`, `CURRENT_STATE.md`, `TASK_BOARD.md`, `HANDOVER.md`, `WORK_LOG.md` |
+| 주요 변경 사항 | 프렌치 75, 아이리시 커피, 다크 앤 스토미, 홀스 넥, 데킬라 선라이즈, 씨 브리즈 추가. 엄격 필터가 비면 베이스·제외 재료 조건을 유지한 최근접 맛·도수 후보를 반환하고 타협안임을 대화에서 안내한다. |
+| 조합 감사 | 전체 180개 조합 중 정확 일치 74개, 최근접 복구 106개, 결과 없음 0개 |
+| 실패한 시도 | 최초 조합 분석 명령에서 PowerShell이 대시 문자를 정규식 와일드카드처럼 전달해 실패했다. 쉼표 기준 파싱으로 재실행했으며 파일 변경은 없었다. |
+| 발견한 문제 | 단일 선택지 커버리지 테스트만으로는 누적 선택 조합의 빈 후보군을 발견할 수 없었다. |
+| 후속 작업 제안 | 최근접 추천의 추천 이유에 어떤 조건을 완화했는지 구조화해 표시할 것 |
+
+### 검증 결과
+
+| 검증 | 결과 |
+|---|---|
+| `npm.cmd test` | 통과, Vitest 31개 |
+| 전체 조합 감사 | 180개 모두 결과 존재 |
+| `npm.cmd run check` | 통과 |
+| `npm.cmd run lint` | 통과 |
+| `npm.cmd run build` | 통과, JS 299.19 kB |
+
 ## 2026-06-13 / RST-402 / 질문 선택지 전체 후보 커버리지
 
 | 항목 | 내용 |

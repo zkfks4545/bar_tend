@@ -213,6 +213,30 @@ export function filterCocktailsByRecommendationState(
   })
 }
 
+export function resolveCocktailsByRecommendationState(
+  pool: CocktailData[],
+  state: RecommendationState,
+): { cocktails: CocktailData[]; exactMatch: boolean } {
+  const exactMatches = filterCocktailsByRecommendationState(pool, state)
+  if (exactMatches.length > 0) return { cocktails: exactMatches, exactMatch: true }
+
+  const eligible = pool.filter((cocktail) => matchesHardConstraints(cocktail, state))
+  if (eligible.length === 0) return { cocktails: [], exactMatch: false }
+
+  const scored = eligible.map((cocktail) => ({
+    cocktail,
+    score: recommendationDistance(cocktail, state),
+  }))
+  const bestScore = Math.min(...scored.map(({ score }) => score))
+
+  return {
+    cocktails: scored
+      .filter(({ score }) => Math.abs(score - bestScore) < 0.0001)
+      .map(({ cocktail }) => cocktail),
+    exactMatch: false,
+  }
+}
+
 export function createRecommendationDecision(
   cocktail: CocktailData,
   state: RecommendationState,
@@ -279,6 +303,41 @@ export function buildRecommendationReasons(
 function isNonAlcoholic(cocktail: CocktailData): boolean {
   return cocktail.alcoholic?.toLowerCase().includes('non') === true
     || cocktail.features.alcohol_strength === 0
+}
+
+function matchesHardConstraints(cocktail: CocktailData, state: RecommendationState): boolean {
+  if (state.alcoholPreference === 'non-alcoholic' && !isNonAlcoholic(cocktail)) return false
+
+  const ingredients = cocktail.ingredients.map(normalize)
+  const normalizedBase = normalize(cocktail.base_spirit ?? '')
+  if (state.preferredIngredients.length > 0 && !state.preferredIngredients.some((preferred) => {
+    const normalizedPreferred = normalize(preferred)
+    return normalizedBase === normalizedPreferred
+      || ingredients.some((ingredient) => ingredient === normalizedPreferred)
+  })) return false
+
+  return !state.excludedIngredients.some((excluded) =>
+    ingredients.some((ingredient) => ingredient.includes(normalize(excluded))),
+  )
+}
+
+function recommendationDistance(cocktail: CocktailData, state: RecommendationState): number {
+  let distance = (Object.keys(state.taste) as FeatureKey[]).reduce(
+    (total, key) => total + Math.abs(cocktail.features[key] - (state.taste[key] ?? 0)),
+    0,
+  )
+
+  const alcoholTarget: Partial<Record<AlcoholPreference, number>> = {
+    low: 0.25,
+    medium: 0.5,
+    high: 0.8,
+  }
+  const target = alcoholTarget[state.alcoholPreference]
+  if (target !== undefined) {
+    distance += Math.abs(cocktail.features.alcohol_strength - target)
+  }
+
+  return distance
 }
 
 function featureDelta(cocktail: CocktailData, taste: TastePreference, key: FeatureKey): number {
